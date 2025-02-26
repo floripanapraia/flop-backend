@@ -19,8 +19,8 @@ Floripa na Praia é uma aplicação simples desenvolvida em Spring Boot para fac
 ### Instalação e Execução
 1. Clone o repositório:
    ```sh
-   git clone https://github.com/seu-usuario/floripa-na-praia.git
-   cd floripa-na-praia
+   git clone https://github.com/floripanapraia/flop-backend.git
+   cd flop-backend
    ```
 2. Configure o banco de dados no `application.properties` ou `application.yml`:
    ```properties
@@ -61,4 +61,3 @@ http://localhost:8080/swagger-ui.html
 
 ## Licença
 Este projeto está sob a licença MIT.
-
