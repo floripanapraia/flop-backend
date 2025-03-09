@@ -59,5 +59,9 @@ public class Usuario {
 	@OneToMany(mappedBy = "usuario")
 	@JsonBackReference
 	private List<Postagem> postagem;
+	
+	@OneToMany(mappedBy = "usuario")
+    @JsonBackReference
+    private List<SugerirPraia> sugestoesPraia;
 
 }
