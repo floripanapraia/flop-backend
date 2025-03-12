@@ -16,5 +16,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String>, JpaSp
 
 	boolean existsByUsername(String username);
 
-	Optional<Usuario> findById(String id);
+	Optional<Usuario> findById(Long id);
 }
