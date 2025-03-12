@@ -2,9 +2,6 @@ package com.vitalu.flop.model.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import javax.validation.constraints.Size;
-
 import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
@@ -16,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Entity

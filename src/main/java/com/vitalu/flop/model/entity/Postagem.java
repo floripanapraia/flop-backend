@@ -29,41 +29,42 @@ import lombok.Data;
 public class Postagem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(name = "id_postagem")
 	private Long idPostagem;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+	@ManyToOne
+	@JoinColumn(name = "usuario_id", nullable = false)
+	private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "praia_id", nullable = false)
-    private Praia praia;
+	@ManyToOne
+	@JoinColumn(name = "praia_id", nullable = false)
+	private Praia praia;
 
-    @CreationTimestamp
-    private LocalDateTime data;
+	@CreationTimestamp
+	private LocalDateTime data;
 
-    private String imagem;
+	private String imagem;
 
-    @Size(max = 300)
-    private String mensagem;
+	@Size(max = 300)
+	private String mensagem;
 
-    private Boolean excluida;
+	private Boolean excluida;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
-    private Localizacao localizacao;
+//	@OneToOne(cascade = CascadeType.ALL)
+//	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
+//	private Localizacao localizacao;
 
-    @ManyToMany
-    @JoinTable(
-        name = "postagem_curtidas",
-        joinColumns = @JoinColumn(name = "postagem_id"),
-        inverseJoinColumns = @JoinColumn(name = "usuario_id")
-    )
-    private List<Usuario> usuariosCurtiram;
+  @ManyToMany
+  @JoinTable(
+      name = "postagem_curtidas",
+      joinColumns = @JoinColumn(name = "postagem_id"),
+      inverseJoinColumns = @JoinColumn(name = "usuario_id")
+  )
+  private List<Usuario> usuariosCurtiram;
 
-    @OneToMany(mappedBy = "postagem")
+	@OneToMany(mappedBy = "postagem")
 	@JsonBackReference
-    private List<Denuncia> denuncias;
+	private List<Denuncia> denuncias;
 
 }

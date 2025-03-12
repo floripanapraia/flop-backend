@@ -16,15 +16,17 @@ import lombok.Data;
 @Entity
 @Data
 public class SugerirPraia {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idSugestao;
 	
 	@NotNull(message = "É obrigatório informar o nome da praia.")
+
 	private String nomePraia;
 	
 	@NotNull(message = "É obrigatório informar o nome do bairro.")
+
 	private String bairro;
 	
 	@NotNull(message = "É obrigatório informar a descrição da praia.")
@@ -34,7 +36,7 @@ public class SugerirPraia {
 	
 	@CreationTimestamp
 	private LocalDateTime criadaEm;
-	
+  
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
 	private Usuario usuario;

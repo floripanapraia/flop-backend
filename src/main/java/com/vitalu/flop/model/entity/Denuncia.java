@@ -21,22 +21,25 @@ import lombok.Data;
 public class Denuncia {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idDenuncia;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long idDenuncia;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuarioDenunciador;
+  @ManyToOne
+  @JoinColumn(name = "usuario_id")
+  private Usuario usuarioDenunciador;
 
-    @ManyToOne
-    @JoinColumn(name = "postagem_id")
-    private Postagem postagem;
+  @ManyToOne
+  @JoinColumn(name = "postagem_id")
+  private Postagem postagem;
     
-    @CreationTimestamp
-    private LocalDateTime dataDenuncia;
+  @CreationTimestamp
+  private LocalDateTime dataDenuncia;
 
-    @Enumerated(EnumType.STRING)
-   private MotivosDenuncia motivo;
+	@CreationTimestamp
+	private LocalDateTime dataDenuncia;
 
-    private Boolean analisada;
+	@Enumerated(EnumType.STRING)
+	private MotivosDenuncia motivo;
+
+	private Boolean analisada;
 }
