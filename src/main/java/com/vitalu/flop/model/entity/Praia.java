@@ -23,9 +23,9 @@ public class Praia {
 
 	private String imagem;
 
-////	@OneToOne(cascade = CascadeType.ALL)
-////	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
-//	private Localizacao localizacao;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
+	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "praia")
 	private List<Avaliacao> avaliacoes;

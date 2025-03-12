@@ -24,13 +24,16 @@ public class Denuncia {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idDenuncia;
 
-	@ManyToOne
-	@JoinColumn(name = "usuario_denunciador_id")
-	private Usuario usuarioDenunciador;
+  @ManyToOne
+  @JoinColumn(name = "usuario_id")
+  private Usuario usuarioDenunciador;
 
-	@ManyToOne
-	@JoinColumn(name = "idPostagem")
-	private Postagem postagem;
+  @ManyToOne
+  @JoinColumn(name = "postagem_id")
+  private Postagem postagem;
+    
+  @CreationTimestamp
+  private LocalDateTime dataDenuncia;
 
 	@CreationTimestamp
 	private LocalDateTime dataDenuncia;
