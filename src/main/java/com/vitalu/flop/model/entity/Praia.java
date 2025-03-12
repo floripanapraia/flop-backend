@@ -17,20 +17,22 @@ import lombok.Data;
 @Entity
 @Data
 public class Praia {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPraia;
+
 	private String nomePraia;
+
 	private String imagem;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
+	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
 	private Localizacao localizacao;
-	
+
 	@OneToMany(mappedBy = "praia")
 	private List<Avaliacao> avaliacoes;
-	
+
 	@OneToMany(mappedBy = "praia")
 	private List<Postagem> postagens;
 }

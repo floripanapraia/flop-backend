@@ -14,13 +14,18 @@ public class Localizacao {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idLocalizacao;
+
 	private String idGooglePlace;
+
 	private Double longitude;
+
 	private Double latitude;
+
 	private String cidade;
+
 	private String estado;
+
 	@OneToOne(mappedBy = "localizacao")
 	private Praia praia;
-	
-	
+
 }

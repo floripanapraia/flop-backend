@@ -25,11 +25,11 @@ public class Denuncia {
     private Long idDenuncia;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_denunciador_id")
+    @JoinColumn(name = "usuario_id")
     private Usuario usuarioDenunciador;
 
     @ManyToOne
-    @JoinColumn(name = "idPostagem")
+    @JoinColumn(name = "postagem_id")
     private Postagem postagem;
     
     @CreationTimestamp

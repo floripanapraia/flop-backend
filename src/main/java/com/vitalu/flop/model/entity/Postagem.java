@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,15 +19,18 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Entity
+@Table(name = "postagem")
 @Data
 public class Postagem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String idPostagem;
+	@Column(name = "id_postagem")
+	private Long idPostagem;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -53,8 +57,8 @@ public class Postagem {
     @ManyToMany
     @JoinTable(
         name = "postagem_curtidas",
-        joinColumns = @JoinColumn(name = "idPostagem"),
-        inverseJoinColumns = @JoinColumn(name = "idUsuario")
+        joinColumns = @JoinColumn(name = "postagem_id"),
+        inverseJoinColumns = @JoinColumn(name = "usuario_id")
     )
     private List<Usuario> usuariosCurtiram;
 

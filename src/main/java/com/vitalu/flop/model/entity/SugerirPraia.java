@@ -20,16 +20,22 @@ public class SugerirPraia {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idSugestao;
+	
 	@NotNull(message = "É obrigatório informar o nome da praia.")
 	private String nomePraia;
+	
 	@NotNull(message = "É obrigatório informar o nome do bairro.")
 	private String bairro;
+	
 	@NotNull(message = "É obrigatório informar a descrição da praia.")
 	private String descricao;
+	
 	private Boolean analisada;
+	
 	@CreationTimestamp
 	private LocalDateTime criadaEm;
+	
 	@ManyToOne
-	@JoinColumn(name = "idUsuario")
+	@JoinColumn(name = "usuario_id")
 	private Usuario usuario;
 }

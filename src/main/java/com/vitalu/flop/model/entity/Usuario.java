@@ -51,17 +51,19 @@ public class Usuario {
 	private String fotoPerfil;
 
 	private boolean bloqueado = false;
-	
-	private Localizacao localizacao;
 
-	private Avaliacao avaliacao;
-	
+//	private Localizacao localizacao;
+
+	@OneToMany(mappedBy = "usuario")
+	@JsonBackReference
+	private List<Avaliacao> avaliacao;
+
 	@OneToMany(mappedBy = "usuario")
 	@JsonBackReference
 	private List<Postagem> postagem;
-	
+
 	@OneToMany(mappedBy = "usuario")
-    @JsonBackReference
-    private List<SugerirPraia> sugestoesPraia;
+	@JsonBackReference
+	private List<SugerirPraia> sugestoesPraia;
 
 }
