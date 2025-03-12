@@ -28,7 +28,7 @@ public class Usuario {
 	@Size(max = 200, message = "O nome deve ter entre 3 e 200 caracteres.")
 	private String nome;
 
-	private String userName;
+	private String username;
 
 	@NotBlank(message = "A senha não deve estar em branco.")
 	@Size(max = 500)
