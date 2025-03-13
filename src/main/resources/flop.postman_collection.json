@@ -1,0 +1,572 @@
+{
+	"info": {
+		"_postman_id": "5c655226-2342-49a8-9d1b-75d1d2dc4691",
+		"name": "flop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28749808"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to validate the response schema and ensure the response contains the expected properties\r",
+									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.isAdmin).to.exist;\r",
+									"});\r",
+									"\r",
+									"// Test to check if the response contains a raw token (string without a key)\r",
+									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
+									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
+									"\r",
+									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
+									"\r",
+									"    // Definindo a variável do token no ambiente da coleção\r",
+									"    pm.collectionVariables.set(\"token\", rawToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "redbull",
+								"username": "max@verstappen.com"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar usuário",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"Max Verstappen\",\r\n  \"email\": \"max@verstappen.com\",\r\n  \"username\": \"maxverstappen\",\r\n  \"senha\": \"redbull\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/novo"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"Ayrton Senna\",\r\n  \"email\": \"ayrton@gmail.com\",\r\n  \"username\": \"ayrtonsenna\",\r\n  \"senha\": \"sennasempre\",\r\n  \"isAdmin\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/novo-admin"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "usuarios",
+			"item": [
+				{
+					"name": "salvar foto de perfil",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fotoDePerfil",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/salvar-foto"
+					},
+					"response": []
+				},
+				{
+					"name": "atualizar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"idUsuario\",\r\n    \"nome\": \"Max Emilian Verstappen\",\r\n    \"email\": \"max@verstappen.com\",\r\n    \"username\": \"maxverstappen\",\r\n    \"senha\": \"redbull\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/atualizar"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/excluir/idUsuario"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/todos"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/idUsuario"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"max@verstappen.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/filtrar"
+					},
+					"response": []
+				},
+				{
+					"name": "obter usuario autenticado",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/usuario-autenticado"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "postagem",
+			"item": [
+				{
+					"name": "salvar foto",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fotoDePerfil",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagem/salvar-foto"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"usuario\": {\r\n    \"id\": \"idUsuario\"\r\n  },\r\n  \"mensagem\": \"A praia ta dahora!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagem/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todos",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pagina\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/pruus/todos"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagem/idPostagem"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mensagem\": \"A praia ta dahora!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagem/filtrar"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "denuncias",
+			"item": [
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"usuario\": {\r\n    \"id\": \"idUsuario\"\r\n  },\r\n  \"pruu\": {\r\n    \"id\": \"idPruu\"\r\n  },\r\n  \"status\": \"PENDENTE\",\r\n  \"motivo\": \"SPAM\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "atualizar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\"ACEITA\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/atualizar/idDenuncia"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/excluir/idDenuncia"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/todas"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/idDenuncia"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mensagem\": \"A praia ta dahora!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/pruus/filtrar"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "PORT",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
