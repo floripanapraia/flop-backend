@@ -43,7 +43,7 @@ public class Usuario {
 	private boolean isAdmin;
 
 	@CreationTimestamp
-	private LocalDateTime dataCriacao;
+	private LocalDateTime criadoEm;
 
 	@Column(columnDefinition = "LONGTEXT")
 	private String fotoPerfil;
