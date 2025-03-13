@@ -79,7 +79,7 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepository.save(usuarioExistente);
 	}
 
-	public void excluir(String id) throws FlopException {
+	public void excluir(Long id) throws FlopException {
 		Usuario usuario = usuarioRepository.findById(id)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 
@@ -94,7 +94,7 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepository.findAll();
 	}
 
-	public Usuario pesquisarPorId(String id) throws FlopException {
+	public Usuario pesquisarPorId(Long id) throws FlopException {
 		return usuarioRepository.findById(id)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 	}
@@ -111,7 +111,7 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepository.findAll(seletor);
 	}
 
-	public void salvarFotoDePerfil(MultipartFile foto, String usuarioId) throws FlopException {
+	public void salvarFotoDePerfil(MultipartFile foto, Long usuarioId) throws FlopException {
 		Usuario usuario = usuarioRepository.findById(usuarioId)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 		String imagemBase64 = imagemService.processarImagem(foto);

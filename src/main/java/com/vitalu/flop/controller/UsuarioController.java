@@ -3,6 +3,7 @@ package com.vitalu.flop.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
@@ -36,14 +39,14 @@ public class UsuarioController {
 	@Autowired
 	private AuthService authService;
 
-//	@PostMapping("/salvar-foto")
-//	public void salvarFotoDePerfil(@RequestParam("fotoDePerfil") MultipartFile foto) throws FlopException {
-//		Usuario subject = authService.getUsuarioAutenticado();
-//		if (foto == null) {
-//			throw new FlopException("O arquivo inserido é inválido.", HttpStatus.BAD_REQUEST);
-//		}
-//		usuarioService.salvarFotoDePerfil(foto, subject.getId());
-//	}
+	@PostMapping("/salvar-foto")
+	public void salvarFotoDePerfil(@RequestParam("fotoDePerfil") MultipartFile foto) throws FlopException {
+		Usuario subject = authService.getUsuarioAutenticado();
+		if (foto == null) {
+			throw new FlopException("O arquivo inserido é inválido.", HttpStatus.BAD_REQUEST);
+		}
+		usuarioService.salvarFotoDePerfil(foto, subject.getIdUsuario());
+	}
 
 	@Operation(summary = "Atualizar um usuário", description = "Atualiza os dados de um usuário existente.")
 	@PutMapping(path = "/atualizar")
@@ -58,7 +61,7 @@ public class UsuarioController {
 	@Operation(summary = "Deletar usuário", description = "Exclui um usuário através do seu ID.", responses = {
 			@ApiResponse(responseCode = "200", description = "Usuário excluído com sucesso"), })
 	@DeleteMapping(path = "/excluir/{idUsuario}")
-	public ResponseEntity<Void> excluir(@PathVariable String idUsuario) throws FlopException {
+	public ResponseEntity<Void> excluir(@PathVariable Long idUsuario) throws FlopException {
 		usuarioService.excluir(idUsuario);
 		return ResponseEntity.noContent().build();
 	}
@@ -72,7 +75,7 @@ public class UsuarioController {
 
 	@Operation(summary = "Pesquisar usuário por ID", description = "Busca um usuário específico através do seu ID.")
 	@GetMapping(path = "/{idUsuario}")
-	public ResponseEntity<Usuario> pesquisarPorId(@PathVariable String idUsuario) throws FlopException {
+	public ResponseEntity<Usuario> pesquisarPorId(@PathVariable Long idUsuario) throws FlopException {
 		Usuario usuario = usuarioService.pesquisarPorId(idUsuario);
 		return ResponseEntity.ok(usuario);
 	}

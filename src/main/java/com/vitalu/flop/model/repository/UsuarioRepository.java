@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.vitalu.flop.model.entity.Usuario;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, String>, JpaSpecificationExecutor<Usuario> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long>, JpaSpecificationExecutor<Usuario> {
 	boolean existsByEmailIgnoreCase(String email);
 
 	Optional<Usuario> findByEmail(String email);
