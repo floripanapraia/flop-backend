@@ -42,7 +42,7 @@ public class Postagem {
 	private Praia praia;
 
 	@CreationTimestamp
-	private LocalDateTime data;
+	private LocalDateTime criadoEm;
 
 	private String imagem;
 

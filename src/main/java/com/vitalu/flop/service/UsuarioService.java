@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Usuario;
@@ -22,8 +23,8 @@ public class UsuarioService implements UserDetailsService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-//    @Autowired
-//    private ImagemService imagemService;
+	@Autowired
+	private ImagemService imagemService;
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -110,12 +111,13 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepository.findAll(seletor);
 	}
 
-//    public void salvarFotoDePerfil(MultipartFile foto, String usuarioId) throws FlopException {
-//        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
-//        String imagemBase64 = imagemService.processarImagem(foto);
-//        usuario.setFotoDePerfil(imagemBase64);
-//        System.out.println(imagemBase64);
-//        usuarioRepository.save(usuario);
-//    }
+	public void salvarFotoDePerfil(MultipartFile foto, String usuarioId) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(usuarioId)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+		String imagemBase64 = imagemService.processarImagem(foto);
+		usuario.setFotoPerfil(imagemBase64);
+		System.out.println(imagemBase64);
+		usuarioRepository.save(usuario);
+	}
 
 }
