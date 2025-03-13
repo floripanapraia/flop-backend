@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -95,6 +96,21 @@ public class PostagemService {
 		String imagemBase64 = imagemService.processarImagem(foto);
 		postagem.setImagem(imagemBase64);
 		postagemRepository.save(postagem);
+	}
+
+	public int contarPaginas(PostagemSeletor seletor) {
+		if (seletor != null && seletor.temPaginacao()) {
+			int pageSize = seletor.getLimite();
+			PageRequest pagina = PageRequest.of(0, pageSize); // Página inicial apenas para contar
+
+			Page<Postagem> paginaResultado = postagemRepository.findAll(seletor, pagina);
+			return paginaResultado.getTotalPages(); // Retorna o número total de páginas
+		}
+
+		// Se não houver paginação, retorna 1 página se houver registros, ou 0 se não
+		// houver registros.
+		long totalRegistros = postagemRepository.count(seletor);
+		return totalRegistros > 0 ? 1 : 0;
 	}
 
 }
