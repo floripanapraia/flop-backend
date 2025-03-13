@@ -1,15 +1,18 @@
 package com.vitalu.flop.model.entity;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
-
+import com.vitalu.flop.model.enums.Condicoes;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import lombok.Data;
 
 @Entity
@@ -30,4 +33,7 @@ public class Avaliacao {
 
 	@CreationTimestamp
 	private LocalDateTime dataAvaliacao;
+
+	@Enumerated(EnumType.STRING)
+	private List<Condicoes> condicoes;
 }
