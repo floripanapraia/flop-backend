@@ -56,4 +56,12 @@ public class PostagemService {
 		return postagemRepository.findAll();
 	}
 
+	public Postagem pesquisarPorId(Long id) throws FlopException {
+		Postagem postagem = postagemRepository.findById(id)
+				.orElseThrow(() -> new FlopException("A postagem buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
+		return postagem;
+	}
+	
+	
+
 }
