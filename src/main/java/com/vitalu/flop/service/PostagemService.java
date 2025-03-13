@@ -1,11 +1,15 @@
 package com.vitalu.flop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
@@ -13,6 +17,7 @@ import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.repository.PostagemRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
+import com.vitalu.flop.model.seletor.PostagemSeletor;
 
 @Service
 public class PostagemService {
@@ -61,7 +66,35 @@ public class PostagemService {
 				.orElseThrow(() -> new FlopException("A postagem buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
 		return postagem;
 	}
-	
-	
+
+	public List<Postagem> pesquisarComFiltros(PostagemSeletor seletor) throws FlopException {
+		List<Postagem> postagensFiltradas;
+
+		if (seletor.temPaginacao()) {
+			int pageNumber = seletor.getPagina();
+			int pageSize = seletor.getLimite();
+
+			PageRequest page = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "criadoEm"));
+			postagensFiltradas = new ArrayList<Postagem>(postagemRepository.findAll(seletor, page).toList());
+		} else {
+			postagensFiltradas = new ArrayList<Postagem>(
+					postagemRepository.findAll(seletor, Sort.by(Sort.Direction.DESC, "criadoEm")));
+		}
+
+		return postagensFiltradas;
+	}
+
+	public void salvarImagem(MultipartFile foto, Long idPostagem, Long idUsuario) throws FlopException {
+		Postagem postagem = postagemRepository.findById(idPostagem)
+				.orElseThrow(() -> new FlopException("Postagem não encontrada.", HttpStatus.NOT_FOUND));
+
+		if (!postagem.getUsuario().getIdUsuario().equals(idUsuario)) {
+			throw new FlopException("Você não tem permissão para fazer esta ação.", HttpStatus.FORBIDDEN);
+		}
+
+		String imagemBase64 = imagemService.processarImagem(foto);
+		postagem.setImagem(imagemBase64);
+		postagemRepository.save(postagem);
+	}
 
 }
