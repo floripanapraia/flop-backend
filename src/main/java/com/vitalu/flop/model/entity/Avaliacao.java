@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import com.vitalu.flop.model.enums.Condicoes;
+
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,6 +36,8 @@ public class Avaliacao {
 	@CreationTimestamp
 	private LocalDateTime dataAvaliacao;
 
-	@Enumerated(EnumType.STRING)
-	private List<Condicoes> condicoes;
+	//converter para string
+	@ElementCollection
+    @Enumerated(EnumType.STRING)
+    private List<Condicoes> condicoes;
 }
