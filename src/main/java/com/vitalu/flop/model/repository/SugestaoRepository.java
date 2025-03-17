@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.vitalu.flop.model.entity.SugerirPraia;
+import com.vitalu.flop.model.entity.Sugestao;
 
 @Repository
-public interface SugerirPraiaRepository extends JpaRepository<SugerirPraia, Long>, JpaSpecificationExecutor<SugerirPraia> {
+public interface SugestaoRepository extends JpaRepository<Sugestao, Long>, JpaSpecificationExecutor<Sugestao> {
 
 }

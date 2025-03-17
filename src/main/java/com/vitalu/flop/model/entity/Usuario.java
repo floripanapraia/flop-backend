@@ -21,7 +21,7 @@ import lombok.Data;
 public class Usuario {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idUsuario;
 
 	@NotBlank(message = "O nome não pode estar em branco.")
@@ -62,6 +62,6 @@ public class Usuario {
 
 	@OneToMany(mappedBy = "usuario")
 	@JsonBackReference
-	private List<SugerirPraia> sugestoesPraia;
+	private List<Sugestao> sugestoes;
 
 }
