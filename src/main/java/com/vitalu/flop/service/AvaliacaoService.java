@@ -9,34 +9,41 @@ import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
+import com.vitalu.flop.model.enums.Condicoes;
 import com.vitalu.flop.model.repository.AvaliacaoRepository;
+import com.vitalu.flop.model.repository.PraiaRepository;
+import com.vitalu.flop.model.repository.UsuarioRepository;
 
 @Service
 public class AvaliacaoService {
+
 	@Autowired
 	private AvaliacaoRepository avaliacaoRepository;
 
-//	@Autowired
-//	private UsuarioService usuarioService; 
-//
-//	@Autowired
-//	private PraiaService praiaService; 
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
-	public Avaliacao cadastrar(Avaliacao avaliacao) throws FlopException {
-		// verificar se usuario existe
-		Optional<Usuario> usuario = Optional.ofNullable(avaliacao.getUsuario());
-		usuario.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
+	@Autowired
+	private PraiaRepository praiaRepository;
 
-		// verificar se a praia existe
-		Optional<Praia> praia = Optional.ofNullable(avaliacao.getPraia());
-		praia.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.BAD_REQUEST));
+	public void cadastrar(Long idUsuario, Long idPraia, List<Condicoes> condicoes) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 
-		return avaliacaoRepository.save(avaliacao);
+		Praia praia = praiaRepository.findById(idPraia)
+				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
+
+		Avaliacao avaliacao = new Avaliacao();
+		avaliacao.setUsuario(usuario);
+		avaliacao.setPraia(praia);
+		avaliacao.setCondicoes(condicoes);
+
+		avaliacaoRepository.save(avaliacao);
 	}
 
 	public Avaliacao buscarPorId(Long idAvaliacao) throws FlopException {
-		return avaliacaoRepository.findById(idAvaliacao).orElseThrow(
-				() -> new FlopException("A avaliação buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
+		return avaliacaoRepository.findById(idAvaliacao)
+				.orElseThrow(() -> new FlopException("A avaliação buscada não foi encontrada.", HttpStatus.NOT_FOUND));
 	}
 
 	public List<Avaliacao> listarAvaliacoesPorPraia(Praia praia) {
@@ -47,23 +54,35 @@ public class AvaliacaoService {
 		return avaliacaoRepository.findByUsuario(usuario);
 	}
 
-	public Avaliacao atualizar(Long idAvaliacao, Avaliacao avaliacaoAtualizada) throws FlopException {
-		Avaliacao avaliacaoExistente = avaliacaoRepository.findById(idAvaliacao)
-				.orElseThrow(() -> new FlopException("A avaliação não foi encontrada.", HttpStatus.BAD_REQUEST));
+	public void atualizar(Long idAvaliacao, List<Condicoes> condicoes) throws FlopException {
+		Optional<Avaliacao> avaliacaoOptional = avaliacaoRepository.findById(idAvaliacao);
 
-		// Atualizar os dados da avaliação
-		avaliacaoExistente.setCondicoes(avaliacaoAtualizada.getCondicoes());
-		avaliacaoExistente.setPraia(avaliacaoAtualizada.getPraia());
-		avaliacaoExistente.setUsuario(avaliacaoAtualizada.getUsuario());
+		if (avaliacaoOptional.isEmpty()) {
+			throw new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND);
+		}
 
-		return avaliacaoRepository.save(avaliacaoExistente);
+		Avaliacao avaliacao = avaliacaoOptional.get();
+
+		// Validação de condições (deve ser um conjunto válido)
+		if (condicoes == null || condicoes.isEmpty()) {
+			throw new FlopException("É necessário selecionar ao menos uma condição.", HttpStatus.BAD_REQUEST);
+		}
+
+		// Atualiza as condições
+		avaliacao.setCondicoes(condicoes);
+		avaliacaoRepository.save(avaliacao);
 	}
 
 	public void excluir(Long idAvaliacao) throws FlopException {
 		Avaliacao avaliacao = avaliacaoRepository.findById(idAvaliacao)
-				.orElseThrow(() -> new FlopException("A avaliação não foi encontrada.", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new FlopException("A avaliação não foi encontrada.", HttpStatus.NOT_FOUND));
 
 		avaliacaoRepository.delete(avaliacao);
+
+		// Verificar se a avaliação foi excluída
+		if (avaliacaoRepository.existsById(idAvaliacao)) {
+			throw new FlopException("A avaliação não pôde ser excluída.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }
