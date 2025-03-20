@@ -53,15 +53,15 @@ public class Usuario {
 //	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "usuario")
-	@JsonBackReference
+	@JsonBackReference(value = "usuario-avaliacoes")
 	private List<Avaliacao> avaliacao;
 
 	@OneToMany(mappedBy = "usuario")
-	@JsonBackReference
+	@JsonBackReference(value = "usuario-postagens")
 	private List<Postagem> postagem;
 
 	@OneToMany(mappedBy = "usuario")
-	@JsonBackReference
+	@JsonBackReference(value = "usuario-sugestoes")
 	private List<Sugestao> sugestoes;
 
 }

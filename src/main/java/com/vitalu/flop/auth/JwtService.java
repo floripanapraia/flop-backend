@@ -46,7 +46,7 @@ public class JwtService {
             authenticatedUser = (Usuario) principal;
         }
 
-        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("pombo").issuedAt(now).expiresAt(now.plusSeconds(dezHorasEmSegundo)).subject(authentication.getName()).claim("perfil", perfil).claim("idUsuario", authenticatedUser.getIdUsuario()).build();
+        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("flop").issuedAt(now).expiresAt(now.plusSeconds(dezHorasEmSegundo)).subject(authentication.getName()).claim("perfil", perfil).claim("idUsuario", authenticatedUser.getIdUsuario()).build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
