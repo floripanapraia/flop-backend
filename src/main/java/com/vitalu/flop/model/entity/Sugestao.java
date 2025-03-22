@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,23 +21,22 @@ public class Sugestao {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idSugestao;
-	
+
 	@NotNull(message = "É obrigatório informar o nome da praia.")
-
 	private String nomePraia;
-	
-	@NotNull(message = "É obrigatório informar o nome do bairro.")
 
+	@NotNull(message = "É obrigatório informar o nome do bairro.")
 	private String bairro;
-	
+
 	@NotNull(message = "É obrigatório informar a descrição da praia.")
 	private String descricao;
-	
-	private Boolean analisada;
-	
+
+	@Column(nullable = false)
+	private Boolean analisada = false;
+
 	@CreationTimestamp
 	private LocalDateTime criadaEm;
-  
+
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
 	private Usuario usuario;
