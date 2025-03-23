@@ -85,6 +85,6 @@ public class SecurityConfig {
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
-		return new PasswordHasher();
+		return new PasswordHasher(publicKey, privateKey);
 	}
 }

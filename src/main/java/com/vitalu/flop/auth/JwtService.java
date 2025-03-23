@@ -19,36 +19,31 @@ import com.vitalu.flop.model.repository.UsuarioRepository;
 
 @Service
 public class JwtService {
-    private final JwtEncoder jwtEncoder;
+	private final JwtEncoder jwtEncoder;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+	public JwtService(JwtEncoder jwtEncoder) {
+		this.jwtEncoder = jwtEncoder;
+	}
 
-    public JwtService(JwtEncoder jwtEncoder) {
-        this.jwtEncoder = jwtEncoder;
-    }
+	public String getGenerateToken(Authentication authentication) throws FlopException {
+		Instant now = Instant.now();
 
-    public String getGenerateToken(Authentication authentication) throws FlopException {
-        Instant now = Instant.now();
-        long dezHorasEmSegundo = 36000L;
+		long dezHorasEmSegundos = 36000L;
 
-        String perfil = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
+		String roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+				.collect(Collectors.joining(" "));
 
-        Object principal = authentication.getPrincipal();
-        Usuario authenticatedUser;
+		Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
 
-        if (principal instanceof Jwt) {
-            Jwt jwt = (Jwt) principal;
-            String login = jwt.getSubject();
+		JwtClaimsSet claims = JwtClaimsSet.builder().issuer("flop") // emissor do token
+				.issuedAt(now) // data/hora em que o token foi emitido
+				.expiresAt(now.plusSeconds(dezHorasEmSegundos)) // expiração do token, em segundos.
+				.subject(authentication.getName()) // nome do usuário
+				.claim("roles", roles) // perfis ou permissões (roles)
+				.claim("idUsuario", usuarioAutenticado.getIdUsuario()) // mais propriedades adicionais no token
+				.build();
 
-            authenticatedUser = usuarioRepository.findByEmail(login).orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
-        } else {
-            authenticatedUser = (Usuario) principal;
-        }
-
-        JwtClaimsSet claims = JwtClaimsSet.builder().issuer("flop").issuedAt(now).expiresAt(now.plusSeconds(dezHorasEmSegundo)).subject(authentication.getName()).claim("perfil", perfil).claim("idUsuario", authenticatedUser.getIdUsuario()).build();
-
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-    }
+		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+	}
 
 }
