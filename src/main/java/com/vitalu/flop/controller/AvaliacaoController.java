@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Avaliacao;
-import com.vitalu.flop.model.entity.Praia;
-import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.enums.Condicoes;
 import com.vitalu.flop.service.AvaliacaoService;
 
@@ -63,7 +61,7 @@ public class AvaliacaoController {
 		}
 	}
 
-	// TODO
+	// TODO VALIDACAO USUARIO LOGADO
 	@Operation(summary = "Excluir avaliação", description = "Exclui a avaliação", responses = {
 			@ApiResponse(responseCode = "200", description = "Avaliação excluída com sucesso"),
 			@ApiResponse(responseCode = "404", description = "Avaliação não encontrada") })
@@ -80,21 +78,22 @@ public class AvaliacaoController {
 		return ResponseEntity.ok(avaliacao);
 	}
 
-	@Operation(summary = "Listar avaliações por praia", description = "Retorna uma lista de avaliações para uma praia específica.")
-	@GetMapping("/por-praia/{idPraia}")
-	public ResponseEntity<List<Avaliacao>> listarAvaliacoesPorPraia(@PathVariable Long idPraia) {
-		Praia praia = new Praia();
-		praia.setIdPraia(idPraia);
-		List<Avaliacao> avaliacoes = avaliacaoService.listarAvaliacoesPorPraia(praia);
-		return ResponseEntity.ok(avaliacoes);
-	}
-
-	@Operation(summary = "Listar avaliações por usuário", description = "Retorna uma lista de avaliações feitas por um usuário específico.")
-	@GetMapping("/por-usuario/{idUsuario}")
-	public ResponseEntity<List<Avaliacao>> listarAvaliacoesPorUsuario(@PathVariable Long idUsuario) {
-		Usuario usuario = new Usuario();
-		usuario.setIdUsuario(idUsuario);
-		List<Avaliacao> avaliacoes = avaliacaoService.listarAvaliacoesPorUsuario(usuario);
-		return ResponseEntity.ok(avaliacoes);
-	}
+	// SELETOR
+//	@Operation(summary = "Listar avaliações por praia", description = "Retorna uma lista de avaliações para uma praia específica.")
+//	@GetMapping("/por-praia/{idPraia}")
+//	public ResponseEntity<List<Avaliacao>> listarAvaliacoesPorPraia(@PathVariable Long idPraia) {
+//		Praia praia = new Praia();
+//		praia.setIdPraia(idPraia);
+//		List<Avaliacao> avaliacoes = avaliacaoService.listarAvaliacoesPorPraia(praia);
+//		return ResponseEntity.ok(avaliacoes);
+//	}
+//
+//	@Operation(summary = "Listar avaliações por usuário", description = "Retorna uma lista de avaliações feitas por um usuário específico.")
+//	@GetMapping("/por-usuario/{idUsuario}")
+//	public ResponseEntity<List<Avaliacao>> listarAvaliacoesPorUsuario(@PathVariable Long idUsuario) {
+//		Usuario usuario = new Usuario();
+//		usuario.setIdUsuario(idUsuario);
+//		List<Avaliacao> avaliacoes = avaliacaoService.listarAvaliacoesPorUsuario(usuario);
+//		return ResponseEntity.ok(avaliacoes);
+//	}
 }
