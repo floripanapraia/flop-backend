@@ -1,0 +1,50 @@
+
+INSERT INTO praia (nome_praia) VALUES 
+('Praia da Joaquina'),
+('Praia Mole'),
+('Praia do Campeche'),
+('Praia do Santinho'),
+('Praia dos Ingleses'),
+('Praia Brava'),
+('Praia de Canasvieiras'),
+('Praia de Jurerê'),
+('Praia de Jurerê Internacional'),
+('Praia do Forte'),
+('Praia da Daniela'),
+('Praia de Ponta das Canas'),
+('Praia do Lagoinha do Norte'),
+('Praia do Sambaqui'),
+('Praia da Barra da Lagoa'),
+('Praia do Moçambique'),
+('Praia da Galheta'),
+('Praia do Saquinho'),
+('Praia da Armação'),
+('Praia do Matadeiro'),
+('Praia da Solidão'),
+('Praia do Pântano do Sul'),
+('Praia dos Naufragados'),
+('Praia do Ribeirão da Ilha'),
+('Praia de Cacupé'),
+('Praia do Bom Abrigo'),
+('Praia da Tapera'),
+('Praia do Campeche Sul'),
+('Praia da Lagoinha do Leste'),
+('Praia do Morro das Pedras'),
+('Praia do Gravatá'),
+('Praia do Caldeirão'),
+('Praia do Tinguá'),
+('Praia da Costeira do Ribeirão'),
+('Praia da Saudade'),
+('Praia da Cachoeira do Bom Jesus'),
+('Praia do Balneário'),
+('Praia da Ilha do Campeche'),
+('Praia do Farol de Naufragados'),
+('Praia da Costeira da Armação'),
+('Praia do Forte São José da Ponta Grossa'),
+('Praia do Forte do Santinho');
+
+
+
+
+
+
