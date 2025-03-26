@@ -29,21 +29,17 @@ public class AvaliacaoService {
 	@Autowired
 	private PraiaRepository praiaRepository;
 
-	public void cadastrar(Long idUsuario, Long idPraia, List<Condicoes> condicoes) throws FlopException {
-		Usuario usuario = usuarioRepository.findById(idUsuario)
-				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+	public Avaliacao cadastrar(Avaliacao avaliacao) throws FlopException {
+		Optional<Usuario> usuario = usuarioRepository.findById(avaliacao.getUsuario().getIdUsuario());
+		avaliacao.setUsuario(
+				usuario.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST)));
 
-		Praia praia = praiaRepository.findById(idPraia)
-				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
+		Optional<Praia> praia = praiaRepository.findById(avaliacao.getPraia().getIdPraia());
+		avaliacao.setPraia(praia.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND)));
 
-		validarCondicoes(condicoes);
+		validarCondicoes(avaliacao.getCondicoes());
 
-		Avaliacao avaliacao = new Avaliacao();
-		avaliacao.setUsuario(usuario);
-		avaliacao.setPraia(praia);
-		avaliacao.setCondicoes(condicoes);
-
-		avaliacaoRepository.save(avaliacao);
+		return avaliacaoRepository.save(avaliacao);
 	}
 
 	public Avaliacao buscarPorId(Long idAvaliacao) throws FlopException {
@@ -51,37 +47,42 @@ public class AvaliacaoService {
 				.orElseThrow(() -> new FlopException("A avaliação buscada não foi encontrada.", HttpStatus.NOT_FOUND));
 	}
 
-	public void atualizar(Long idAvaliacao, List<Condicoes> condicoes) throws FlopException {
+	public Avaliacao atualizar(Long idAvaliacao, Avaliacao editarAvaliacao) throws FlopException {
 		Optional<Avaliacao> avaliacaoOptional = avaliacaoRepository.findById(idAvaliacao);
 
 		if (avaliacaoOptional.isEmpty()) {
 			throw new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND);
 		}
 
-		Avaliacao avaliacao = avaliacaoOptional.get();
+		Avaliacao avaliacaoExistente = avaliacaoOptional.get();
 
-		// Validação de condições
-		if (condicoes == null || condicoes.isEmpty()) {
-			throw new FlopException("É necessário selecionar ao menos uma condição.", HttpStatus.BAD_REQUEST);
+		// Atualiza as condições
+		if (editarAvaliacao.getCondicoes() != null && !editarAvaliacao.getCondicoes().isEmpty()) {
+			validarCondicoes(editarAvaliacao.getCondicoes()); // Valida as condições
+			avaliacaoExistente.setCondicoes(editarAvaliacao.getCondicoes()); // Atualiza as condições
 		}
 
-		validarCondicoes(condicoes);
-
-		avaliacao.setCondicoes(condicoes);
-		avaliacaoRepository.save(avaliacao);
+		return avaliacaoRepository.save(avaliacaoExistente);
 	}
 
-	public void excluir(Long idAvaliacao) throws FlopException {
+	// uma mensagem deve ser excluída apenas logicamente, permitido apenas para
+	// usuário ADMIN ou para USUARIO que criou a avaliacao
+	public void excluir(Long idAvaliacao, Long idUsuario) throws FlopException {
 		Avaliacao avaliacao = avaliacaoRepository.findById(idAvaliacao)
-				.orElseThrow(() -> new FlopException("A avaliação não foi encontrada.", HttpStatus.NOT_FOUND));
+				.orElseThrow(() -> new FlopException("O pruu selecionado não foi encontrado.", HttpStatus.BAD_REQUEST));
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 
-		avaliacaoRepository.delete(avaliacao);
+		boolean isAdmin = usuario.isAdmin();
+		boolean isOwner = avaliacao.getUsuario().getIdUsuario().equals(usuario.getIdUsuario());
 
-		// Verificar se a avaliação foi excluída
-		if (avaliacaoRepository.existsById(idAvaliacao)) {
-			throw new FlopException("A avaliação não pôde ser excluída.", HttpStatus.INTERNAL_SERVER_ERROR);
+		if (!isAdmin && !isOwner) {
+			throw new FlopException("Você não é o Pombo dono deste Pruu, portanto não pode excluí-lo.",
+					HttpStatus.FORBIDDEN);
 		}
+		avaliacaoRepository.delete(avaliacao);
 	}
+
 
 	private void validarCondicoes(List<Condicoes> condicoes) throws FlopException {
 		// Mapeamento de condições incompatíveis
