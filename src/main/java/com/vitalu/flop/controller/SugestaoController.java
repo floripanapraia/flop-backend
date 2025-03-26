@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
-import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Sugestao;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.service.SugestaoService;
@@ -45,7 +44,7 @@ public class SugestaoController {
 	@PostMapping(path = "/cadastrar")
 	public ResponseEntity<Sugestao> criarSugestao(@Valid @RequestBody Sugestao novaSugestao) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
-		if (subject.isAdmin() == true) {
+		if (subject.isAdmin() == false) {
 			novaSugestao.setUsuario(subject);
 			Sugestao sugestaoCriada = sugestaoService.criarSugestao(novaSugestao);
 			return ResponseEntity.status(201).body(sugestaoCriada);
