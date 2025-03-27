@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.vitalu.flop.model.dto.DenunciaDTO;
 import com.vitalu.flop.model.enums.MotivosDenuncia;
+import com.vitalu.flop.model.enums.StatusDenuncia;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -38,5 +41,23 @@ public class Denuncia {
 	@Enumerated(EnumType.STRING)
 	private MotivosDenuncia motivo;
 
-	private Boolean analisada;
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private StatusDenuncia status = StatusDenuncia.PENDENTE;
+
+	public static DenunciaDTO toDTO(Denuncia denuncia) {
+	    return new DenunciaDTO(
+	        String.valueOf(denuncia.getIdDenuncia()),  // Convertendo Long para String
+	        denuncia.getUsuarioDenunciador().getNome(),
+	        String.valueOf(denuncia.getPostagem().getIdPostagem()),  // Convertendo Long para String
+	        denuncia.getPostagem().getMensagem(),
+	        denuncia.getPostagem().getImagem(),
+	        String.valueOf(denuncia.getUsuarioDenunciador().getIdUsuario()),  // Convertendo Long para String
+	        denuncia.getPostagem().getUsuario().getNome(),
+	        denuncia.getMotivo(),
+	        denuncia.getStatus(),
+	        denuncia.getCriadoEm()
+	    );
+	}
+
 }
