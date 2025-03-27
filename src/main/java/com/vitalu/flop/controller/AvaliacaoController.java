@@ -1,5 +1,7 @@
 package com.vitalu.flop.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Avaliacao;
+import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Usuario;
+import com.vitalu.flop.model.seletor.AvaliacaoSeletor;
 import com.vitalu.flop.service.AvaliacaoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
@@ -75,22 +81,11 @@ public class AvaliacaoController {
 		return ResponseEntity.ok(avaliacao);
 	}
 
-	// SELETOR
-//	@Operation(summary = "Listar avaliações por praia", description = "Retorna uma lista de avaliações para uma praia específica.")
-//	@GetMapping("/por-praia/{idPraia}")
-//	public ResponseEntity<List<Avaliacao>> listarAvaliacoesPorPraia(@PathVariable Long idPraia) {
-//		Praia praia = new Praia();
-//		praia.setIdPraia(idPraia);
-//		List<Avaliacao> avaliacoes = avaliacaoService.listarAvaliacoesPorPraia(praia);
-//		return ResponseEntity.ok(avaliacoes);
-//	}
-//
-//	@Operation(summary = "Listar avaliações por usuário", description = "Retorna uma lista de avaliações feitas por um usuário específico.")
-//	@GetMapping("/por-usuario/{idUsuario}")
-//	public ResponseEntity<List<Avaliacao>> listarAvaliacoesPorUsuario(@PathVariable Long idUsuario) {
-//		Usuario usuario = new Usuario();
-//		usuario.setIdUsuario(idUsuario);
-//		List<Avaliacao> avaliacoes = avaliacaoService.listarAvaliacoesPorUsuario(usuario);
-//		return ResponseEntity.ok(avaliacoes);
-//	}
+	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de postagens de acordo com o filtro selecionado.", responses = {
+			@ApiResponse(responseCode = "200", description = "Postagens filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Postagem.class))),
+			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
+	@PostMapping("/filtrar")
+	public List<Avaliacao> pesquisarComFiltros(@RequestBody AvaliacaoSeletor seletor) throws FlopException {
+		return avaliacaoService.pesquisarComFiltros(seletor);
+	}
 }
