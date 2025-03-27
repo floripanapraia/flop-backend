@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,7 @@ public class PraiaController {
 
 	@Operation(summary = "Listar todas as praias.", description = "Retorna uma lista de todas as praias cadastrados no sistema.", responses = {
 			@ApiResponse(responseCode = "200", description = "Lista de praias retornada com sucesso") })
-	@PostMapping(path = "/todos")
+	@GetMapping(path = "/todos")
 	public List<Praia> pesquisarTodos() throws FlopException {
 		return praiaService.pesquisarPraiaTodas();
 	}
