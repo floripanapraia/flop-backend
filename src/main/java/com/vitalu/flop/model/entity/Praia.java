@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
@@ -20,6 +21,7 @@ public class Praia {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPraia;
 
+	@NotBlank(message = "O nome da praia é obrigatório")
 	private String nomePraia;
 
 	private String imagem;
