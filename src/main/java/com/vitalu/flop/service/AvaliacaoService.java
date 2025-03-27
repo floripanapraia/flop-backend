@@ -1,13 +1,15 @@
 package com.vitalu.flop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Praia;
@@ -16,6 +18,7 @@ import com.vitalu.flop.model.enums.Condicoes;
 import com.vitalu.flop.model.repository.AvaliacaoRepository;
 import com.vitalu.flop.model.repository.PraiaRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
+import com.vitalu.flop.model.seletor.AvaliacaoSeletor;
 
 @Service
 public class AvaliacaoService {
@@ -65,11 +68,11 @@ public class AvaliacaoService {
 		return avaliacaoRepository.save(avaliacaoExistente);
 	}
 
-	// uma mensagem deve ser excluída apenas logicamente, permitido apenas para
-	// usuário ADMIN ou para USUARIO que criou a avaliacao
+	// uma avaliação deve ser excluída apenas logicamente, permitido apenas para
+	// para o USUARIO que criou a avaliacao
 	public void excluir(Long idAvaliacao, Long idUsuario) throws FlopException {
-		Avaliacao avaliacao = avaliacaoRepository.findById(idAvaliacao)
-				.orElseThrow(() -> new FlopException("O pruu selecionado não foi encontrado.", HttpStatus.BAD_REQUEST));
+		Avaliacao avaliacao = avaliacaoRepository.findById(idAvaliacao).orElseThrow(
+				() -> new FlopException("A avaliação selecionada não foi encontrada.", HttpStatus.BAD_REQUEST));
 		Usuario usuario = usuarioRepository.findById(idUsuario)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 
@@ -77,12 +80,11 @@ public class AvaliacaoService {
 		boolean isOwner = avaliacao.getUsuario().getIdUsuario().equals(usuario.getIdUsuario());
 
 		if (!isAdmin && !isOwner) {
-			throw new FlopException("Você não é o Pombo dono deste Pruu, portanto não pode excluí-lo.",
+			throw new FlopException("Você não é o Dono desta avaliação, portanto não pode excluí-la.",
 					HttpStatus.FORBIDDEN);
 		}
 		avaliacaoRepository.delete(avaliacao);
 	}
-
 
 	private void validarCondicoes(List<Condicoes> condicoes) throws FlopException {
 		// Mapeamento de condições incompatíveis
@@ -105,13 +107,43 @@ public class AvaliacaoService {
 		}
 	}
 
-	// seletor
-//	public List<Avaliacao> listarAvaliacoesPorPraia(Praia praia) {
-//		return avaliacaoRepository.findByPraia(praia);
+	public List<Avaliacao> pesquisarComFiltros(AvaliacaoSeletor seletor) throws FlopException {
+		List<Avaliacao> postagensFiltradas;
+
+		if (seletor.temPaginacao()) {
+			int pageNumber = seletor.getPagina();
+			int pageSize = seletor.getLimite();
+
+			PageRequest page = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "criadoEm"));
+			postagensFiltradas = new ArrayList<Avaliacao>(avaliacaoRepository.findAll(seletor, page).toList());
+		} else {
+			postagensFiltradas = new ArrayList<Avaliacao>(
+					avaliacaoRepository.findAll(seletor, Sort.by(Sort.Direction.DESC, "criadoEm")));
+		}
+
+		return postagensFiltradas;
+	}
+
+	//Avaliacões tem que ser guardadas em um histórico?
+//	@Scheduled(cron = "0 0 0 * * *") // Executa à meia-noite todos os dias
+//	public void limparAvaliacoesDiarias() {
+//		avaliacaoRepository.deleteAll();
+//		System.out.println("Avaliações removidas do feed à meia-noite.");
 //	}
-//
-//	public List<Avaliacao> listarAvaliacoesPorUsuario(Usuario usuario) {
-//		return avaliacaoRepository.findByUsuario(usuario);
-//	}
+
+	public int contarPaginas(AvaliacaoSeletor seletor) {
+		if (seletor != null && seletor.temPaginacao()) {
+			int pageSize = seletor.getLimite();
+			PageRequest pagina = PageRequest.of(0, pageSize); // Página inicial apenas para contar
+
+			Page<Avaliacao> paginaResultado = avaliacaoRepository.findAll(seletor, pagina);
+			return paginaResultado.getTotalPages(); // Retorna o número total de páginas
+		}
+
+		// Se não houver paginação, retorna 1 página se houver registros, ou 0 se não
+		// houver registros.
+		long totalRegistros = avaliacaoRepository.count(seletor);
+		return totalRegistros > 0 ? 1 : 0;
+	}
 
 }
