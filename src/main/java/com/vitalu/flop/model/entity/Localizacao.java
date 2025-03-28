@@ -25,7 +25,7 @@ public class Localizacao {
 
 	private String estado;
 
-	@OneToOne(mappedBy = "localizacao")
-	private Praia praia;
+//	@OneToOne(mappedBy = "localizacao")
+//	private Praia praia;
 
 }
