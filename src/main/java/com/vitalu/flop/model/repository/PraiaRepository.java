@@ -8,5 +8,5 @@ import com.vitalu.flop.model.entity.Praia;
 
 @Repository
 public interface PraiaRepository extends JpaRepository<Praia, Long>, JpaSpecificationExecutor<Praia> {
-
+	
 }
