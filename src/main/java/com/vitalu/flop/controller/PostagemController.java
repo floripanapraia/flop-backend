@@ -57,7 +57,7 @@ public class PostagemController {
 	public ResponseEntity<Postagem> cadastrar(@Valid @RequestBody Postagem novaPostagem) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 
-		if (subject.isAdmin() == true) {
+		if (subject.isAdmin() == false) {
 			novaPostagem.setUsuario(subject);
 			Postagem postagemCriada = postagemService.cadastrar(novaPostagem);
 			return ResponseEntity.status(201).body(postagemCriada);
