@@ -11,12 +11,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class DenunciaDTO {
 
-	private String id;
+	private Long id;
 	private String nomeDenunciante;
-	private String postagemId;
+	private Long postagemId;
 	private String textoPostagem;
 	private String imagemPostagem;
-	private String usuarioId;
+	private Long usuarioId;
 	private String nomeUsuario;
 	private MotivosDenuncia motivo;
 	private StatusDenuncia status;

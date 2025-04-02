@@ -46,18 +46,11 @@ public class Denuncia {
 	private StatusDenuncia status = StatusDenuncia.PENDENTE;
 
 	public static DenunciaDTO toDTO(Denuncia denuncia) {
-	    return new DenunciaDTO(
-	        String.valueOf(denuncia.getIdDenuncia()),  // Convertendo Long para String
-	        denuncia.getUsuarioDenunciador().getNome(),
-	        String.valueOf(denuncia.getPostagem().getIdPostagem()),  // Convertendo Long para String
-	        denuncia.getPostagem().getMensagem(),
-	        denuncia.getPostagem().getImagem(),
-	        String.valueOf(denuncia.getUsuarioDenunciador().getIdUsuario()),  // Convertendo Long para String
-	        denuncia.getPostagem().getUsuario().getNome(),
-	        denuncia.getMotivo(),
-	        denuncia.getStatus(),
-	        denuncia.getCriadoEm()
-	    );
+		return new DenunciaDTO(denuncia.getIdDenuncia(), denuncia.getUsuarioDenunciador().getNome(),
+				denuncia.getPostagem().getIdPostagem(), denuncia.getPostagem().getMensagem(),
+				denuncia.getPostagem().getImagem(), denuncia.getUsuarioDenunciador().getIdUsuario(),
+				denuncia.getPostagem().getUsuario().getNome(), denuncia.getMotivo(), denuncia.getStatus(),
+				denuncia.getCriadoEm());
 	}
 
 }

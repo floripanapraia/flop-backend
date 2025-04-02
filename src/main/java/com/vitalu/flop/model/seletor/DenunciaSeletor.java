@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
+
 import com.vitalu.flop.model.entity.Denuncia;
 import com.vitalu.flop.model.enums.MotivosDenuncia;
 import com.vitalu.flop.model.enums.StatusDenuncia;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -17,8 +19,8 @@ import lombok.Data;
 @Data
 public class DenunciaSeletor extends BaseSeletor implements Specification<Denuncia> {
 
-	private String idUsuario;
-	private String idPostagem;
+	private Long idUsuario;
+	private Long idPostagem;
 	private MotivosDenuncia motivo;
 	private StatusDenuncia status;
 	private LocalDateTime criadoEmInicio;
