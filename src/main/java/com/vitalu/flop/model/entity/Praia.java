@@ -2,14 +2,13 @@ package com.vitalu.flop.model.entity;
 
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -31,6 +30,7 @@ public class Praia {
 //	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "praia")
+	@JsonIgnore
 	private List<Avaliacao> avaliacoes;
 
 	@OneToMany(mappedBy = "praia")
