@@ -61,15 +61,13 @@ public class AvaliacaoService {
 
 		// Atualiza as condições
 		if (editarAvaliacao.getCondicoes() != null && !editarAvaliacao.getCondicoes().isEmpty()) {
-			validarCondicoes(editarAvaliacao.getCondicoes()); // Valida as condições
-			avaliacaoExistente.setCondicoes(editarAvaliacao.getCondicoes()); // Atualiza as condições
+			validarCondicoes(editarAvaliacao.getCondicoes());
+			avaliacaoExistente.setCondicoes(editarAvaliacao.getCondicoes());
 		}
 
 		return avaliacaoRepository.save(avaliacaoExistente);
 	}
 
-	// uma avaliação deve ser excluída apenas logicamente, permitido apenas para
-	// para o USUARIO que criou a avaliacao
 	public void excluir(Long idAvaliacao, Long idUsuario) throws FlopException {
 		Avaliacao avaliacao = avaliacaoRepository.findById(idAvaliacao).orElseThrow(
 				() -> new FlopException("A avaliação selecionada não foi encontrada.", HttpStatus.BAD_REQUEST));
@@ -107,29 +105,23 @@ public class AvaliacaoService {
 		}
 	}
 
+//TODO está listando todas 
 	public List<Avaliacao> pesquisarComFiltros(AvaliacaoSeletor seletor) throws FlopException {
-		List<Avaliacao> postagensFiltradas;
+		List<Avaliacao> avaliacoesFiltradas;
 
 		if (seletor.temPaginacao()) {
 			int pageNumber = seletor.getPagina();
 			int pageSize = seletor.getLimite();
 
 			PageRequest page = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "criadoEm"));
-			postagensFiltradas = new ArrayList<Avaliacao>(avaliacaoRepository.findAll(seletor, page).toList());
+			avaliacoesFiltradas = new ArrayList<Avaliacao>(avaliacaoRepository.findAll(seletor, page).toList());
 		} else {
-			postagensFiltradas = new ArrayList<Avaliacao>(
+			avaliacoesFiltradas = new ArrayList<Avaliacao>(
 					avaliacaoRepository.findAll(seletor, Sort.by(Sort.Direction.DESC, "criadoEm")));
 		}
 
-		return postagensFiltradas;
+		return avaliacoesFiltradas;
 	}
-
-	//Avaliacões tem que ser guardadas em um histórico?
-//	@Scheduled(cron = "0 0 0 * * *") // Executa à meia-noite todos os dias
-//	public void limparAvaliacoesDiarias() {
-//		avaliacaoRepository.deleteAll();
-//		System.out.println("Avaliações removidas do feed à meia-noite.");
-//	}
 
 	public int contarPaginas(AvaliacaoSeletor seletor) {
 		if (seletor != null && seletor.temPaginacao()) {

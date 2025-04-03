@@ -2,7 +2,10 @@ package com.vitalu.flop.model.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vitalu.flop.model.enums.Condicoes;
 
 import jakarta.persistence.ElementCollection;
@@ -14,7 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
 import lombok.Data;
 
 @Entity
@@ -27,6 +29,7 @@ public class Avaliacao {
 
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
+	@JsonBackReference
 	private Usuario usuario;
 
 	@ManyToOne
@@ -34,10 +37,9 @@ public class Avaliacao {
 	private Praia praia;
 
 	@CreationTimestamp
-	private LocalDateTime dataAvaliacao;
+	private LocalDateTime criadoEm;
 
-	//converter para string
 	@ElementCollection
-    @Enumerated(EnumType.STRING)
-    private List<Condicoes> condicoes;
+	@Enumerated(EnumType.STRING)
+	private List<Condicoes> condicoes;
 }

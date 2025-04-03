@@ -25,10 +25,10 @@ public class AvaliacaoSeletor extends BaseSeletor implements Specification<Avali
 	@Override
 	public Predicate toPredicate(Root<Avaliacao> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		List<Predicate> predicates = new ArrayList<>();
-//
-//		if (this.getIdUsuario() != null) {
-//			predicates.add(cb.equal(root.get("usuario").get("id"), this.getIdUsuario()));
-//		}
+
+		if (this.getIdUsuario() != null) {
+			predicates.add(cb.equal(root.get("usuario").get("id"), this.getIdUsuario()));
+		}
 
 		if (this.getIdPraia() != null) {
 			predicates.add(cb.equal(root.get("praia").get("id"), this.getIdPraia()));
