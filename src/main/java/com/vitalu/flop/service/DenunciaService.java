@@ -38,7 +38,7 @@ public class DenunciaService {
 		}
 
 		Postagem postDenunciado = postagemRepository.findById(denuncia.getPostagem().getIdPostagem())
-				.orElseThrow(() -> new FlopException("Pruu não encontrado.", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new FlopException("Postagem não encontrada.", HttpStatus.BAD_REQUEST));
 		Usuario autorDaDenuncia = usuarioRepository.findById(denuncia.getUsuarioDenunciador().getIdUsuario())
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
@@ -48,6 +48,7 @@ public class DenunciaService {
 		return denunciaRepository.save(denuncia);
 	}
 
+//TODO dando erro enum
 	public void atualizar(Long idDenuncia, StatusDenuncia novoStatus) throws FlopException {
 		Denuncia denuncia = denunciaRepository.findById(idDenuncia)
 				.orElseThrow(() -> new FlopException("Denúncia não encontrada.", HttpStatus.BAD_REQUEST));
@@ -71,43 +72,45 @@ public class DenunciaService {
 					HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	 public List<DenunciaDTO> pesquisarTodas() {
-	        List<Denuncia> denuncias =  denunciaRepository.findAll();
-	        return toDenunciaDTO(denuncias);
-	    }
 
-	    public DenunciaDTO pesquisarPorId(Long idDenuncia) throws FlopException {
-	        Denuncia denuncia = denunciaRepository.findById(idDenuncia).orElseThrow(() -> new FlopException("A denúncia buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
-	        return Denuncia.toDTO(denuncia);
-	    }
+	public List<DenunciaDTO> pesquisarTodas() {
+		List<Denuncia> denuncias = denunciaRepository.findAll();
+		return toDenunciaDTO(denuncias);
+	}
 
-	    public List<DenunciaDTO> pesquisarComFiltros(DenunciaSeletor seletor) {
-	        List<Denuncia> denuncias;
+	public DenunciaDTO pesquisarPorId(Long idDenuncia) throws FlopException {
+		Denuncia denuncia = denunciaRepository.findById(idDenuncia)
+				.orElseThrow(() -> new FlopException("A denúncia buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
+		return Denuncia.toDTO(denuncia);
+	}
 
-	        if (seletor.temPaginacao()) {
-	            int pageNumber = seletor.getPagina();
-	            int pageSize = seletor.getLimite();
+	// TODO está listando todas denuncias
+	public List<DenunciaDTO> pesquisarComFiltros(DenunciaSeletor seletor) {
+		List<Denuncia> denuncias;
 
-	            PageRequest page = PageRequest.of(pageNumber - 1, pageSize);
-	            denuncias = denunciaRepository.findAll(seletor, page).toList();
-	        }
+		if (seletor.temPaginacao()) {
+			int pageNumber = seletor.getPagina();
+			int pageSize = seletor.getLimite();
 
-	        denuncias = denunciaRepository.findAll(seletor);
+			PageRequest page = PageRequest.of(pageNumber - 1, pageSize);
+			denuncias = denunciaRepository.findAll(seletor, page).toList();
+		}
 
-	        return toDenunciaDTO(denuncias);
-	    }
+		denuncias = denunciaRepository.findAll(seletor);
 
-	    public List<DenunciaDTO> toDenunciaDTO(List<Denuncia> denuncias) {
-	        List<DenunciaDTO> denunciasDTO = new ArrayList<>();
+		return toDenunciaDTO(denuncias);
+	}
 
-	        for (Denuncia d : denuncias) {
-	            DenunciaDTO dto = Denuncia.toDTO(d);
-	            denunciasDTO.add(dto);
+	public List<DenunciaDTO> toDenunciaDTO(List<Denuncia> denuncias) {
+		List<DenunciaDTO> denunciasDTO = new ArrayList<>();
 
-	        }
-	        return denunciasDTO;
-	    }
+		for (Denuncia d : denuncias) {
+			DenunciaDTO dto = Denuncia.toDTO(d);
+			denunciasDTO.add(dto);
+
+		}
+		return denunciasDTO;
+	}
 
 	void atualizarStatusPruu(Postagem postagem, StatusDenuncia statusAtual, StatusDenuncia novoStatus) {
 		if (novoStatus == StatusDenuncia.ACEITA) {
