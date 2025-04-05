@@ -64,12 +64,12 @@ public class SugestaoService {
 		return sugestoesDTO;
 	}
 
-	public SugestaoDTO  procurarPorId(Long sugestaoId) throws FlopException {
-		 Sugestao sugestao = sugestaoRepository.findById(sugestaoId)
-			        .orElseThrow(() -> new FlopException("Esta sugestão não foi encontrada!", HttpStatus.NOT_FOUND));
+	public SugestaoDTO procurarPorId(Long sugestaoId) throws FlopException {
+		Sugestao sugestao = sugestaoRepository.findById(sugestaoId)
+				.orElseThrow(() -> new FlopException("Esta sugestão não foi encontrada!", HttpStatus.NOT_FOUND));
 
-			    SugestaoDTO dto = SugestaoDTO.converterParaDTO(sugestao); 
-			    return dto;
+		SugestaoDTO dto = SugestaoDTO.converterParaDTO(sugestao);
+		return dto;
 	}
 
 	public Page<SugestaoDTO> pesquisarSugestaoFiltros(SugestaoSeletor seletor) throws FlopException {

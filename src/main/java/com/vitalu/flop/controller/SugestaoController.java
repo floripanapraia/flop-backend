@@ -96,9 +96,10 @@ public class SugestaoController {
 			@ApiResponse(responseCode = "200", description = "Sugestões filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Sugestao.class))),
 			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
 	@PostMapping("/filtrar")
-	public ResponseEntity<Page<SugestaoDTO>> pesquisarSugestaoFiltros(@RequestBody SugestaoSeletor seletor) throws FlopException {
+	public ResponseEntity<Page<SugestaoDTO>> pesquisarSugestaoFiltros(@RequestBody SugestaoSeletor seletor)
+			throws FlopException {
 		Page<SugestaoDTO> resultado = sugestaoService.pesquisarSugestaoFiltros(seletor);
 		return ResponseEntity.ok(resultado);
 	}
-	
+
 }
