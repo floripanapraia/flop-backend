@@ -1,5 +1,6 @@
 package com.vitalu.flop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.SugestaoDTO;
 import com.vitalu.flop.model.entity.Sugestao;
 import com.vitalu.flop.model.repository.SugestaoRepository;
 import com.vitalu.flop.model.seletor.SugestaoSeletor;
@@ -50,23 +52,36 @@ public class SugestaoService {
 		return sugestaoRepository.save(existente);
 	}
 
-	public List<Sugestao> pesquisarSugestaoTodas() throws FlopException {
-		return sugestaoRepository.findAll();
+	public List<SugestaoDTO> pesquisarSugestaoTodas() throws FlopException {
+		List<Sugestao> sugestoes = sugestaoRepository.findAll();
+		List<SugestaoDTO> sugestoesDTO = new ArrayList<SugestaoDTO>();
+
+		for (Sugestao sugestao : sugestoes) {
+			SugestaoDTO dto = SugestaoDTO.converterParaDTO(sugestao);
+			sugestoesDTO.add(dto);
+		}
+
+		return sugestoesDTO;
 	}
 
-	public Sugestao procurarPorId(Long sugestaoId) throws FlopException {
-		return sugestaoRepository.findById(sugestaoId)
-				.orElseThrow(() -> new FlopException("Esta sugestão não foi encontrada!", HttpStatus.NOT_FOUND));
+	public SugestaoDTO  procurarPorId(Long sugestaoId) throws FlopException {
+		 Sugestao sugestao = sugestaoRepository.findById(sugestaoId)
+			        .orElseThrow(() -> new FlopException("Esta sugestão não foi encontrada!", HttpStatus.NOT_FOUND));
+
+			    SugestaoDTO dto = SugestaoDTO.converterParaDTO(sugestao); 
+			    return dto;
 	}
 
-	public Page<Sugestao> pesquisarSugestaoFiltros(SugestaoSeletor seletor) throws FlopException {
+	public Page<SugestaoDTO> pesquisarSugestaoFiltros(SugestaoSeletor seletor) throws FlopException {
 		Pageable pageable = Pageable.unpaged();
 
 		if (seletor.temPaginacao()) {
 			pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadaEm").ascending());
 		}
 
-		return sugestaoRepository.findAll(seletor, pageable);
+		Page<Sugestao> sugestoes = sugestaoRepository.findAll(seletor, pageable);
+
+		return sugestoes.map(SugestaoDTO::converterParaDTO);
 
 	}
 }
