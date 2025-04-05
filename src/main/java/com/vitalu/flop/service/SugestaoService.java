@@ -4,12 +4,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Sugestao;
 import com.vitalu.flop.model.repository.SugestaoRepository;
+import com.vitalu.flop.model.seletor.SugestaoSeletor;
 
 @Service
 public class SugestaoService {
@@ -55,8 +59,14 @@ public class SugestaoService {
 				.orElseThrow(() -> new FlopException("Esta sugestão não foi encontrada!", HttpStatus.NOT_FOUND));
 	}
 
-	public Page<Sugestao> pesquisarSugestaoFiltros(Long sugestaoId) throws FlopException {
-		// TODO
-		return null;
+	public Page<Sugestao> pesquisarSugestaoFiltros(SugestaoSeletor seletor) throws FlopException {
+		Pageable pageable = Pageable.unpaged();
+
+		if (seletor.temPaginacao()) {
+			pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadaEm").ascending());
+		}
+
+		return sugestaoRepository.findAll(seletor, pageable);
+
 	}
 }
