@@ -1,5 +1,7 @@
 package com.vitalu.flop.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ public class SugestaoService {
 	public void excluirSugestao(Long sugestaoId, Long usuarioId) throws FlopException {
 
 		Sugestao sugestao = sugestaoRepository.findById(sugestaoId)
-				.orElseThrow(() -> new FlopException("Sugestão não encontrada", HttpStatus.NOT_FOUND));
+				.orElseThrow(() -> new FlopException("Sugestão não encontrada.", HttpStatus.NOT_FOUND));
 
 		if (sugestao.getUsuario().getIdUsuario().equals(usuarioId)) {
 			sugestaoRepository.deleteById(sugestaoId);
@@ -42,6 +44,10 @@ public class SugestaoService {
 		existente.setAnalisada(editarSugestao.getAnalisada());
 
 		return sugestaoRepository.save(existente);
+	}
+
+	public List<Sugestao> pesquisarSugestaoTodas() throws FlopException {
+		return sugestaoRepository.findAll();
 	}
 
 	public Sugestao procurarPorId(Long sugestaoId) throws FlopException {

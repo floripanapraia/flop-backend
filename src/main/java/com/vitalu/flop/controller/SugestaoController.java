@@ -1,5 +1,7 @@
 package com.vitalu.flop.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -72,6 +74,13 @@ public class SugestaoController {
 
 		Sugestao atualizada = sugestaoService.editarSugestao(sugestaoId, editarSugestao);
 		return ResponseEntity.status(201).body(atualizada);
+	}
+
+	@Operation(summary = "Listar todas as sugestões.", description = "Retorna uma lista de todas as sugestões cadastrados no sistema.", responses = {
+			@ApiResponse(responseCode = "200", description = "Lista de sugestões retornada com sucesso") })
+	@GetMapping(path = "/todos")
+	public List<Sugestao> pesquisarSugestaoTodas() throws FlopException {
+		return sugestaoService.pesquisarSugestaoTodas();
 	}
 
 	@Operation(summary = "Buscar sugestão por ID")
