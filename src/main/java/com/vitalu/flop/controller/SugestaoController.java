@@ -20,6 +20,7 @@ import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Sugestao;
 import com.vitalu.flop.model.entity.Usuario;
+import com.vitalu.flop.model.seletor.SugestaoSeletor;
 import com.vitalu.flop.service.SugestaoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -90,8 +91,11 @@ public class SugestaoController {
 		return ResponseEntity.ok(sugestao);
 	}
 
-	public Page<Sugestao> pesquisarSugestaoFiltros(Long sugestaoId) throws FlopException {
-		// TODO
-		return null;
+	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de sugestões de acordo com o filtro selecionado.", responses = {
+			@ApiResponse(responseCode = "200", description = "Sugestões filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Sugestao.class))),
+			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
+	@PostMapping("/filtrar")
+	public Page<Sugestao> pesquisarSugestaoFiltros(@RequestBody SugestaoSeletor seletor) throws FlopException {
+		return sugestaoService.pesquisarSugestaoFiltros(seletor);
 	}
 }
