@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/usuarios")
-@CrossOrigin(origins = { "http://localhost:4200" }, maxAge = 3600)
+@CrossOrigin(origins = { "http://localhost:3000" }, maxAge = 3600)
 @MultipartConfig(fileSizeThreshold = 10485760)
 public class UsuarioController {
 
