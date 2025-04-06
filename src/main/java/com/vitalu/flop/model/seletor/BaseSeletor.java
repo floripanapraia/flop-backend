@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.Data;
@@ -32,5 +33,9 @@ public abstract class BaseSeletor {
 		} else if (endDate != null) {
 			predicates.add(cb.lessThanOrEqualTo(root.get(attributeName), endDate));
 		}
+	}
+
+	public static Predicate filtroDeTexto(CriteriaBuilder cb, Path<String> campo, String valor) {
+		return cb.like(cb.lower(campo), "%" + valor.toLowerCase() + "%");
 	}
 }

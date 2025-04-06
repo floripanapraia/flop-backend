@@ -1,5 +1,7 @@
 package com.vitalu.flop.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.SugestaoDTO;
 import com.vitalu.flop.model.entity.Sugestao;
 import com.vitalu.flop.model.entity.Usuario;
+import com.vitalu.flop.model.seletor.SugestaoSeletor;
 import com.vitalu.flop.service.SugestaoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,15 +78,28 @@ public class SugestaoController {
 		return ResponseEntity.status(201).body(atualizada);
 	}
 
+	@Operation(summary = "Listar todas as sugestões.", description = "Retorna uma lista de todas as sugestões cadastrados no sistema.", responses = {
+			@ApiResponse(responseCode = "200", description = "Lista de sugestões retornada com sucesso") })
+	@GetMapping(path = "/todos")
+	public List<SugestaoDTO> pesquisarSugestaoTodas() throws FlopException {
+		return sugestaoService.pesquisarSugestaoTodas();
+	}
+
 	@Operation(summary = "Buscar sugestão por ID")
 	@GetMapping("/{idSugestao}")
-	public ResponseEntity<Sugestao> procurarPorId(@PathVariable Long sugestaoId) throws FlopException {
-		Sugestao sugestao = sugestaoService.procurarPorId(sugestaoId);
+	public ResponseEntity<SugestaoDTO> procurarPorId(@PathVariable Long sugestaoId) throws FlopException {
+		SugestaoDTO sugestao = sugestaoService.procurarPorId(sugestaoId);
 		return ResponseEntity.ok(sugestao);
 	}
 
-	public Page<Sugestao> pesquisarSugestaoFiltros(Long sugestaoId) throws FlopException {
-		// TODO
-		return null;
+	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de sugestões de acordo com o filtro selecionado.", responses = {
+			@ApiResponse(responseCode = "200", description = "Sugestões filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Sugestao.class))),
+			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
+	@PostMapping("/filtrar")
+	public ResponseEntity<Page<SugestaoDTO>> pesquisarSugestaoFiltros(@RequestBody SugestaoSeletor seletor)
+			throws FlopException {
+		Page<SugestaoDTO> resultado = sugestaoService.pesquisarSugestaoFiltros(seletor);
+		return ResponseEntity.ok(resultado);
 	}
+
 }
