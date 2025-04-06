@@ -28,8 +28,6 @@ public class PostagemService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	@Autowired
-	private AuthService authService;
-	@Autowired
 	private ImagemService imagemService;
 
 	public Postagem cadastrar(Postagem postagem) throws FlopException {
