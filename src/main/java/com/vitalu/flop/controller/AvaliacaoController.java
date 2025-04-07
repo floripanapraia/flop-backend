@@ -1,8 +1,7 @@
 package com.vitalu.flop.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,16 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Avaliacao;
-import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.AvaliacaoSeletor;
 import com.vitalu.flop.service.AvaliacaoService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -79,11 +79,13 @@ public class AvaliacaoController {
 		return ResponseEntity.ok(avaliacao);
 	}
 
-	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de postagens de acordo com o filtro selecionado.", responses = {
-			@ApiResponse(responseCode = "200", description = "Postagens filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Postagem.class))),
+	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de avaliacoes de acordo com o filtro selecionado.", responses = {
+			@ApiResponse(responseCode = "200", description = "Avaliações filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Avaliacao.class))),
 			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
 	@PostMapping("/filtrar")
-	public List<Avaliacao> pesquisarComFiltros(@RequestBody AvaliacaoSeletor seletor) throws FlopException {
-		return avaliacaoService.pesquisarComFiltros(seletor);
+	public ResponseEntity<Page<Avaliacao>> pesquisarComFiltros(@RequestBody AvaliacaoSeletor seletor)
+			throws FlopException {
+		Page<Avaliacao> resultado = avaliacaoService.pesquisarComFiltros(seletor);
+		return ResponseEntity.ok(resultado);
 	}
 }
