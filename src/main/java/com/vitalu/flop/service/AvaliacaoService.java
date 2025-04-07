@@ -1,15 +1,17 @@
 package com.vitalu.flop.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Praia;
@@ -105,37 +107,19 @@ public class AvaliacaoService {
 		}
 	}
 
-//TODO está listando todas 
-	public List<Avaliacao> pesquisarComFiltros(AvaliacaoSeletor seletor) throws FlopException {
-		List<Avaliacao> avaliacoesFiltradas;
+
+
+	public Page<Avaliacao> pesquisarComFiltros(AvaliacaoSeletor seletor) throws FlopException {
+		Pageable pageable = Pageable.unpaged();
 
 		if (seletor.temPaginacao()) {
-			int pageNumber = seletor.getPagina();
-			int pageSize = seletor.getLimite();
-
-			PageRequest page = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "criadoEm"));
-			avaliacoesFiltradas = new ArrayList<Avaliacao>(avaliacaoRepository.findAll(seletor, page).toList());
-		} else {
-			avaliacoesFiltradas = new ArrayList<Avaliacao>(
-					avaliacaoRepository.findAll(seletor, Sort.by(Sort.Direction.DESC, "criadoEm")));
+			pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadaEm").ascending());
 		}
+
+		Page<Avaliacao> avaliacoesFiltradas = avaliacaoRepository.findAll(seletor, pageable);
 
 		return avaliacoesFiltradas;
-	}
 
-	public int contarPaginas(AvaliacaoSeletor seletor) {
-		if (seletor != null && seletor.temPaginacao()) {
-			int pageSize = seletor.getLimite();
-			PageRequest pagina = PageRequest.of(0, pageSize); // Página inicial apenas para contar
-
-			Page<Avaliacao> paginaResultado = avaliacaoRepository.findAll(seletor, pagina);
-			return paginaResultado.getTotalPages(); // Retorna o número total de páginas
-		}
-
-		// Se não houver paginação, retorna 1 página se houver registros, ou 0 se não
-		// houver registros.
-		long totalRegistros = avaliacaoRepository.count(seletor);
-		return totalRegistros > 0 ? 1 : 0;
 	}
 
 }
