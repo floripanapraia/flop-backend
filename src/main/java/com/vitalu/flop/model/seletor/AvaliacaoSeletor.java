@@ -33,10 +33,10 @@ public class AvaliacaoSeletor extends BaseSeletor implements Specification<Avali
 		if (this.getIdPraia() != null) {
 			predicates.add(cb.equal(root.get("praia").get("id"), this.getIdPraia()));
 		}
-
-		if (this.criadoEmInicio != null && this.criadoEmFim != null) {
-			filtrarPorData(root, cb, predicates, this.getCriadoEmInicio(), this.getCriadoEmFim(), "criadoEm");
+		if (this.getNomePraia() != null) {
+			predicates.add(filtroDeTexto(cb, root.get("nomePraia"), this.getNomePraia()));
 		}
+		filtrarPorData(root, cb, predicates, this.getCriadoEmInicio(), this.getCriadoEmFim(), "criadaEm");
 
 		return cb.and(predicates.toArray(new Predicate[0]));
 	}
