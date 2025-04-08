@@ -21,7 +21,7 @@ import com.vitalu.flop.model.enums.StatusDenuncia;
 import com.vitalu.flop.model.seletor.DenunciaSeletor;
 import com.vitalu.flop.service.DenunciaService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
