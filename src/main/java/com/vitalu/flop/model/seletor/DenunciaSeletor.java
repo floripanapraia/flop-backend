@@ -31,11 +31,11 @@ public class DenunciaSeletor extends BaseSeletor implements Specification<Denunc
 		List<Predicate> predicates = new ArrayList<>();
 
 		if (this.getIdUsuario() != null) {
-			predicates.add(cb.equal(root.get("usuario").get("id"), this.getIdUsuario()));
+			predicates.add(cb.equal(root.get("usuarioDenunciador").get("id"), this.getIdUsuario()));
 		}
 
 		if (this.getIdPostagem() != null) {
-			predicates.add(cb.equal(root.get("pruu").get("id"), this.getIdPostagem()));
+			predicates.add(cb.equal(root.get("postagem").get("id"), this.getIdPostagem()));
 		}
 
 		if (this.getMotivo() != null) {
