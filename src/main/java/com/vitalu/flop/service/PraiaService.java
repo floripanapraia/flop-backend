@@ -1,6 +1,7 @@
 package com.vitalu.flop.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.entity.Localizacao;
 import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
+import com.vitalu.flop.model.repository.LocalizacaoRepository;
 import com.vitalu.flop.model.repository.PraiaRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
 
@@ -22,29 +25,29 @@ public class PraiaService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-	
-	//@Autowired 
-	//private LocalizacaoRepository localizacaoRepository;
-	 
+	@Autowired
+	private LocalizacaoRepository localizacaoRepository;
+
 	public Praia cadastrarPraia(Praia novaPraia) throws FlopException {
+		Optional<Localizacao> local = localizacaoRepository.findById(novaPraia.getIdPraia());
+		novaPraia.setLocalizacao(
+				local.orElseThrow(() -> new FlopException("Localização não encontrado.", HttpStatus.BAD_REQUEST)));
 		return praiaRepository.save(novaPraia);
 	}
 
 	public List<Praia> pesquisarPraiaTodas() throws FlopException {
 		return praiaRepository.findAll();
 	}
-	
+
 	public Praia pesquisarPraiasId(Long praiaId) throws FlopException {
 		return praiaRepository.findById(praiaId)
 				.orElseThrow(() -> new FlopException("Esta praia não foi localizada!", HttpStatus.NOT_FOUND));
 	}
 
-	
 	public Page<Praia> pesquisarPraiaFiltros(Long praiaId) throws FlopException {
 		// TODO
 		return null;
 	}
-
 
 	public void excluirPraia(Long praiaId, Long usuarioId) throws FlopException {
 
