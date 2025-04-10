@@ -4,11 +4,14 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -25,9 +28,9 @@ public class Praia {
 
 	private String imagem;
 
-//	@OneToOne(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
-//	private Localizacao localizacao;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
+	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "praia")
 	@JsonIgnore
