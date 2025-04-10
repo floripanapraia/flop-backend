@@ -56,7 +56,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Libera a origem do Angular
+		configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Libera a origem do React
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Métodos HTTP permitidos
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin",
 				"Access-Control-Allow-Headers", "Access-Control-Expose-Headers", "Accept", "Origin", "X-Requested-With",
@@ -64,7 +64,7 @@ public class SecurityConfig {
 				"Content-Length", "Content-Encoding", "Connection")); // Cabeçalhos permitidos
 
 		configuration.setAllowCredentials(true); // Permite envio de credenciais (cookies, por exemplo)
-		configuration.setAllowedOriginPatterns(List.of("http://localhost:4200/*"));
+		configuration.setAllowedOriginPatterns(List.of("http://localhost:3000/*"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
