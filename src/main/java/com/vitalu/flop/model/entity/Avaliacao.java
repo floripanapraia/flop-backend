@@ -34,6 +34,7 @@ public class Avaliacao {
 
 	@ManyToOne
 	@JoinColumn(name = "praia_id", nullable = false)
+	@JsonBackReference
 	private Praia praia;
 
 	@CreationTimestamp

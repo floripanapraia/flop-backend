@@ -3,12 +3,16 @@ package com.vitalu.flop.model.entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -25,12 +29,12 @@ public class Praia {
 
 	private String imagem;
 
-//	@OneToOne(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
-//	private Localizacao localizacao;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
+	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "praia")
-	@JsonIgnore
+	@JsonManagedReference
 	private List<Avaliacao> avaliacoes;
 
 	@OneToMany(mappedBy = "praia")
