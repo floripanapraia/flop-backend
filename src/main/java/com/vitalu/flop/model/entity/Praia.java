@@ -37,5 +37,6 @@ public class Praia {
 	private List<Avaliacao> avaliacoes;
 
 	@OneToMany(mappedBy = "praia")
+	@JsonManagedReference("postagem-praia")
 	private List<Postagem> postagens;
 }
