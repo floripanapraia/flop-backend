@@ -10,8 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,10 +38,12 @@ public class Usuario implements UserDetails {
 	@Size(max = 200, message = "O nome deve ter entre 3 e 200 caracteres.")
 	private String nome;
 
+	@NotBlank(message = "O username não pode estar em branco.")
 	private String username;
 
-	@NotBlank(message = "A senha não deve estar em branco.")
+	@NotBlank(message = "A senha não pode estar em branco.")
 	@Size(max = 500)
+	@JsonIgnore
 	private String senha;
 
 	@NotBlank(message = "O email não pode estar em branco.")
@@ -63,15 +65,15 @@ public class Usuario implements UserDetails {
 //	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
-	@JsonBackReference(value = "usuario-avaliacoes")
+	@JsonManagedReference(value = "usuario-avaliacoes")
 	private List<Avaliacao> avaliacao;
 
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
-	@JsonBackReference(value = "usuario-postagens")
+	@JsonManagedReference(value = "usuario-postagens")
 	private List<Postagem> postagem;
 
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
-	@JsonBackReference(value = "usuario-sugestoes")
+	@JsonManagedReference(value = "usuario-sugestoes")
 	private List<Sugestao> sugestoes;
 
 	// Métodos da interface UserDetails
