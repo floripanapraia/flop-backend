@@ -33,7 +33,11 @@ public class Praia {
 	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "praia")
+<<<<<<< Updated upstream
 	@JsonIgnore
+=======
+	@JsonManagedReference("avaliacao-praia")
+>>>>>>> Stashed changes
 	private List<Avaliacao> avaliacoes;
 
 	@OneToMany(mappedBy = "praia")
