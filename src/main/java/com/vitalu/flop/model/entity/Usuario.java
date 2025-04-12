@@ -65,11 +65,11 @@ public class Usuario implements UserDetails {
 //	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
-	@JsonManagedReference(value = "usuario-avaliacoes")
+	@JsonManagedReference(value = "avaliacao-usuario")
 	private List<Avaliacao> avaliacao;
 
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
-	@JsonManagedReference(value = "usuario-postagens")
+	@JsonManagedReference(value = "postagem-usuario")
 	private List<Postagem> postagem;
 
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)

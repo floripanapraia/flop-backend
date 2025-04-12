@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +17,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -35,10 +33,12 @@ public class Postagem {
 
 	@ManyToOne
 	@JoinColumn(name = "usuario_id", nullable = false)
+	@JsonBackReference("postagem-usuario")
 	private Usuario usuario;
 
 	@ManyToOne
 	@JoinColumn(name = "praia_id", nullable = false)
+	@JsonBackReference("postagem-praia")
 	private Praia praia;
 
 	@CreationTimestamp
