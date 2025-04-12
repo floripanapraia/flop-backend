@@ -6,4 +6,5 @@ import lombok.Data;
 public class PraiaDTO {
 	private String nomePraia;
     private String imagem;
+    private Long idLocalizacao;
 }

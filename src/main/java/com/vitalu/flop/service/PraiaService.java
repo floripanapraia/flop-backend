@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.vitalu.flop.exception.FlopException;
+
+import com.vitalu.flop.model.dto.PraiaDTO;
 import com.vitalu.flop.model.entity.Localizacao;
 import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
@@ -28,10 +30,18 @@ public class PraiaService {
 	@Autowired
 	private LocalizacaoRepository localizacaoRepository;
 
-	public Praia cadastrarPraia(Praia novaPraia) throws FlopException {
-		Optional<Localizacao> local = localizacaoRepository.findById(novaPraia.getIdPraia());
+	public Praia cadastrarPraia(PraiaDTO dto) throws FlopException {
+		if (dto.getIdLocalizacao() == null) {
+			throw new FlopException("ID da localização é obrigatório.", HttpStatus.BAD_REQUEST);
+		}
+
+		Optional<Localizacao> local = localizacaoRepository.findById(dto.getIdLocalizacao());
+
+		Praia novaPraia = new Praia();
+		novaPraia.setNomePraia(dto.getNomePraia());
 		novaPraia.setLocalizacao(
-				local.orElseThrow(() -> new FlopException("Localização não encontrado.", HttpStatus.BAD_REQUEST)));
+				local.orElseThrow(() -> new FlopException("Localização não encontrada.", HttpStatus.BAD_REQUEST)));
+
 		return praiaRepository.save(novaPraia);
 	}
 
