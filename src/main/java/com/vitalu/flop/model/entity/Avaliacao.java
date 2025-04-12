@@ -34,10 +34,8 @@ public class Avaliacao {
 
 	@ManyToOne
 	@JoinColumn(name = "praia_id", nullable = false)
-<<<<<<< Updated upstream
-=======
+
 	@JsonBackReference("avaliacao-praia")
->>>>>>> Stashed changes
 	private Praia praia;
 
 	@CreationTimestamp
