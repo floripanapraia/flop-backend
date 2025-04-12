@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.PraiaDTO;
 import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.service.PraiaService;
@@ -41,7 +42,7 @@ public class PraiaController {
 			@ApiResponse(responseCode = "200", description = "Praia criada com sucesso!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Praia.class))),
 			@ApiResponse(responseCode = "400", description = "Erro de validação ou regra de negócio.", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Erro de validação: campo X é obrigatório\", \"status\": 400}"))) })
 	@PostMapping(path = "/cadastrar")
-	public ResponseEntity<Praia> cadastrarPraia(@Valid @RequestBody Praia novaPraia) throws FlopException {
+	public ResponseEntity<Praia> cadastrarPraia(@Valid @RequestBody PraiaDTO novaPraia) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 		if (subject.isAdmin() == true) {
 			Praia praiaCriada = praiaService.cadastrarPraia(novaPraia);

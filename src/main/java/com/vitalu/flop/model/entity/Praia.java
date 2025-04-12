@@ -2,7 +2,7 @@ package com.vitalu.flop.model.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -33,11 +33,7 @@ public class Praia {
 	private Localizacao localizacao;
 
 	@OneToMany(mappedBy = "praia")
-<<<<<<< Updated upstream
-	@JsonIgnore
-=======
 	@JsonManagedReference("avaliacao-praia")
->>>>>>> Stashed changes
 	private List<Avaliacao> avaliacoes;
 
 	@OneToMany(mappedBy = "praia")
