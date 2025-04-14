@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.dto.PraiaDTO;
+import com.vitalu.flop.model.entity.Avaliacao;
+import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.service.PraiaService;
@@ -55,14 +58,44 @@ public class PraiaController {
 	@Operation(summary = "Listar todas as praias.", description = "Retorna uma lista de todas as praias cadastrados no sistema.", responses = {
 			@ApiResponse(responseCode = "200", description = "Lista de praias retornada com sucesso") })
 	@GetMapping(path = "/todos")
-	public List<Praia> pesquisarTodos() throws FlopException {
+	public List<PraiaDTO> pesquisarTodos() throws FlopException {
 		return praiaService.pesquisarPraiaTodas();
 	}
 
 	@Operation(summary = "Pesquisar praia por ID.", description = "Busca uma praia específica através do seu ID.")
 	@GetMapping(path = "/{idPraia}")
-	public ResponseEntity<Praia> pesquisarPraiasId(@PathVariable("idPraia") Long praiaId) throws FlopException {
-		Praia praia = praiaService.pesquisarPraiasId(praiaId);
+	public ResponseEntity<PraiaDTO> pesquisarPraiasId(@PathVariable("idPraia") Long praiaId) throws FlopException {
+		PraiaDTO praia = praiaService.pesquisarPraiasId(praiaId);
 		return ResponseEntity.ok(praia);
+	}
+
+	@Operation(summary = "Pesquisa as avaliações do dia", description = "Retorna as avaliações do dia.")
+	@GetMapping("/{praiaId}/avaliacoes")
+	public List<Avaliacao> getAvaliacoesDoDia(@PathVariable Long praiaId) {
+		return praiaService.buscarAvaliacoesDoDia(praiaId);
+	}
+
+	@PutMapping("/editar/{praiaId}")
+	public ResponseEntity<Praia> editarPraia(@PathVariable Long praiaId, @RequestBody PraiaDTO praiaEditadaDto)
+			throws FlopException {
+		Usuario subject = authService.getUsuarioAutenticado();
+		if (subject.isAdmin() == true) {
+			Praia praiaAtualizada = praiaService.editarPraia(praiaEditadaDto, subject.getIdUsuario());
+			return ResponseEntity.ok(praiaAtualizada);
+		} else {
+			throw new FlopException("Usuários não podem editar praias.", HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping("/{praiaId}/postagens")
+	public ResponseEntity<List<Postagem>> getPostagensDoDia(@PathVariable Long praiaId) {
+	    List<Postagem> postagensDoDia = praiaService.buscarPostagensDoDia(praiaId);
+	    return ResponseEntity.ok(postagensDoDia);
+	}
+
+	@GetMapping("/{praiaId}/now")
+	public ResponseEntity<PraiaDTO> getInformacoesPraiaHoje(@PathVariable Long praiaId) throws FlopException {
+	    PraiaDTO praiaHoje = praiaService.obterInformacoesPraiaHoje(praiaId);
+	    return ResponseEntity.ok(praiaHoje);
 	}
 }
