@@ -1,5 +1,7 @@
 package com.vitalu.flop.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +16,7 @@ public class Localizacao {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonBackReference("localizacao-praia")
 	private Long idLocalizacao;
 
 	@NotNull
