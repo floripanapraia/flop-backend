@@ -29,10 +29,10 @@ public class Praia {
 	private String imagem;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
-	@JsonManagedReference("localizacao-praia")
-	private Localizacao localizacao;
-
+    @JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
+    @JsonManagedReference("praia-localizacao")  
+    private Localizacao localizacao;
+	
 	@OneToMany(mappedBy = "praia")
 	@JsonManagedReference("avaliacao-praia")
 	private List<Avaliacao> avaliacoes;
