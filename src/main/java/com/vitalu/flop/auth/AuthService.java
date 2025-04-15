@@ -27,7 +27,7 @@ public class AuthService {
 		return jwtService.generateToken(authentication);
 	}
 
-	public Usuario getAuthenticatedUser() throws FlopException {
+	public Usuario getUsuarioAutenticado() throws FlopException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Usuario authenticatedUser = null;
 
