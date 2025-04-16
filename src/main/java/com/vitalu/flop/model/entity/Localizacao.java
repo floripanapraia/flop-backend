@@ -24,8 +24,8 @@ public class Localizacao {
 	@NotNull
 	private Double longitude;
 
-	@OneToOne(mappedBy = "localizacao") 
-	@JsonBackReference("praia-localizacao") 
+	@OneToOne(mappedBy = "localizacao")
+	@JsonBackReference("localizacao-praia")
 	private Praia praia;
 
 }
