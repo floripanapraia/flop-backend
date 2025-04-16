@@ -16,7 +16,6 @@ public class Localizacao {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonBackReference("localizacao-praia")
 	private Long idLocalizacao;
 
 	@NotNull
@@ -26,6 +25,7 @@ public class Localizacao {
 	private Double longitude;
 
 	@OneToOne(mappedBy = "localizacao")
+	@JsonBackReference("localizacao-praia")
 	private Praia praia;
 
 }
