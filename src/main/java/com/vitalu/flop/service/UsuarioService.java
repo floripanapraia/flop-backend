@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.repository.UsuarioRepository;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
@@ -35,33 +36,36 @@ public class UsuarioService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado " + username));
 	}
 
-	public void cadastrar(Usuario usuario) throws FlopException {
-		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
+	public void cadastrar(UsuarioDTO usuarioDTO) throws FlopException {
+		if (usuarioRepository.existsByEmailIgnoreCase(usuarioDTO.getEmail())) {
 			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
 			throw new FlopException(
 					"O username informado já está registrado. Por favor, verifique os dados ou utilize outro CPF.",
 					HttpStatus.BAD_REQUEST);
 		}
 
+		Usuario usuario = usuarioDTO.toEntity(encoder);
 		usuarioRepository.save(usuario);
 	}
 
-	public void cadastrarAdmin(Usuario usuario) throws FlopException {
-		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
+	public void cadastrarAdmin(UsuarioDTO usuarioDTO) throws FlopException {
+		if (usuarioRepository.existsByEmailIgnoreCase(usuarioDTO.getEmail())) {
 			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
 			throw new FlopException(
 					"O username informado já está registrado. Por favor, verifique os dados ou utilize outro CPF.",
 					HttpStatus.BAD_REQUEST);
 		}
 
+		Usuario usuario = usuarioDTO.toEntity(encoder);
+		usuario.setAdmin(true);
 		usuarioRepository.save(usuario);
 	}
 
