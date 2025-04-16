@@ -13,35 +13,38 @@ import com.vitalu.flop.model.repository.UsuarioRepository;
 
 @Service
 public class AuthService {
-    private final JwtService jwtService;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
-    public AuthService(JwtService jwtService, UsuarioRepository usuarioRepository) {
-        this.jwtService = jwtService;
-    }
+	private final JwtService jwtService;
 
-    public String authenticate(Authentication authentication) throws FlopException {
-        return jwtService.getGenerateToken(authentication);
-    }
+	@Autowired
+	private UsuarioRepository userRepository;
 
-    public Usuario getUsuarioAutenticado() throws FlopException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Usuario usuarioAutenticado = null;
+	public AuthService(JwtService jwtService) {
+		this.jwtService = jwtService;
+	}
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
+	public String authenticate(Authentication authentication) {
+		return jwtService.generateToken(authentication);
+	}
 
-            Jwt jwt = (Jwt) principal;
-            String login = jwt.getClaim("sub");
+	public Usuario getUsuarioAutenticado() throws FlopException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Usuario authenticatedUser = null;
 
-            usuarioAutenticado = usuarioRepository.findByEmail(login).orElseThrow(() -> new FlopException("Usuário não encontrado", HttpStatus.BAD_REQUEST));
-        }
+		if (authentication != null && authentication.isAuthenticated()) {
+			Object principal = authentication.getPrincipal();
 
-        if (usuarioAutenticado == null) {
-            throw new FlopException("Usuário não encontrado", HttpStatus.BAD_REQUEST);
-        }
+			Jwt jwt = (Jwt) principal;
+			String login = jwt.getClaim("sub");
 
-        return usuarioAutenticado;
-    }
+			authenticatedUser = userRepository.findByEmail(login)
+					.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
+		}
+
+		if (authenticatedUser == null) {
+			throw new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST);
+		}
+
+		return authenticatedUser;
+	}
 }

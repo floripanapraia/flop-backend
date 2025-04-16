@@ -41,13 +41,7 @@ public class SecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(
-						// Hierarquia de permissões e bloqueios
-						auth -> auth
-								// URLs liberadas
-								.requestMatchers("/auth/*", "/public").permitAll()
-
-								// Todas as demais são bloqueadas
-								.anyRequest().authenticated())
+						auth -> auth.requestMatchers("/auth/*", "/public").permitAll().anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults()).oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()));
 
 		return http.build();
@@ -56,12 +50,13 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Libera a origem do React
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Métodos HTTP permitidos
+		configuration.setAllowedOrigins(List.of("http://localhost:3000/")); // Libera a origem do React
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // Métodos HTTP
+																										// permitidos
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin",
 				"Access-Control-Allow-Headers", "Access-Control-Expose-Headers", "Accept", "Origin", "X-Requested-With",
 				"Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Credentials",
-				"Content-Length", "Content-Encoding", "Connection")); // Cabeçalhos permitidos
+				"Content-Length", "Content-Encoding", "Connection"));
 
 		configuration.setAllowCredentials(true); // Permite envio de credenciais (cookies, por exemplo)
 		configuration.setAllowedOriginPatterns(List.of("http://localhost:3000/*"));
@@ -85,6 +80,6 @@ public class SecurityConfig {
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
-		return new PasswordHasher(publicKey, privateKey);
+		return new PasswordHasher();
 	}
 }

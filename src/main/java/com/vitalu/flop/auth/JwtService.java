@@ -1,49 +1,50 @@
 package com.vitalu.flop.auth;
 
-import java.time.Instant;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Usuario;
-import com.vitalu.flop.model.repository.UsuarioRepository;
+
+import java.time.Instant;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
-	private final JwtEncoder jwtEncoder;
 
-	public JwtService(JwtEncoder jwtEncoder) {
-		this.jwtEncoder = jwtEncoder;
-	}
+    private final JwtEncoder jwtEncoder;
 
-	public String getGenerateToken(Authentication authentication) throws FlopException {
-		Instant now = Instant.now();
+    public JwtService(JwtEncoder jwtEncoder) {
+        this.jwtEncoder = jwtEncoder;
+    }
 
-		long dezHorasEmSegundos = 36000L;
+    public String generateToken(Authentication subject) {
 
-		String roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-				.collect(Collectors.joining(" "));
+        Instant now = Instant.now();
 
-		Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
+        long tenHoursInSeconds = 36000L;
 
-		JwtClaimsSet claims = JwtClaimsSet.builder().issuer("flop") // emissor do token
-				.issuedAt(now) // data/hora em que o token foi emitido
-				.expiresAt(now.plusSeconds(dezHorasEmSegundos)) // expiração do token, em segundos.
-				.subject(authentication.getName()) // nome do usuário
-				.claim("roles", roles) // perfis ou permissões (roles)
-				.claim("idUsuario", usuarioAutenticado.getIdUsuario()) // mais propriedades adicionais no token
-				.build();
+        String roles = subject
+                .getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
 
-		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-	}
+        Usuario authenticatedUser = (Usuario) subject.getPrincipal();
 
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("flop")
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(tenHoursInSeconds))
+                .subject(subject.getName())
+                .claim("roles", roles)
+                .claim("idUsuario", authenticatedUser.getIdUsuario())
+                .build();
+
+        return jwtEncoder.encode(
+                JwtEncoderParameters.from(claims)).getTokenValue();
+    }
 }
