@@ -44,7 +44,7 @@ public class UsuarioService implements UserDetailsService {
 
 		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
 			throw new FlopException(
-					"O username informado já está registrado. Por favor, verifique os dados ou utilize outro CPF.",
+					"O username informado já está registrado. Por favor, utilize um username diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
@@ -60,7 +60,7 @@ public class UsuarioService implements UserDetailsService {
 
 		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
 			throw new FlopException(
-					"O username informado já está registrado. Por favor, verifique os dados ou utilize outro CPF.",
+					"O username informado já está registrado. Por favor, utilize um username diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
