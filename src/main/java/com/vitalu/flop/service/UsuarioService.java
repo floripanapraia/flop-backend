@@ -48,7 +48,7 @@ public class UsuarioService implements UserDetailsService {
 					HttpStatus.BAD_REQUEST);
 		}
 
-		Usuario usuario = usuarioDTO.toEntity(encoder);
+		Usuario usuario = usuarioDTO.toEntity();
 		usuarioRepository.save(usuario);
 	}
 
@@ -64,7 +64,7 @@ public class UsuarioService implements UserDetailsService {
 					HttpStatus.BAD_REQUEST);
 		}
 
-		Usuario usuario = usuarioDTO.toEntity(encoder);
+		Usuario usuario = usuarioDTO.toEntity();
 		usuario.setAdmin(true);
 		usuarioRepository.save(usuario);
 	}

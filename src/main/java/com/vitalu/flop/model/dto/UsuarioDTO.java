@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vitalu.flop.model.entity.Usuario;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.Data;
 
@@ -25,14 +24,12 @@ public class UsuarioDTO {
 	private List<Long> postagemIds;
 	private List<Long> sugerirPraiaIds;
 
-	public Usuario toEntity(PasswordEncoder encoder) {
+	public Usuario toEntity() {
 		Usuario usuario = new Usuario();
 		usuario.setIdUsuario(this.idUsuario);
 		usuario.setNome(this.nome);
 		usuario.setUsername(this.username);
-		if (this.senha != null && !this.senha.isEmpty()) {
-			usuario.setSenha(encoder.encode(this.senha));
-		}
+		usuario.setSenha(this.senha);
 		usuario.setEmail(this.email);
 		usuario.setAdmin(this.isAdmin);
 		usuario.setFotoPerfil(this.fotoPerfil);
