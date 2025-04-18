@@ -2,7 +2,6 @@ package com.vitalu.flop.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.AvaliacaoDTO;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
@@ -34,40 +34,67 @@ public class AvaliacaoService {
 	@Autowired
 	private PraiaRepository praiaRepository;
 
-	public Avaliacao cadastrar(Avaliacao avaliacao) throws FlopException {
-		Optional<Usuario> usuario = usuarioRepository.findById(avaliacao.getUsuario().getIdUsuario());
-		avaliacao.setUsuario(
-				usuario.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST)));
+//	public Avaliacao cadastrar(Avaliacao avaliacao) throws FlopException {
+//		Optional<Usuario> usuario = usuarioRepository.findById(avaliacao.getUsuario().getIdUsuario());
+//		avaliacao.setUsuario(
+//				usuario.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST)));
+//
+//		Optional<Praia> praia = praiaRepository.findById(avaliacao.getPraia().getIdPraia());
+//		avaliacao.setPraia(praia.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND)));
+//
+//		validarCondicoes(avaliacao.getCondicoes());
+//
+//		return avaliacaoRepository.save(avaliacao);
+//	}
+	
+	
+	
+	public AvaliacaoDTO cadastrar(AvaliacaoDTO avaliacaoDTO) throws FlopException {
+	    
+	    if (avaliacaoDTO == null) {
+	        throw new FlopException("Dados da avaliação inválidos.", HttpStatus.BAD_REQUEST);
+	    }
 
-		Optional<Praia> praia = praiaRepository.findById(avaliacao.getPraia().getIdPraia());
-		avaliacao.setPraia(praia.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND)));
+	    Avaliacao avaliacao = new Avaliacao();
+	    
+	    Usuario usuario = usuarioRepository.findById(avaliacaoDTO.getIdUsuario())
+	            .orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
+	    
+	    Praia praia = praiaRepository.findById(avaliacaoDTO.getIdPraia())
+	            .orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
 
-		validarCondicoes(avaliacao.getCondicoes());
-
-		return avaliacaoRepository.save(avaliacao);
+	    
+	    avaliacao.setUsuario(usuario);
+	    avaliacao.setPraia(praia);
+	    avaliacao.setCondicoes(avaliacaoDTO.getCondicoes());
+	    
+	    validarCondicoes(avaliacaoDTO.getCondicoes());
+	    Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
+	    return Avaliacao.toDTO(avaliacaoSalva);
 	}
+	
 
-	public Avaliacao buscarPorId(Long idAvaliacao) throws FlopException {
-		return avaliacaoRepository.findById(idAvaliacao)
+	public AvaliacaoDTO buscarPorId(Long idAvaliacao) throws FlopException {
+		Avaliacao avaliacao = avaliacaoRepository.findById(idAvaliacao)
 				.orElseThrow(() -> new FlopException("A avaliação buscada não foi encontrada.", HttpStatus.NOT_FOUND));
+
+		AvaliacaoDTO dto = Avaliacao.toDTO(avaliacao);
+		return dto;
 	}
 
-	public Avaliacao atualizar(Long idAvaliacao, Avaliacao editarAvaliacao) throws FlopException {
-		Optional<Avaliacao> avaliacaoOptional = avaliacaoRepository.findById(idAvaliacao);
+	public AvaliacaoDTO atualizar(Long idAvaliacao, AvaliacaoDTO editarAvaliacaoDTO) throws FlopException {
+	   
+	    Avaliacao avaliacaoExistente = avaliacaoRepository.findById(idAvaliacao)
+	        .orElseThrow(() -> new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND));
 
-		if (avaliacaoOptional.isEmpty()) {
-			throw new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND);
-		}
+	   
+	    if (editarAvaliacaoDTO.getCondicoes() != null && !editarAvaliacaoDTO.getCondicoes().isEmpty()) {
+	        validarCondicoes(editarAvaliacaoDTO.getCondicoes());
+	        avaliacaoExistente.setCondicoes(editarAvaliacaoDTO.getCondicoes());
+	    }
 
-		Avaliacao avaliacaoExistente = avaliacaoOptional.get();
-
-		// Atualiza as condições
-		if (editarAvaliacao.getCondicoes() != null && !editarAvaliacao.getCondicoes().isEmpty()) {
-			validarCondicoes(editarAvaliacao.getCondicoes());
-			avaliacaoExistente.setCondicoes(editarAvaliacao.getCondicoes());
-		}
-
-		return avaliacaoRepository.save(avaliacaoExistente);
+	    Avaliacao avaliacaoAtualizada = avaliacaoRepository.save(avaliacaoExistente);
+	    return Avaliacao.toDTO(avaliacaoAtualizada);
 	}
 
 	public void excluir(Long idAvaliacao, Long idUsuario) throws FlopException {
@@ -107,19 +134,16 @@ public class AvaliacaoService {
 		}
 	}
 
-
-
-	public Page<Avaliacao> pesquisarComFiltros(AvaliacaoSeletor seletor) throws FlopException {
+	public Page<AvaliacaoDTO> pesquisarComFiltros(AvaliacaoSeletor seletor) throws FlopException {
 		Pageable pageable = Pageable.unpaged();
 
 		if (seletor.temPaginacao()) {
-			pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadaEm").ascending());
+			pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadoEm").ascending());
 		}
 
 		Page<Avaliacao> avaliacoesFiltradas = avaliacaoRepository.findAll(seletor, pageable);
 
-		return avaliacoesFiltradas;
-
+		return avaliacoesFiltradas.map(Avaliacao::toDTO);
 	}
 
 }

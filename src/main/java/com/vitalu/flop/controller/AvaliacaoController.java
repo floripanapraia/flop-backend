@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.AvaliacaoDTO;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.AvaliacaoSeletor;
@@ -40,24 +41,30 @@ public class AvaliacaoController {
 
 	@Operation(summary = "Cadastrar avaliação", description = "Cadastra uma nova avaliação de praia.")
 	@ApiResponse(responseCode = "201", description = "Avaliação cadastrada com sucesso")
+	@ApiResponse(responseCode = "400", description = "Dados inválidos ou usuário não autorizado")
 	@PostMapping(path = "/cadastrar")
-	public ResponseEntity<Avaliacao> cadastrar(@Valid @RequestBody Avaliacao novaAvaliacao) throws FlopException {
-		Usuario subject = authService.getUsuarioAutenticado();
-		if (subject.isAdmin() == false) {
-			novaAvaliacao.setUsuario(subject);
-			Avaliacao avaliacaoCriada = avaliacaoService.cadastrar(novaAvaliacao);
-			return ResponseEntity.status(201).body(avaliacaoCriada);
-		} else {
+	public ResponseEntity<AvaliacaoDTO> cadastrar(@Valid @RequestBody AvaliacaoDTO novaAvaliacaoDTO)
+			throws FlopException {
+
+		Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
+
+		if (usuarioAutenticado.isAdmin()) {
 			throw new FlopException("Administradores não podem fazer avaliações.", HttpStatus.BAD_REQUEST);
 		}
+
+		novaAvaliacaoDTO.setIdUsuario(usuarioAutenticado.getIdUsuario());
+
+		AvaliacaoDTO avaliacaoCriada = avaliacaoService.cadastrar(novaAvaliacaoDTO);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(avaliacaoCriada);
 	}
 
 	@Operation(summary = "Atualizar avaliação", description = "Atualiza as condições de uma avaliação existente.")
 	@PutMapping(path = "/atualizar/{idAvaliacao}")
-	public ResponseEntity<Avaliacao> atualizar(@PathVariable Long idAvaliacao, @RequestBody Avaliacao editarAvaliacao)
-			throws FlopException {
+	public ResponseEntity<AvaliacaoDTO> atualizar(@PathVariable Long idAvaliacao,
+			@RequestBody AvaliacaoDTO editarAvaliacao) throws FlopException {
 
-		Avaliacao atualizada = avaliacaoService.atualizar(idAvaliacao, editarAvaliacao);
+		AvaliacaoDTO atualizada = avaliacaoService.atualizar(idAvaliacao, editarAvaliacao);
 		return ResponseEntity.status(200).body(atualizada);
 	}
 
@@ -74,8 +81,8 @@ public class AvaliacaoController {
 
 	@Operation(summary = "Buscar avaliação por ID", description = "Busca uma avaliação específica através do seu ID.")
 	@GetMapping("/{idAvaliacao}")
-	public ResponseEntity<Avaliacao> buscarPorId(@PathVariable Long idAvaliacao) throws FlopException {
-		Avaliacao avaliacao = avaliacaoService.buscarPorId(idAvaliacao);
+	public ResponseEntity<AvaliacaoDTO> buscarPorId(@PathVariable Long idAvaliacao) throws FlopException {
+		AvaliacaoDTO avaliacao = avaliacaoService.buscarPorId(idAvaliacao);
 		return ResponseEntity.ok(avaliacao);
 	}
 
@@ -83,9 +90,9 @@ public class AvaliacaoController {
 			@ApiResponse(responseCode = "200", description = "Avaliações filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Avaliacao.class))),
 			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
 	@PostMapping("/filtrar")
-	public ResponseEntity<Page<Avaliacao>> pesquisarComFiltros(@RequestBody AvaliacaoSeletor seletor)
+	public ResponseEntity<Page<AvaliacaoDTO>> pesquisarComFiltros(@RequestBody AvaliacaoSeletor seletor)
 			throws FlopException {
-		Page<Avaliacao> resultado = avaliacaoService.pesquisarComFiltros(seletor);
+		Page<AvaliacaoDTO> resultado = avaliacaoService.pesquisarComFiltros(seletor);
 		return ResponseEntity.ok(resultado);
 	}
 }

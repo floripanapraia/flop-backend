@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vitalu.flop.model.dto.AvaliacaoDTO;
 import com.vitalu.flop.model.enums.Condicoes;
 
 import jakarta.persistence.ElementCollection;
@@ -44,4 +45,14 @@ public class Avaliacao {
 	@ElementCollection
 	@Enumerated(EnumType.STRING)
 	private List<Condicoes> condicoes;
+	
+	public static AvaliacaoDTO toDTO(Avaliacao avaliacao) {
+		return new AvaliacaoDTO(avaliacao.getIdAvaliacao(),
+				avaliacao.getUsuario().getUsername(),
+				avaliacao.getCriadoEm(),
+				avaliacao.getCondicoes(),
+				avaliacao.getPraia().getIdPraia(),
+				avaliacao.getUsuario().getIdUsuario()
+				);
+	}
 }
