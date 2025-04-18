@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
 import com.vitalu.flop.service.UsuarioService;
@@ -88,9 +89,9 @@ public class UsuarioController {
 
 	@Operation(summary = "Obter o usuário autenticado", description = "Retorna o usuário autenticado.")
 	@GetMapping("/usuario-autenticado")
-	public ResponseEntity<Usuario> buscarUsuarioAutenticado() throws FlopException {
+	public ResponseEntity<UsuarioDTO> buscarUsuarioAutenticado() throws FlopException {
 		Usuario usuario = authService.getUsuarioAutenticado();
-		return ResponseEntity.ok(usuario);
+		return ResponseEntity.ok(usuario.toDTO());
 	}
 
 }
