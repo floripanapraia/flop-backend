@@ -36,7 +36,7 @@ public class Usuario implements UserDetails {
 	private Long idUsuario;
 
 	@NotBlank(message = "O nome não pode estar em branco.")
-	@Size(max = 200, message = "O nome deve ter entre 3 e 200 caracteres.")
+	@Size(min = 3, max = 200, message = "O nome deve ter entre 3 e 200 caracteres.")
 	private String nome;
 
 	@NotBlank(message = "O username não pode estar em branco.")
