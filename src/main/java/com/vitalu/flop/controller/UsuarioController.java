@@ -89,7 +89,9 @@ public class UsuarioController {
 		return usuarioService.pesquisarTodos();
 	}
 
-	@Operation(summary = "Pesquisar usuário por ID", description = "Busca um usuário específico através do seu ID.")
+	@Operation(summary = "Buscar usuário por ID", description = "Retorna os dados de um usuário com base no ID informado.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado") })
 	@GetMapping(path = "/{idUsuario}")
 	public ResponseEntity<Usuario> pesquisarPorId(@PathVariable Long idUsuario) throws FlopException {
 		Usuario usuario = usuarioService.pesquisarPorId(idUsuario);
