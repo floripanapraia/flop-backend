@@ -24,21 +24,4 @@ public class UsuarioDTO {
 	private List<Long> postagemIds;
 	private List<Long> sugerirPraiaIds;
 
-	public Usuario toEntity() {
-		Usuario usuario = new Usuario();
-		usuario.setIdUsuario(this.idUsuario);
-		usuario.setNome(this.nome);
-		usuario.setUsername(this.username);
-		usuario.setSenha(this.senha);
-		usuario.setEmail(this.email);
-		usuario.setAdmin(this.isAdmin);
-		usuario.setFotoPerfil(this.fotoPerfil);
-		usuario.setBloqueado(this.bloqueado);
-
-		usuario.setAvaliacao(new ArrayList<>());
-		usuario.setPostagem(new ArrayList<>());
-		usuario.setSugestoes(new ArrayList<>());
-
-		return usuario;
-	}
 }
