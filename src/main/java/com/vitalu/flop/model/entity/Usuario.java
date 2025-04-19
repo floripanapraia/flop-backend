@@ -40,6 +40,7 @@ public class Usuario implements UserDetails {
 	private String nome;
 
 	@NotBlank(message = "O username não pode estar em branco.")
+	@Size(min = 3, max = 15, message = "O username deve ter entre 3 e 15 caracteres.")
 	@Column(unique = true)
 	private String username;
 
