@@ -15,7 +15,7 @@ public class UsuarioMapper {
 		dto.setNome(usuario.getNome());
 		dto.setEmail(usuario.getEmail());
 		dto.setFotoPerfil(usuario.getFotoPerfil());
-		dto.setUsername(usuario.getUsername());
+		dto.setNickname(usuario.getNickname());
 		return dto;
 	}
 
@@ -29,7 +29,7 @@ public class UsuarioMapper {
         usuario.setNome(dto.getNome());
         usuario.setEmail(dto.getEmail());
         usuario.setFotoPerfil(dto.getFotoPerfil());
-        usuario.setUsername(dto.getUsername());
+        usuario.setNickname(dto.getNickname());
         return usuario;
     }
 }

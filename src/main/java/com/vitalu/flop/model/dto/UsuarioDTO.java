@@ -10,7 +10,7 @@ public class UsuarioDTO {
 
 	private Long idUsuario;
 	private String nome;
-	private String username;
+	private String nickname;
 	private String email;
 	private boolean isAdmin;
 	private LocalDateTime dataCriacao;

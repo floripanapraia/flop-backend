@@ -40,7 +40,7 @@ public class Usuario implements UserDetails {
 	@NotBlank(message = "Por favor, preencha o nome de usuário.")
 	@Size(min = 3, max = 15, message = "O nome de usuário deve ter entre 3 e 15 caracteres.")
 	@Column(unique = true)
-	private String username;
+	private String nickname;
 
 	@NotBlank(message = "Por favor, preencha a senha.")
 	@Size(max = 500, message = "A senha deve ter no máximo 500 caracteres.")
