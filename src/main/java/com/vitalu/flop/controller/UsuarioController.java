@@ -98,7 +98,8 @@ public class UsuarioController {
 		return ResponseEntity.ok(usuario);
 	}
 
-	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de usuários de acordo com o filtro selecionado.")
+	@Operation(summary = "Filtrar usuários", description = "Filtra usuários com base nos critérios definidos no seletor.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuários filtrados com sucesso") })
 	@PostMapping("/filtrar")
 	public List<Usuario> pesquisarComFiltros(@RequestBody UsuarioSeletor seletor) {
 		return usuarioService.pesquisarComFiltros(seletor);
