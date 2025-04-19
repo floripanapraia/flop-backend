@@ -55,7 +55,10 @@ public class UsuarioController {
 		usuarioService.salvarFotoDePerfil(foto, subject.getIdUsuario());
 	}
 
-	@Operation(summary = "Atualizar um usuário", description = "Atualiza os dados de um usuário existente.")
+	@Operation(summary = "Atualizar dados do usuário", description = "Atualiza os dados do usuário autenticado com as informações fornecidas.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+			@ApiResponse(responseCode = "400", description = "Erro de validação nos dados fornecidos"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@PutMapping(path = "/atualizar")
 	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioDTO usuarioASerAtualizado)
 			throws FlopException {
