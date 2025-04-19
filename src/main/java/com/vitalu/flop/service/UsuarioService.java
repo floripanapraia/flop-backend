@@ -25,6 +25,8 @@ public class UsuarioService implements UserDetailsService {
 
 	@Autowired
 	private ImagemService imagemService;
+	@Autowired
+	private PostagemService postagemService;
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -80,15 +82,14 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepository.save(usuarioExistente);
 	}
 
-	public void excluir(Long id) throws FlopException {
-		Usuario usuario = usuarioRepository.findById(id)
+	public void excluir(Long idUsuario) throws FlopException {
+		usuarioRepository.findById(idUsuario)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 
-		if (usuario.getPostagem().isEmpty()) {
-			usuarioRepository.deleteById(id);
-		} else {
-			throw new FlopException("Usuários com posts criados não podem ser deletados.", HttpStatus.BAD_REQUEST);
-		}
+		// Deleta todas as postagens do usuário antes de deletar o usuário
+		postagemService.excluirPostagensDoUsuario(idUsuario);
+
+		usuarioRepository.deleteById(idUsuario);
 	}
 
 	public List<Usuario> pesquisarTodos() {
