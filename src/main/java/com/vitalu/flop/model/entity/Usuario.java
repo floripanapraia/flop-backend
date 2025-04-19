@@ -35,26 +35,26 @@ public class Usuario implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idUsuario;
 
-	@NotBlank(message = "O nome não pode estar em branco.")
+	@NotBlank(message = "Por favor, preencha o nome.")
 	@Size(min = 3, max = 200, message = "O nome deve ter entre 3 e 200 caracteres.")
 	private String nome;
 
-	@NotBlank(message = "O username não pode estar em branco.")
-	@Size(min = 3, max = 15, message = "O username deve ter entre 3 e 15 caracteres.")
+	@NotBlank(message = "Por favor, preencha o nome de usuário.")
+	@Size(min = 3, max = 15, message = "O nome de usuário deve ter entre 3 e 15 caracteres.")
 	@Column(unique = true)
 	private String username;
 
-	@NotBlank(message = "A senha não pode estar em branco.")
-	@Size(max = 500)
+	@NotBlank(message = "Por favor, preencha a senha.")
+	@Size(max = 500, message = "A senha deve ter no máximo 500 caracteres.")
 	@JsonIgnore
 	private String senha;
 
-	@NotBlank(message = "O email não pode estar em branco.")
-	@Email(message = "O email informado deve ser válido.")
+	@NotBlank(message = "Por favor, preencha o e-mail.")
+	@Email(message = "Informe um e-mail válido.")
 	@Column(unique = true)
 	private String email;
 
-	@NotNull(message = "É obrigatório informar se o usuário é administrador.")
+	@NotNull(message = "Informe se o usuário é administrador ou não.")
 	private boolean isAdmin;
 
 	@CreationTimestamp
