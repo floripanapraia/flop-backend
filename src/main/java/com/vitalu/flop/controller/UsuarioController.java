@@ -115,4 +115,24 @@ public class UsuarioController {
 		return ResponseEntity.ok(UsuarioMapper.toDTO(usuario));
 	}
 
+	@Operation(summary = "Bloquear usuário", description = "Bloqueia ou desbloqueia um usuário específico. Apenas administradores podem usar este recurso.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Usuário bloqueado/desbloqueado com sucesso"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+			@ApiResponse(responseCode = "403", description = "Usuário sem permissão de administrador"),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado") })
+	@PutMapping("/bloquear/{idUsuario}")
+	public ResponseEntity<Usuario> bloquearUsuario(@PathVariable Long idUsuario, @RequestParam boolean bloquear)
+			throws FlopException {
+		Usuario adminAutenticado = authService.getUsuarioAutenticado();
+
+		// Verifica se o usuário autenticado é um administrador
+		if (!adminAutenticado.isAdmin()) {
+			throw new FlopException("Apenas administradores podem bloquear usuários.", HttpStatus.FORBIDDEN);
+		}
+
+		Usuario usuarioBloqueado = usuarioService.bloquearUsuario(idUsuario, bloquear);
+		return ResponseEntity.ok(usuarioBloqueado);
+	}
+
 }
