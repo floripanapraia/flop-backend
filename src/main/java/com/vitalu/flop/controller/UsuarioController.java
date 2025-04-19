@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.mapper.UsuarioMapper;
 import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
@@ -51,12 +52,14 @@ public class UsuarioController {
 
 	@Operation(summary = "Atualizar um usuário", description = "Atualiza os dados de um usuário existente.")
 	@PutMapping(path = "/atualizar")
-	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioDTO usuarioASerAtualizado) throws FlopException {
+	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioDTO usuarioASerAtualizado)
+			throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 
 		usuarioASerAtualizado.setIdUsuario(subject.getIdUsuario());
 
-		return ResponseEntity.ok(usuarioService.atualizar(usuarioASerAtualizado.toEntity()).toDTO());
+		Usuario usuarioAtualizado = usuarioService.atualizar(UsuarioMapper.toEntity(usuarioASerAtualizado));
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuarioAtualizado));
 	}
 
 	@Operation(summary = "Deletar usuário", description = "Exclui sua conta.", responses = {
@@ -64,9 +67,9 @@ public class UsuarioController {
 	@DeleteMapping(path = "/excluir")
 	public ResponseEntity<Void> excluir() throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
-		
+
 		usuarioService.excluir(subject.getIdUsuario());
-		
+
 		return ResponseEntity.noContent().build();
 	}
 
@@ -94,7 +97,7 @@ public class UsuarioController {
 	@GetMapping("/usuario-autenticado")
 	public ResponseEntity<UsuarioDTO> buscarUsuarioAutenticado() throws FlopException {
 		Usuario usuario = authService.getUsuarioAutenticado();
-		return ResponseEntity.ok(usuario.toDTO());
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuario));
 	}
 
 }
