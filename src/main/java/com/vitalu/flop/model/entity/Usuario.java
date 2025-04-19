@@ -53,7 +53,7 @@ public class Usuario implements UserDetails {
 	private String email;
 
 	@NotNull(message = "Informe se o usuário é administrador ou não.")
-	private boolean isAdmin;
+	private boolean isAdmin = false;
 
 	@CreationTimestamp
 	private LocalDateTime criadoEm;
