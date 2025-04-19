@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Usuario;
@@ -54,6 +53,11 @@ public class PostagemService {
 		}
 
 		postagemRepository.save(postagem);
+	}
+
+	public void excluirPostagensDoUsuario(Long idUsuario) {
+		List<Postagem> postagens = postagemRepository.findByUsuarioId(idUsuario);
+		postagemRepository.deleteAll(postagens);
 	}
 
 	public List<Postagem> pesquisarTodos() {
