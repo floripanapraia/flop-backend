@@ -82,8 +82,8 @@ public class UsuarioController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados no sistema.", responses = {
-			@ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso") })
+	@Operation(summary = "Listar todos os usuários", description = "Retorna uma lista completa com todos os usuários cadastrados.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso") })
 	@GetMapping(path = "/todos")
 	public List<Usuario> pesquisarTodos() {
 		return usuarioService.pesquisarTodos();
