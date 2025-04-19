@@ -1,6 +1,7 @@
 package com.vitalu.flop.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -85,24 +86,26 @@ public class UsuarioController {
 	@Operation(summary = "Listar todos os usuários", description = "Retorna uma lista completa com todos os usuários cadastrados.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso") })
 	@GetMapping(path = "/todos")
-	public List<Usuario> pesquisarTodos() {
-		return usuarioService.pesquisarTodos();
+	public List<UsuarioDTO> pesquisarTodos() {
+		List<Usuario> usuarios = usuarioService.pesquisarTodos();
+		return usuarios.stream().map(UsuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
 	@Operation(summary = "Buscar usuário por ID", description = "Retorna os dados de um usuário com base no ID informado.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
 			@ApiResponse(responseCode = "404", description = "Usuário não encontrado") })
 	@GetMapping(path = "/{idUsuario}")
-	public ResponseEntity<Usuario> pesquisarPorId(@PathVariable Long idUsuario) throws FlopException {
+	public ResponseEntity<UsuarioDTO> pesquisarPorId(@PathVariable Long idUsuario) throws FlopException {
 		Usuario usuario = usuarioService.pesquisarPorId(idUsuario);
-		return ResponseEntity.ok(usuario);
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuario));
 	}
 
 	@Operation(summary = "Filtrar usuários", description = "Filtra usuários com base nos critérios definidos no seletor.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuários filtrados com sucesso") })
 	@PostMapping("/filtrar")
-	public List<Usuario> pesquisarComFiltros(@RequestBody UsuarioSeletor seletor) {
-		return usuarioService.pesquisarComFiltros(seletor);
+	public List<UsuarioDTO> pesquisarComFiltros(@RequestBody UsuarioSeletor seletor) {
+		List<Usuario> usuarios = usuarioService.pesquisarComFiltros(seletor);
+		return usuarios.stream().map(UsuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
 	@Operation(summary = "Obter usuário autenticado", description = "Retorna os dados do usuário atualmente autenticado.")
@@ -122,7 +125,7 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "403", description = "Usuário sem permissão de administrador"),
 			@ApiResponse(responseCode = "404", description = "Usuário não encontrado") })
 	@PutMapping("/bloquear/{idUsuario}")
-	public ResponseEntity<Usuario> bloquearUsuario(@PathVariable Long idUsuario, @RequestParam boolean bloquear)
+	public ResponseEntity<UsuarioDTO> bloquearUsuario(@PathVariable Long idUsuario, @RequestParam boolean bloquear)
 			throws FlopException {
 		Usuario adminAutenticado = authService.getUsuarioAutenticado();
 
@@ -132,7 +135,7 @@ public class UsuarioController {
 		}
 
 		Usuario usuarioBloqueado = usuarioService.bloquearUsuario(idUsuario, bloquear);
-		return ResponseEntity.ok(usuarioBloqueado);
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuarioBloqueado));
 	}
 
 }
