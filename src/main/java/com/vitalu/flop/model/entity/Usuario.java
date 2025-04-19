@@ -45,7 +45,6 @@ public class Usuario implements UserDetails {
 
 	@NotBlank(message = "Por favor, preencha a senha.")
 	@Size(max = 500, message = "A senha deve ter no máximo 500 caracteres.")
-	@JsonIgnore
 	private String senha;
 
 	@NotBlank(message = "Por favor, preencha o e-mail.")
