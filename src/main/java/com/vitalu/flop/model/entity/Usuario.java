@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.vitalu.flop.model.dto.UsuarioDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -97,46 +96,6 @@ public class Usuario implements UserDetails {
 	@Override
 	public String getUsername() {
 		return this.email;
-	}
-
-	public UsuarioDTO toDTO() {
-		UsuarioDTO dto = new UsuarioDTO();
-		dto.setIdUsuario(this.idUsuario);
-		dto.setNome(this.nome);
-		dto.setUsername(this.username);
-		dto.setEmail(this.email);
-		dto.setSenha(this.senha);
-		dto.setAdmin(this.isAdmin);
-		dto.setDataCriacao(this.criadoEm);
-		dto.setFotoPerfil(this.fotoPerfil);
-		dto.setBloqueado(this.bloqueado);
-
-		// Mapeando IDs das listas
-//	    if (this.avaliacao != null) {
-//	        dto.setAvaliacaoIds(this.avaliacao.stream()
-//	            .map(a -> a.getIdAvaliacao())
-//	            .toList());
-//	    } else {
-//	        dto.setAvaliacaoIds(new ArrayList<>());
-//	    }
-//
-//	    if (this.postagem != null) {
-//	        dto.setPostagemIds(this.postagem.stream()
-//	            .map(p -> p.getIdPostagem())
-//	            .toList());
-//	    } else {
-//	        dto.setPostagemIds(new ArrayList<>());
-//	    }
-//
-//	    if (this.sugestoes != null) {
-//	        dto.setSugerirPraiaIds(this.sugestoes.stream()
-//	            .map(s -> s.getIdSugestao())
-//	            .toList());
-//	    } else {
-//	        dto.setSugerirPraiaIds(new ArrayList<>());
-//	    }
-
-		return dto;
 	}
 
 }
