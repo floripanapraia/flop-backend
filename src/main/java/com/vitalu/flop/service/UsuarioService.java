@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.exception.FlopException;
-import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.repository.UsuarioRepository;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
@@ -36,36 +35,33 @@ public class UsuarioService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado " + username));
 	}
 
-	public void cadastrar(UsuarioDTO usuarioDTO) throws FlopException {
-		if (usuarioRepository.existsByEmailIgnoreCase(usuarioDTO.getEmail())) {
+	public void cadastrar(Usuario usuario) throws FlopException {
+		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
 			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
+		if (usuarioRepository.existsByUsername(usuario.getUsername())) {
 			throw new FlopException(
 					"O username informado já está registrado. Por favor, utilize um username diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		Usuario usuario = usuarioDTO.toEntity();
 		usuarioRepository.save(usuario);
 	}
 
-	public void cadastrarAdmin(UsuarioDTO usuarioDTO) throws FlopException {
-		if (usuarioRepository.existsByEmailIgnoreCase(usuarioDTO.getEmail())) {
+	public void cadastrarAdmin(Usuario usuario) throws FlopException {
+		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
 			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
+		if (usuarioRepository.existsByUsername(usuario.getUsername())) {
 			throw new FlopException(
 					"O username informado já está registrado. Por favor, utilize um username diferente.",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		Usuario usuario = usuarioDTO.toEntity();
-		usuario.setAdmin(true);
 		usuarioRepository.save(usuario);
 	}
 
@@ -76,7 +72,7 @@ public class UsuarioService implements UserDetailsService {
 		usuarioExistente.setNome(usuarioASerAtualizado.getNome());
 		usuarioExistente.setEmail(usuarioASerAtualizado.getEmail());
 		usuarioExistente.setFotoPerfil(usuarioASerAtualizado.getFotoPerfil());
-		
+
 		if (usuarioASerAtualizado.getSenha() != null && !usuarioASerAtualizado.getSenha().isEmpty()) {
 			usuarioExistente.setSenha(encoder.encode(usuarioASerAtualizado.getSenha()));
 		}
