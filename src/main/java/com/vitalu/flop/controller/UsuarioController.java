@@ -27,6 +27,7 @@ import com.vitalu.flop.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 
@@ -41,6 +42,10 @@ public class UsuarioController {
 	@Autowired
 	private AuthService authService;
 
+	@Operation(summary = "Salvar foto de perfil", description = "Salva a foto de perfil do usuário autenticado.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Foto de perfil salva com sucesso"),
+			@ApiResponse(responseCode = "400", description = "Arquivo inválido ou ausente"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@PostMapping("/salvar-foto")
 	public void salvarFotoDePerfil(@RequestParam("fotoDePerfil") MultipartFile foto) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
