@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +23,6 @@ import com.vitalu.flop.mapper.UsuarioMapper;
 import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
-import com.vitalu.flop.service.ImagemService;
 import com.vitalu.flop.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,8 +41,6 @@ public class UsuarioController {
 	private UsuarioService usuarioService;
 	@Autowired
 	private AuthService authService;
-	@Autowired
-	private ImagemService imagemService;
 
 	@Operation(summary = "Salvar foto de perfil", description = "Salva a foto de perfil do usuário autenticado.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Foto de perfil salva com sucesso"),
@@ -64,20 +60,13 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "400", description = "Erro de validação nos dados fornecidos"),
 			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@PutMapping(path = "/atualizar")
-	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestPart("usuario") UsuarioDTO usuarioASerAtualizado,
-			@RequestPart(value = "fotoPerfil", required = false) MultipartFile fotoPerfil) throws FlopException {
+	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioDTO usuarioASerAtualizado)
+			throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
+
 		usuarioASerAtualizado.setIdUsuario(subject.getIdUsuario());
 
-		Usuario usuarioEntity = UsuarioMapper.toEntity(usuarioASerAtualizado);
-
-		// Se houver foto de perfil no request, processá-la
-		if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
-			String imagemBase64 = imagemService.processarImagem(fotoPerfil);
-			usuarioEntity.setFotoPerfil(imagemBase64);
-		}
-
-		Usuario usuarioAtualizado = usuarioService.atualizar(usuarioEntity);
+		Usuario usuarioAtualizado = usuarioService.atualizar(UsuarioMapper.toEntity(usuarioASerAtualizado));
 		return ResponseEntity.ok(UsuarioMapper.toDTO(usuarioAtualizado));
 	}
 
