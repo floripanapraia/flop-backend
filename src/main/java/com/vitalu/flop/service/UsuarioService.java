@@ -39,31 +39,11 @@ public class UsuarioService implements UserDetailsService {
 
 	public void cadastrar(Usuario usuario) throws FlopException {
 		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
-			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
-					HttpStatus.BAD_REQUEST);
+			throw new FlopException("O e-mail informado já está cadastrado.", HttpStatus.BAD_REQUEST);
 		}
-
 		if (usuarioRepository.existsByUsername(usuario.getUsername())) {
-			throw new FlopException(
-					"O username informado já está registrado. Por favor, utilize um username diferente.",
-					HttpStatus.BAD_REQUEST);
+			throw new FlopException("O username informado já está registrado.", HttpStatus.BAD_REQUEST);
 		}
-
-		usuarioRepository.save(usuario);
-	}
-
-	public void cadastrarAdmin(Usuario usuario) throws FlopException {
-		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
-			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		if (usuarioRepository.existsByUsername(usuario.getUsername())) {
-			throw new FlopException(
-					"O username informado já está registrado. Por favor, utilize um username diferente.",
-					HttpStatus.BAD_REQUEST);
-		}
-
 		usuarioRepository.save(usuario);
 	}
 
@@ -118,7 +98,6 @@ public class UsuarioService implements UserDetailsService {
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 		String imagemBase64 = imagemService.processarImagem(foto);
 		usuario.setFotoPerfil(imagemBase64);
-		System.out.println(imagemBase64);
 		usuarioRepository.save(usuario);
 	}
 
