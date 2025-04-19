@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.repository.UsuarioRepository;
@@ -29,6 +29,8 @@ public class UsuarioService implements UserDetailsService {
 	private ImagemService imagemService;
 	@Autowired
 	private PostagemService postagemService;
+	@Autowired
+	private AuthService authService;
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -115,7 +117,7 @@ public class UsuarioService implements UserDetailsService {
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 
 		// Não permitir que um administrador bloqueie a si mesmo
-		Usuario adminAutenticado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Usuario adminAutenticado = authService.getUsuarioAutenticado();
 		if (usuario.getIdUsuario().equals(adminAutenticado.getIdUsuario())) {
 			throw new FlopException("Não é possível bloquear sua própria conta.", HttpStatus.BAD_REQUEST);
 		}
