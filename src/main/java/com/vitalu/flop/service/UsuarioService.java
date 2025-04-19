@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -99,6 +100,20 @@ public class UsuarioService implements UserDetailsService {
 		String imagemBase64 = imagemService.processarImagem(foto);
 		usuario.setFotoPerfil(imagemBase64);
 		usuarioRepository.save(usuario);
+	}
+
+	public Usuario bloquearUsuario(Long idUsuario, boolean bloquear) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+
+		// Não permitir que um administrador bloqueie a si mesmo
+		Usuario adminAutenticado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (usuario.getIdUsuario().equals(adminAutenticado.getIdUsuario())) {
+			throw new FlopException("Não é possível bloquear sua própria conta.", HttpStatus.BAD_REQUEST);
+		}
+
+		usuario.setBloqueado(bloquear);
+		return usuarioRepository.save(usuario);
 	}
 
 }
