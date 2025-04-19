@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
-import com.vitalu.flop.model.dto.UsuarioDTO;
+import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.service.UsuarioService;
 
 @RestController
@@ -45,7 +45,7 @@ public class AuthController {
 
 	@PostMapping("/novo")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public void cadastrar(@RequestBody UsuarioDTO novoUsuario) throws FlopException {
+	public void cadastrar(@RequestBody Usuario novoUsuario) throws FlopException {
 		String senhaCifrada = passwordEncoder.encode(novoUsuario.getSenha());
 		novoUsuario.setSenha(senhaCifrada);
 		usuarioService.cadastrar(novoUsuario);
@@ -53,7 +53,7 @@ public class AuthController {
 
 	@PostMapping("/novo-admin")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public void cadastrarAdmin(@RequestBody UsuarioDTO novoUsuario) throws FlopException {
+	public void cadastrarAdmin(@RequestBody Usuario novoUsuario) throws FlopException {
 		String senhaCifrada = passwordEncoder.encode(novoUsuario.getSenha());
 		novoUsuario.setSenha(senhaCifrada);
 		novoUsuario.setAdmin(true);
