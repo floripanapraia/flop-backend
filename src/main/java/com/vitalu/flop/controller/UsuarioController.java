@@ -51,19 +51,22 @@ public class UsuarioController {
 
 	@Operation(summary = "Atualizar um usuário", description = "Atualiza os dados de um usuário existente.")
 	@PutMapping(path = "/atualizar")
-	public ResponseEntity<Usuario> atualizar(@Valid @RequestBody Usuario usuarioASerAtualizado) throws FlopException {
+	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioDTO usuarioASerAtualizado) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 
 		usuarioASerAtualizado.setIdUsuario(subject.getIdUsuario());
 
-		return ResponseEntity.ok(usuarioService.atualizar(usuarioASerAtualizado));
+		return ResponseEntity.ok(usuarioService.atualizar(usuarioASerAtualizado.toEntity()).toDTO());
 	}
 
-	@Operation(summary = "Deletar usuário", description = "Exclui um usuário através do seu ID.", responses = {
+	@Operation(summary = "Deletar usuário", description = "Exclui sua conta.", responses = {
 			@ApiResponse(responseCode = "200", description = "Usuário excluído com sucesso"), })
-	@DeleteMapping(path = "/excluir/{idUsuario}")
-	public ResponseEntity<Void> excluir(@PathVariable Long idUsuario) throws FlopException {
-		usuarioService.excluir(idUsuario);
+	@DeleteMapping(path = "/excluir")
+	public ResponseEntity<Void> excluir() throws FlopException {
+		Usuario subject = authService.getUsuarioAutenticado();
+		
+		usuarioService.excluir(subject.getIdUsuario());
+		
 		return ResponseEntity.noContent().build();
 	}
 

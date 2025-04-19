@@ -75,7 +75,8 @@ public class UsuarioService implements UserDetailsService {
 
 		usuarioExistente.setNome(usuarioASerAtualizado.getNome());
 		usuarioExistente.setEmail(usuarioASerAtualizado.getEmail());
-
+		usuarioExistente.setFotoPerfil(usuarioASerAtualizado.getFotoPerfil());
+		
 		if (usuarioASerAtualizado.getSenha() != null && !usuarioASerAtualizado.getSenha().isEmpty()) {
 			usuarioExistente.setSenha(encoder.encode(usuarioASerAtualizado.getSenha()));
 		}

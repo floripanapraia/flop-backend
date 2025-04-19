@@ -40,6 +40,7 @@ public class Usuario implements UserDetails {
 	private String nome;
 
 	@NotBlank(message = "O username não pode estar em branco.")
+	@Column(unique = true)
 	private String username;
 
 	@NotBlank(message = "A senha não pode estar em branco.")
@@ -103,6 +104,7 @@ public class Usuario implements UserDetails {
 		dto.setNome(this.nome);
 		dto.setUsername(this.username);
 		dto.setEmail(this.email);
+		dto.setSenha(this.senha);
 		dto.setAdmin(this.isAdmin);
 		dto.setDataCriacao(this.criadoEm);
 		dto.setFotoPerfil(this.fotoPerfil);
