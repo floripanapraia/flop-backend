@@ -70,8 +70,9 @@ public class UsuarioController {
 		return ResponseEntity.ok(UsuarioMapper.toDTO(usuarioAtualizado));
 	}
 
-	@Operation(summary = "Deletar usuário", description = "Exclui sua conta.", responses = {
-			@ApiResponse(responseCode = "200", description = "Usuário excluído com sucesso"), })
+	@Operation(summary = "Excluir conta de usuário", description = "Exclui a conta do usuário autenticado de forma permanente.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Conta excluída com sucesso"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@DeleteMapping(path = "/excluir")
 	public ResponseEntity<Void> excluir() throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
