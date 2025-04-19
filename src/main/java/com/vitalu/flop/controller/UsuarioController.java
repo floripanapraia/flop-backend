@@ -105,7 +105,10 @@ public class UsuarioController {
 		return usuarioService.pesquisarComFiltros(seletor);
 	}
 
-	@Operation(summary = "Obter o usuário autenticado", description = "Retorna o usuário autenticado.")
+	@Operation(summary = "Obter usuário autenticado", description = "Retorna os dados do usuário atualmente autenticado.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Dados do usuário autenticado retornados com sucesso"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@GetMapping("/usuario-autenticado")
 	public ResponseEntity<UsuarioDTO> buscarUsuarioAutenticado() throws FlopException {
 		Usuario usuario = authService.getUsuarioAutenticado();
