@@ -56,7 +56,7 @@ public class PostagemService {
 	}
 
 	public void excluirPostagensDoUsuario(Long idUsuario) {
-		List<Postagem> postagens = postagemRepository.findByUsuarioId(idUsuario);
+		List<Postagem> postagens = postagemRepository.findByUsuarioIdUsuario(idUsuario);
 		postagemRepository.deleteAll(postagens);
 	}
 

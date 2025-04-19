@@ -18,5 +18,5 @@ public interface PostagemRepository extends JpaRepository<Postagem, Long>, JpaSp
 	List<Postagem> findPostagensDoDia(@Param("praiaId") Long praiaId, @Param("inicioDia") LocalDateTime inicioDia,
 			@Param("fimDia") LocalDateTime fimDia);
 
-	List<Postagem> findByUsuarioId(Long idUsuario);
+	List<Postagem> findByUsuarioIdUsuario(Long idUsuario);
 }
