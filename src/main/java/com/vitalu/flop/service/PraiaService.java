@@ -7,19 +7,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.dto.PraiaDTO;
+import com.vitalu.flop.model.dto.SugestaoDTO;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Localizacao;
 import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Praia;
+import com.vitalu.flop.model.entity.Sugestao;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.enums.Condicoes;
 import com.vitalu.flop.model.repository.AvaliacaoRepository;
@@ -27,6 +31,7 @@ import com.vitalu.flop.model.repository.LocalizacaoRepository;
 import com.vitalu.flop.model.repository.PostagemRepository;
 import com.vitalu.flop.model.repository.PraiaRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
+import com.vitalu.flop.model.seletor.PraiaSeletor;
 
 @Service
 public class PraiaService {
@@ -47,20 +52,28 @@ public class PraiaService {
 	private PostagemRepository postagemRepository;
 
 	public Praia cadastrarPraia(PraiaDTO dto) throws FlopException {
-		if (dto.getIdLocalizacao() == null) {
-			throw new FlopException("ID da localização é obrigatório.", HttpStatus.BAD_REQUEST);
-		}
 
-		Optional<Localizacao> local = localizacaoRepository.findById(dto.getIdLocalizacao());
+		Localizacao local = localizacaoRepository.save(dto.getLocalizacao());
 
 		Praia novaPraia = new Praia();
 		novaPraia.setNomePraia(dto.getNomePraia());
-		novaPraia.setLocalizacao(
-				local.orElseThrow(() -> new FlopException("Localização não encontrada.", HttpStatus.BAD_REQUEST)));
+		novaPraia.setLocalizacao(local);
 
 		return praiaRepository.save(novaPraia);
 	}
 
+	public void excluirPraia(Long praiaId) throws FlopException {
+	    Praia praia = praiaRepository.findById(praiaId)
+	            .orElseThrow(() -> new FlopException("Praia não encontrada", HttpStatus.NOT_FOUND));
+	    
+	    // Exclui a localização associada se existir
+	    if (praia.getLocalizacao() != null) {
+	        localizacaoRepository.deleteById(praia.getLocalizacao().getIdLocalizacao());
+	    }
+	    
+	    praiaRepository.deleteById(praiaId);
+	}
+	
 	public List<PraiaDTO> pesquisarPraiaTodas() throws FlopException {
 		List<Praia> praias = praiaRepository.findAll();
 		List<PraiaDTO> praiasDTO = new ArrayList<PraiaDTO>();
@@ -69,7 +82,7 @@ public class PraiaService {
 			PraiaDTO dto = converterParaDTO(praia);
 			praiasDTO.add(dto);
 		}
-		return null;
+		return praiasDTO;
 	}
 
 	public PraiaDTO pesquisarPraiasId(Long praiaId) throws FlopException {
@@ -80,9 +93,21 @@ public class PraiaService {
 		return dto;
 	}
 
-	public Page<PraiaDTO> pesquisarPraiaFiltros(Long praiaId) throws FlopException {
-		// TODO
-		return null;
+	public Page<PraiaDTO> pesquisarPraiaFiltros(PraiaSeletor seletor) throws FlopException {
+	    Pageable pageable = Pageable.unpaged();
+
+	    if (seletor.temPaginacao()) {
+	        pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadaEm").ascending());
+	    }
+
+	    Page<Praia> praias = praiaRepository.findAll(seletor, pageable);
+
+	    Page<PraiaDTO> praiasDTO = praias.map(praia -> {
+	        PraiaDTO dto = converterParaDTO(praia);
+	        return dto;
+	    });
+
+	    return praiasDTO;
 	}
 
 	public void excluirPraia(Long praiaId, Long usuarioId) throws FlopException {
@@ -115,8 +140,9 @@ public class PraiaService {
 		existente.setImagem(praiaEditadaDto.getImagem());
 
 		// Atualizar a localização se for fornecida no DTO
-		if (praiaEditadaDto.getIdLocalizacao() != null) {
-			Localizacao novaLocalizacao = localizacaoRepository.findById(praiaEditadaDto.getIdLocalizacao())
+		if (praiaEditadaDto.getLocalizacao().getIdLocalizacao() != null) {
+			Localizacao novaLocalizacao = localizacaoRepository
+					.findById(praiaEditadaDto.getLocalizacao().getIdLocalizacao())
 					.orElseThrow(() -> new FlopException("Localização não localizada.", HttpStatus.NOT_FOUND));
 			existente.setLocalizacao(novaLocalizacao);
 		}
@@ -157,7 +183,7 @@ public class PraiaService {
 		dto.setIdPraia(praia.getIdPraia());
 		dto.setNomePraia(praia.getNomePraia());
 		dto.setImagem(praia.getImagem());
-		dto.setIdLocalizacao(praia.getLocalizacao() != null ? praia.getLocalizacao().getIdLocalizacao() : null);
+		dto.setLocalizacao(praia.getLocalizacao() != null ? praia.getLocalizacao() : null);
 
 		// Contando as condições das avaliações do dia
 		List<Avaliacao> avaliacoes = buscarAvaliacoesDoDia(praia.getIdPraia());
