@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,8 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
-import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.repository.UsuarioRepository;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
@@ -26,46 +27,34 @@ public class UsuarioService implements UserDetailsService {
 
 	@Autowired
 	private ImagemService imagemService;
+	@Autowired
+	private PostagemService postagemService;
+	@Autowired
+	private AuthService authService;
 
 	@Autowired
 	private PasswordEncoder encoder;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return (UserDetails) usuarioRepository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado " + username));
+		Usuario usuario = usuarioRepository.findByEmail(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+
+		// Verifica se o usuário está bloqueado
+		if (usuario.isBloqueado()) {
+			throw new DisabledException("Esta conta está bloqueada. Entre em contato com o suporte.");
+		}
+
+		return usuario;
 	}
 
-	public void cadastrar(UsuarioDTO usuarioDTO) throws FlopException {
-		if (usuarioRepository.existsByEmailIgnoreCase(usuarioDTO.getEmail())) {
-			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
-					HttpStatus.BAD_REQUEST);
+	public void cadastrar(Usuario usuario) throws FlopException {
+		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
+			throw new FlopException("O e-mail informado já está cadastrado.", HttpStatus.BAD_REQUEST);
 		}
-
-		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
-			throw new FlopException(
-					"O username informado já está registrado. Por favor, utilize um username diferente.",
-					HttpStatus.BAD_REQUEST);
+		if (usuarioRepository.existsByNickname(usuario.getUsername())) {
+			throw new FlopException("O username informado já está registrado.", HttpStatus.BAD_REQUEST);
 		}
-
-		Usuario usuario = usuarioDTO.toEntity();
-		usuarioRepository.save(usuario);
-	}
-
-	public void cadastrarAdmin(UsuarioDTO usuarioDTO) throws FlopException {
-		if (usuarioRepository.existsByEmailIgnoreCase(usuarioDTO.getEmail())) {
-			throw new FlopException("O e-mail informado já está cadastrado. Por favor, utilize um e-mail diferente.",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
-			throw new FlopException(
-					"O username informado já está registrado. Por favor, utilize um username diferente.",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		Usuario usuario = usuarioDTO.toEntity();
-		usuario.setAdmin(true);
 		usuarioRepository.save(usuario);
 	}
 
@@ -75,6 +64,7 @@ public class UsuarioService implements UserDetailsService {
 
 		usuarioExistente.setNome(usuarioASerAtualizado.getNome());
 		usuarioExistente.setEmail(usuarioASerAtualizado.getEmail());
+		usuarioExistente.setFotoPerfil(usuarioASerAtualizado.getFotoPerfil());
 
 		if (usuarioASerAtualizado.getSenha() != null && !usuarioASerAtualizado.getSenha().isEmpty()) {
 			usuarioExistente.setSenha(encoder.encode(usuarioASerAtualizado.getSenha()));
@@ -83,15 +73,14 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepository.save(usuarioExistente);
 	}
 
-	public void excluir(Long id) throws FlopException {
-		Usuario usuario = usuarioRepository.findById(id)
+	public void excluir(Long idUsuario) throws FlopException {
+		usuarioRepository.findById(idUsuario)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 
-		if (usuario.getPostagem().isEmpty()) {
-			usuarioRepository.deleteById(id);
-		} else {
-			throw new FlopException("Usuários com posts criados não podem ser deletados.", HttpStatus.BAD_REQUEST);
-		}
+		// Deleta todas as postagens do usuário antes de deletar o usuário
+		postagemService.excluirPostagensDoUsuario(idUsuario);
+
+		usuarioRepository.deleteById(idUsuario);
 	}
 
 	public List<Usuario> pesquisarTodos() {
@@ -120,8 +109,21 @@ public class UsuarioService implements UserDetailsService {
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
 		String imagemBase64 = imagemService.processarImagem(foto);
 		usuario.setFotoPerfil(imagemBase64);
-		System.out.println(imagemBase64);
 		usuarioRepository.save(usuario);
+	}
+
+	public Usuario bloquearUsuario(Long idUsuario, boolean bloquear) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+
+		// Não permitir que um administrador bloqueie a si mesmo
+		Usuario adminAutenticado = authService.getUsuarioAutenticado();
+		if (usuario.getIdUsuario().equals(adminAutenticado.getIdUsuario())) {
+			throw new FlopException("Não é possível bloquear sua própria conta.", HttpStatus.BAD_REQUEST);
+		}
+
+		usuario.setBloqueado(bloquear);
+		return usuarioRepository.save(usuario);
 	}
 
 }

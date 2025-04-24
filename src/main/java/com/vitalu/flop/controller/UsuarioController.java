@@ -1,6 +1,7 @@
 package com.vitalu.flop.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.mapper.UsuarioMapper;
 import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
@@ -26,6 +28,7 @@ import com.vitalu.flop.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 
@@ -40,6 +43,10 @@ public class UsuarioController {
 	@Autowired
 	private AuthService authService;
 
+	@Operation(summary = "Salvar foto de perfil", description = "Salva a foto de perfil do usuário autenticado.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Foto de perfil salva com sucesso"),
+			@ApiResponse(responseCode = "400", description = "Arquivo inválido ou ausente"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@PostMapping("/salvar-foto")
 	public void salvarFotoDePerfil(@RequestParam("fotoDePerfil") MultipartFile foto) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
@@ -49,49 +56,86 @@ public class UsuarioController {
 		usuarioService.salvarFotoDePerfil(foto, subject.getIdUsuario());
 	}
 
-	@Operation(summary = "Atualizar um usuário", description = "Atualiza os dados de um usuário existente.")
+	@Operation(summary = "Atualizar dados do usuário", description = "Atualiza os dados do usuário autenticado com as informações fornecidas.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+			@ApiResponse(responseCode = "400", description = "Erro de validação nos dados fornecidos"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@PutMapping(path = "/atualizar")
-	public ResponseEntity<Usuario> atualizar(@Valid @RequestBody Usuario usuarioASerAtualizado) throws FlopException {
+	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioDTO usuarioASerAtualizado)
+			throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 
 		usuarioASerAtualizado.setIdUsuario(subject.getIdUsuario());
 
-		return ResponseEntity.ok(usuarioService.atualizar(usuarioASerAtualizado));
+		Usuario usuarioAtualizado = usuarioService.atualizar(UsuarioMapper.toEntity(usuarioASerAtualizado));
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuarioAtualizado));
 	}
 
-	@Operation(summary = "Deletar usuário", description = "Exclui um usuário através do seu ID.", responses = {
-			@ApiResponse(responseCode = "200", description = "Usuário excluído com sucesso"), })
-	@DeleteMapping(path = "/excluir/{idUsuario}")
-	public ResponseEntity<Void> excluir(@PathVariable Long idUsuario) throws FlopException {
-		usuarioService.excluir(idUsuario);
+	@Operation(summary = "Excluir conta de usuário", description = "Exclui a conta do usuário autenticado de forma permanente.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Conta excluída com sucesso"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
+	@DeleteMapping(path = "/excluir")
+	public ResponseEntity<Void> excluir() throws FlopException {
+		Usuario subject = authService.getUsuarioAutenticado();
+
+		usuarioService.excluir(subject.getIdUsuario());
+
 		return ResponseEntity.noContent().build();
 	}
 
-	@Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados no sistema.", responses = {
-			@ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso") })
+	@Operation(summary = "Listar todos os usuários", description = "Retorna uma lista completa com todos os usuários cadastrados.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso") })
 	@GetMapping(path = "/todos")
-	public List<Usuario> pesquisarTodos() {
-		return usuarioService.pesquisarTodos();
+	public List<UsuarioDTO> pesquisarTodos() {
+		List<Usuario> usuarios = usuarioService.pesquisarTodos();
+		return usuarios.stream().map(UsuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
-	@Operation(summary = "Pesquisar usuário por ID", description = "Busca um usuário específico através do seu ID.")
+	@Operation(summary = "Buscar usuário por ID", description = "Retorna os dados de um usuário com base no ID informado.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado") })
 	@GetMapping(path = "/{idUsuario}")
-	public ResponseEntity<Usuario> pesquisarPorId(@PathVariable Long idUsuario) throws FlopException {
+	public ResponseEntity<UsuarioDTO> pesquisarPorId(@PathVariable Long idUsuario) throws FlopException {
 		Usuario usuario = usuarioService.pesquisarPorId(idUsuario);
-		return ResponseEntity.ok(usuario);
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuario));
 	}
 
-	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de usuários de acordo com o filtro selecionado.")
+	@Operation(summary = "Filtrar usuários", description = "Filtra usuários com base nos critérios definidos no seletor.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Usuários filtrados com sucesso") })
 	@PostMapping("/filtrar")
-	public List<Usuario> pesquisarComFiltros(@RequestBody UsuarioSeletor seletor) {
-		return usuarioService.pesquisarComFiltros(seletor);
+	public List<UsuarioDTO> pesquisarComFiltros(@RequestBody UsuarioSeletor seletor) {
+		List<Usuario> usuarios = usuarioService.pesquisarComFiltros(seletor);
+		return usuarios.stream().map(UsuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
-	@Operation(summary = "Obter o usuário autenticado", description = "Retorna o usuário autenticado.")
+	@Operation(summary = "Obter usuário autenticado", description = "Retorna os dados do usuário atualmente autenticado.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Dados do usuário autenticado retornados com sucesso"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@GetMapping("/usuario-autenticado")
 	public ResponseEntity<UsuarioDTO> buscarUsuarioAutenticado() throws FlopException {
 		Usuario usuario = authService.getUsuarioAutenticado();
-		return ResponseEntity.ok(usuario.toDTO());
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuario));
+	}
+
+	@Operation(summary = "Bloquear usuário", description = "Bloqueia ou desbloqueia um usuário específico. Apenas administradores podem usar este recurso.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Usuário bloqueado/desbloqueado com sucesso"),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+			@ApiResponse(responseCode = "403", description = "Usuário sem permissão de administrador"),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado") })
+	@PutMapping("/bloquear/{idUsuario}")
+	public ResponseEntity<UsuarioDTO> bloquearUsuario(@PathVariable Long idUsuario, @RequestParam boolean bloquear)
+			throws FlopException {
+		Usuario adminAutenticado = authService.getUsuarioAutenticado();
+
+		// Verifica se o usuário autenticado é um administrador
+		if (!adminAutenticado.isAdmin()) {
+			throw new FlopException("Apenas administradores podem bloquear usuários.", HttpStatus.FORBIDDEN);
+		}
+
+		Usuario usuarioBloqueado = usuarioService.bloquearUsuario(idUsuario, bloquear);
+		return ResponseEntity.ok(UsuarioMapper.toDTO(usuarioBloqueado));
 	}
 
 }
