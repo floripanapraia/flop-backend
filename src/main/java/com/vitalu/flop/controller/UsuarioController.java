@@ -61,14 +61,15 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "400", description = "Erro de validação nos dados fornecidos"),
 			@ApiResponse(responseCode = "401", description = "Usuário não autenticado") })
 	@PutMapping(path = "/atualizar")
-	public ResponseEntity<UsuarioDTO> atualizar(@Valid @RequestBody UsuarioDTO usuarioASerAtualizado)
-			throws FlopException {
+	public ResponseEntity<Usuario> atualizar(@Valid @RequestBody Usuario usuarioASerAtualizado) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 
 		usuarioASerAtualizado.setIdUsuario(subject.getIdUsuario());
+		usuarioASerAtualizado.setNickname(subject.getNickname());
 
-		Usuario usuarioAtualizado = usuarioService.atualizar(UsuarioMapper.toEntity(usuarioASerAtualizado));
-		return ResponseEntity.ok(UsuarioMapper.toDTO(usuarioAtualizado));
+		Usuario usuarioAtualizado = usuarioService.atualizar(usuarioASerAtualizado);
+
+		return ResponseEntity.ok(usuarioAtualizado);
 	}
 
 	@Operation(summary = "Excluir conta de usuário", description = "Exclui a conta do usuário autenticado de forma permanente.")
