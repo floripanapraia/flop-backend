@@ -46,7 +46,8 @@ public class PraiaController {
 
 	@Operation(summary = "Inserir nova praia.", responses = {
 			@ApiResponse(responseCode = "200", description = "Praia criada com sucesso!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Praia.class))),
-			@ApiResponse(responseCode = "400", description = "Erro de validação ou regra de negócio.", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Erro de validação: campo X é obrigatório\", \"status\": 400}"))) })
+			@ApiResponse(responseCode = "400", description = "Erro de validação ou regra de negócio.", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Erro de validação: campo X é obrigatório\", \"status\": 400}"))),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado")})
 	@PostMapping(path = "/cadastrar")
 	public ResponseEntity<Praia> cadastrarPraia(@Valid @RequestBody PraiaDTO novaPraia) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
@@ -62,6 +63,7 @@ public class PraiaController {
 	@ApiResponse(responseCode = "204", description = "Praia excluída com sucesso")
 	@ApiResponse(responseCode = "403", description = "Apenas administradores podem excluir praias")
 	@ApiResponse(responseCode = "404", description = "Praia não encontrada")
+	@ApiResponse(responseCode = "401", description = "Usuário não autenticado")
 	@DeleteMapping("/excluir/{praiaId}")
 	public ResponseEntity<Void> excluirPraia(@PathVariable Long praiaId) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
@@ -73,6 +75,11 @@ public class PraiaController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "Excluir praia")
+	@ApiResponse(responseCode = "204", description = "Praia editada com sucesso")
+	@ApiResponse(responseCode = "403", description = "Apenas administradores podem editar praias")
+	@ApiResponse(responseCode = "404", description = "Praia não encontrada")
+	@ApiResponse(responseCode = "401", description = "Usuário não autenticado")
 	@PutMapping("/editar/{praiaId}")
 	public ResponseEntity<Praia> editarPraia(@PathVariable Long praiaId, @RequestBody PraiaDTO praiaEditadaDto)
 			throws FlopException {

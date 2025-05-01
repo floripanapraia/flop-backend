@@ -41,12 +41,23 @@ public class SecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/auth/*", "/public").permitAll().anyRequest().authenticated())
+						auth -> auth
+							// Rotas públicas que não precisam de autenticação
+							.requestMatchers("/auth/*", "/public").permitAll()
+							// Rotas de praias que estarão públicas
+							.requestMatchers("/praias/todos").permitAll()
+							.requestMatchers("/praias/{idPraia}").permitAll()
+							.requestMatchers("/praias/filtrar").permitAll()
+							.requestMatchers("/praias/{praiaId}/now").permitAll()
+							.requestMatchers("/praias/{praiaId}/postagens").permitAll()
+							.requestMatchers("/praias/{praiaId}/avaliacoes").permitAll()
+							// Todas as outras rotas requerem autenticação
+							.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults()).oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()));
 
 		return http.build();
 	}
-
+	
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
