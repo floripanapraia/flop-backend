@@ -85,13 +85,13 @@ public class PraiaController {
 			throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 		if (subject.isAdmin() == true) {
-			Praia praiaAtualizada = praiaService.editarPraia(praiaEditadaDto, subject.getIdUsuario());
+			Praia praiaAtualizada = praiaService.editarPraia(praiaEditadaDto, praiaId);
 			return ResponseEntity.ok(praiaAtualizada);
 		} else {
-			throw new FlopException("Usuários não podem editar praias.", HttpStatus.BAD_REQUEST);
+			throw new FlopException("Apenas administradores podem editar praias!", HttpStatus.UNAUTHORIZED);
 		}
 	}
-
+	
 	@Operation(summary = "Listar todas as praias.", description = "Retorna uma lista de todas as praias cadastrados no sistema.", responses = {
 			@ApiResponse(responseCode = "200", description = "Lista de praias retornada com sucesso") })
 	@GetMapping(path = "/todos")
@@ -101,8 +101,8 @@ public class PraiaController {
 
 	@Operation(summary = "Pesquisar praia por ID.", description = "Busca uma praia específica através do seu ID.")
 	@GetMapping(path = "/{idPraia}")
-	public ResponseEntity<PraiaDTO> pesquisarPraiasId(@PathVariable("idPraia") Long praiaId) throws FlopException {
-		PraiaDTO praia = praiaService.pesquisarPraiasId(praiaId);
+	public ResponseEntity<PraiaDTO> pesquisarPraiasId(@PathVariable("idPraia") Long idPraia) throws FlopException {
+		PraiaDTO praia = praiaService.pesquisarPraiasId(idPraia);
 		return ResponseEntity.ok(praia);
 	}
 
