@@ -4,14 +4,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -26,13 +24,15 @@ public class Praia {
 	@NotBlank(message = "O nome da praia é obrigatório")
 	private String nomePraia;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String imagem;
 
-	@OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
-    @JsonManagedReference("localizacao-praia")  
-    private Localizacao localizacao;
-	
+	private Double latitude;
+
+	private Double longitude;
+
+	private String placeId;
+
 	@OneToMany(mappedBy = "praia")
 	@JsonManagedReference("avaliacao-praia")
 	private List<Avaliacao> avaliacoes;
