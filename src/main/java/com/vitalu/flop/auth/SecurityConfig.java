@@ -44,6 +44,7 @@ public class SecurityConfig {
 						auth -> auth
 							// Rotas públicas que não precisam de autenticação
 							.requestMatchers("/auth/*", "/public").permitAll()
+							.requestMatchers("/forgotPassword/**").permitAll()
 							// Rotas de praias que estarão públicas
 							.requestMatchers("/praias/todos").permitAll()
 							.requestMatchers("/praias/{idPraia}").permitAll()
