@@ -7,7 +7,7 @@ Floripa na Praia é uma aplicação simples desenvolvida em Spring Boot para fac
 - Spring Boot
 - Spring Data JPA
 - Spring Security
-- Banco de Dados PostgreSQL/MySQL
+- Banco de Dados MySQL
 - Swagger para documentação da API
 
 ## Configuração do Ambiente
@@ -24,9 +24,15 @@ Floripa na Praia é uma aplicação simples desenvolvida em Spring Boot para fac
    ```
 2. Configure o banco de dados no `application.properties` ou `application.yml`:
    ```properties
-   spring.datasource.url=jdbc:postgresql://localhost:5432/floripa
+   spring.datasource.url=jdbc:mysql://localhost:3306/flop_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&useTimezone=true
    spring.datasource.username=seu_usuario
    spring.datasource.password=sua_senha
+   server.port=8080
+   server.servlet.context-path=/flop
+   jwt.public.key=classpath:app.pub 
+   jwt.private.key=classpath:app.key
+   spring.servlet.multipart.max-file-size=10MB
+   spring.servlet.multipart.max-request-size=10MB
    ```
 3. Execute a aplicação:
    ```sh
