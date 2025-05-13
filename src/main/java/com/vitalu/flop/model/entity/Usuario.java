@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -75,6 +76,9 @@ public class Usuario implements UserDetails {
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
 	@JsonManagedReference(value = "usuario-sugestoes")
 	private List<Sugestao> sugestoes;
+
+	@OneToOne(mappedBy = "user")
+	private ForgotPassword forgotPassword;
 
 	// Métodos da interface UserDetails
 	@Override
