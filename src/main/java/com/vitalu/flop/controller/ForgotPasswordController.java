@@ -49,7 +49,8 @@ public class ForgotPasswordController {
 				.subject("OTP for forgot password request").build();
 
 		ForgotPassword fp = ForgotPassword.builder().otp(otp)
-				.expirationTime(new Date(System.currentTimeMillis() + 70 * 1000)).user(user).build();
+				// código válido por uma hora. 
+				.expirationTime(new Date(System.currentTimeMillis() + 60 * 60 * 1000)).user(user).build();
 
 		emailService.sendSimpleMessage(mailBody);
 		forgotPasswordRepository.save(fp);
