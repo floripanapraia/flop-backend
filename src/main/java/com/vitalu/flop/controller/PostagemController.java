@@ -68,7 +68,7 @@ public class PostagemController {
 
 	@Operation(summary = "Listar todas as postagens", description = "Retorna uma lista de todas os postagens cadastrados no sistema.", responses = {
 			@ApiResponse(responseCode = "200", description = "Lista de postagems retornada com sucesso") })
-	@PostMapping(path = "/todos")
+	@GetMapping(path = "/todos")
 	public List<Postagem> pesquisarTodos() throws FlopException {
 		return postagemService.pesquisarTodos();
 	}
