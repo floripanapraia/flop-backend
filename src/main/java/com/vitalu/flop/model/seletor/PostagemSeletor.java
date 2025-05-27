@@ -19,7 +19,7 @@ public class PostagemSeletor extends BaseSeletor implements Specification<Postag
 
 	private Long idUsuario;
 	private Long idPraia;
-	private String texto;
+	private String mensagem;
 	private LocalDateTime criadoEmInicio;
 	private LocalDateTime criadoEmFim;
 
@@ -27,16 +27,16 @@ public class PostagemSeletor extends BaseSeletor implements Specification<Postag
 	public Predicate toPredicate(Root<Postagem> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (this.getTexto() != null && !this.getTexto().trim().isEmpty()) {
-			predicates.add(cb.like(root.get("texto"), "%" + this.getTexto() + "%"));
+		if (this.getMensagem() != null && !this.getMensagem().trim().isEmpty()) {
+			predicates.add(cb.like(root.get("mensagem"), "%" + this.getMensagem() + "%"));
 		}
 
 		if (this.getIdUsuario() != null) {
-			predicates.add(cb.equal(root.get("usuario").get("id"), this.getIdUsuario()));
+			predicates.add(cb.equal(root.get("usuario").get("idUsuario"), this.getIdUsuario()));
 		}
 
 		if (this.getIdPraia() != null) {
-			predicates.add(cb.equal(root.get("praia").get("id"), this.getIdPraia()));
+			predicates.add(cb.equal(root.get("praia").get("idPraia"), this.getIdPraia()));
 		}
 
 		if (this.criadoEmInicio != null && this.criadoEmFim != null) {
