@@ -34,45 +34,28 @@ public class AvaliacaoService {
 	@Autowired
 	private PraiaRepository praiaRepository;
 
-//	public Avaliacao cadastrar(Avaliacao avaliacao) throws FlopException {
-//		Optional<Usuario> usuario = usuarioRepository.findById(avaliacao.getUsuario().getIdUsuario());
-//		avaliacao.setUsuario(
-//				usuario.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST)));
-//
-//		Optional<Praia> praia = praiaRepository.findById(avaliacao.getPraia().getIdPraia());
-//		avaliacao.setPraia(praia.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND)));
-//
-//		validarCondicoes(avaliacao.getCondicoes());
-//
-//		return avaliacaoRepository.save(avaliacao);
-//	}
-	
-	
-	
 	public AvaliacaoDTO cadastrar(AvaliacaoDTO avaliacaoDTO) throws FlopException {
-	    
-	    if (avaliacaoDTO == null) {
-	        throw new FlopException("Dados da avaliação inválidos.", HttpStatus.BAD_REQUEST);
-	    }
 
-	    Avaliacao avaliacao = new Avaliacao();
-	    
-	    Usuario usuario = usuarioRepository.findById(avaliacaoDTO.getIdUsuario())
-	            .orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
-	    
-	    Praia praia = praiaRepository.findById(avaliacaoDTO.getIdPraia())
-	            .orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
+		if (avaliacaoDTO == null) {
+			throw new FlopException("Dados da avaliação inválidos.", HttpStatus.BAD_REQUEST);
+		}
 
-	    
-	    avaliacao.setUsuario(usuario);
-	    avaliacao.setPraia(praia);
-	    avaliacao.setCondicoes(avaliacaoDTO.getCondicoes());
-	    
-	    validarCondicoes(avaliacaoDTO.getCondicoes());
-	    Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
-	    return Avaliacao.toDTO(avaliacaoSalva);
+		Avaliacao avaliacao = new Avaliacao();
+
+		Usuario usuario = usuarioRepository.findById(avaliacaoDTO.getIdUsuario())
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
+
+		Praia praia = praiaRepository.findById(avaliacaoDTO.getIdPraia())
+				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
+
+		avaliacao.setUsuario(usuario);
+		avaliacao.setPraia(praia);
+		avaliacao.setCondicoes(avaliacaoDTO.getCondicoes());
+
+		validarCondicoes(avaliacaoDTO.getCondicoes());
+		Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
+		return Avaliacao.toDTO(avaliacaoSalva);
 	}
-	
 
 	public AvaliacaoDTO buscarPorId(Long idAvaliacao) throws FlopException {
 		Avaliacao avaliacao = avaliacaoRepository.findById(idAvaliacao)
@@ -83,18 +66,17 @@ public class AvaliacaoService {
 	}
 
 	public AvaliacaoDTO atualizar(Long idAvaliacao, AvaliacaoDTO editarAvaliacaoDTO) throws FlopException {
-	   
-	    Avaliacao avaliacaoExistente = avaliacaoRepository.findById(idAvaliacao)
-	        .orElseThrow(() -> new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND));
 
-	   
-	    if (editarAvaliacaoDTO.getCondicoes() != null && !editarAvaliacaoDTO.getCondicoes().isEmpty()) {
-	        validarCondicoes(editarAvaliacaoDTO.getCondicoes());
-	        avaliacaoExistente.setCondicoes(editarAvaliacaoDTO.getCondicoes());
-	    }
+		Avaliacao avaliacaoExistente = avaliacaoRepository.findById(idAvaliacao)
+				.orElseThrow(() -> new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND));
 
-	    Avaliacao avaliacaoAtualizada = avaliacaoRepository.save(avaliacaoExistente);
-	    return Avaliacao.toDTO(avaliacaoAtualizada);
+		if (editarAvaliacaoDTO.getCondicoes() != null && !editarAvaliacaoDTO.getCondicoes().isEmpty()) {
+			validarCondicoes(editarAvaliacaoDTO.getCondicoes());
+			avaliacaoExistente.setCondicoes(editarAvaliacaoDTO.getCondicoes());
+		}
+
+		Avaliacao avaliacaoAtualizada = avaliacaoRepository.save(avaliacaoExistente);
+		return Avaliacao.toDTO(avaliacaoAtualizada);
 	}
 
 	public void excluir(Long idAvaliacao, Long idUsuario) throws FlopException {
