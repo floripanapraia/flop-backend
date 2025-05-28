@@ -18,6 +18,7 @@ public class PraiaDTO {
 	private Double latitude;
     private Double longitude;
     private String placeId;
+    private int totalAvaliacoesDoDia;  
 	private List<String> mensagensPostagens;
 	private List<String> imagensPostagens;
 	private Map<String, Integer> condicoesAvaliacoes;
