@@ -130,7 +130,7 @@ public class PraiaController {
 	}
 
 	@Operation(summary = "Retorna as informações da praia atualizadas.", description = "Apresenta as postagens, avaliações e imagens do dia.")
-	@GetMapping("/{praiaId}/now")
+	@GetMapping("/{praiaId}/hoje")
 	public ResponseEntity<PraiaDTO> informacoesPraiaHoje(@PathVariable Long praiaId) throws FlopException {
 		PraiaDTO praiaHoje = praiaService.obterInformacoesPraiaHoje(praiaId);
 		return ResponseEntity.ok(praiaHoje);
