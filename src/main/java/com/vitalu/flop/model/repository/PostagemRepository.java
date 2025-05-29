@@ -19,4 +19,7 @@ public interface PostagemRepository extends JpaRepository<Postagem, Long>, JpaSp
 			@Param("fimDia") LocalDateTime fimDia);
 
 	List<Postagem> findByUsuarioIdUsuario(Long idUsuario);
+	
+    List<Postagem> findByPraia_IdPraia (Long idPraia);
+
 }
