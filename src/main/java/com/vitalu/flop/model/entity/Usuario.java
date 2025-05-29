@@ -79,6 +79,9 @@ public class Usuario implements UserDetails {
 
 	@OneToOne(mappedBy = "user")
 	private ForgotPassword forgotPassword;
+	
+	private String twoFactorSecret;
+	private boolean twoFactorEnabled;
 
 	// Métodos da interface UserDetails
 	@Override
