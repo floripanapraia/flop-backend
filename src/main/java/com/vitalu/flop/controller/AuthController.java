@@ -1,5 +1,7 @@
 package com.vitalu.flop.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -7,10 +9,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vitalu.flop.auth.AuthService;
+import com.vitalu.flop.auth.TwoFactorAuthUtil;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.service.UsuarioService;
@@ -31,16 +35,6 @@ public class AuthController {
 
 	@Autowired
 	private UsuarioService usuarioService;
-
-	/**
-	 * Método de login padronizado -> Basic Auth
-	 * <p>
-	 * O parâmetro Authentication já encapsula login (username) e senha (senha)
-	 * Basic <Base64 encoded username and senha>
-	 *
-	 * @param authentication
-	 * @return o JWT gerado
-	 */
 
 	@Operation(summary = "Realiza login do usuário", description = "Autentica um usuário e retorna um token de acesso.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
@@ -67,6 +61,22 @@ public class AuthController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void cadastrarAdmin(@RequestBody Usuario novoUsuario) throws FlopException {
 		processarCadastro(novoUsuario, true);
+	}
+	
+	@PostMapping("/2fa/setup")
+	public Map<String, String> setup2FA(@RequestParam String email) throws FlopException {
+	    Usuario usuario = (Usuario) usuarioService.loadUserByUsername(email);
+
+	    String secret = TwoFactorAuthUtil.generateSecretKey();
+	    usuario.setTwoFactorSecret(secret);
+	    usuario.setTwoFactorEnabled(true);
+
+	    usuarioService.atualizar(usuario);
+
+	    return Map.of(
+	        "secret", secret,
+	        "mensagem", "Adicione essa chave no seu Google Authenticator"
+	    );
 	}
 
 	private void processarCadastro(Usuario usuario, boolean isAdmin) throws FlopException {
