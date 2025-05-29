@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.auth.TwoFactorAuthUtil;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.LoginDTO;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.service.UsuarioService;
 
@@ -41,9 +42,22 @@ public class AuthController {
 			@ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
 			@ApiResponse(responseCode = "400", description = "Erro de validação nos dados fornecidos") })
 	@PostMapping("/login")
-	public String login(Authentication authentication) throws FlopException {
-		return authenticationService.authenticate(authentication);
+	public String login(@RequestBody LoginDTO loginDTO) throws FlopException {
+	    Usuario usuario = (Usuario) usuarioService.loadUserByUsername(loginDTO.getEmail());
+
+	    if (!passwordEncoder.matches(loginDTO.getSenha(), usuario.getSenha())) {
+	        throw new FlopException("Credenciais inválidas.", HttpStatus.UNAUTHORIZED);
+	    }
+
+	    if (usuario.isTwoFactorEnabled()) {
+	        if (loginDTO.getCodigo2fa() == null || !TwoFactorAuthUtil.verifyCode(usuario.getTwoFactorSecret(), loginDTO.getCodigo2fa())) {
+	            throw new FlopException("Código 2FA inválido.", HttpStatus.UNAUTHORIZED);
+	        }
+	    }
+
+	    return authenticationService.authenticate((Authentication) usuario);
 	}
+
 
 	@Operation(summary = "Cadastra um novo usuário", description = "Cadastra um usuário com o perfil de usuário comum.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Usuário cadastrado com sucesso"),
