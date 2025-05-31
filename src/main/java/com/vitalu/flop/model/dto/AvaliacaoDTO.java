@@ -11,7 +11,7 @@ import lombok.Data;
 public class AvaliacaoDTO {
 
 	private Long idAvaliacao;
-	private String username;
+	private String nickname;
 	private LocalDateTime criadoEm;
 	private List<Condicoes> condicoes;
 	private Long idUsuario;
