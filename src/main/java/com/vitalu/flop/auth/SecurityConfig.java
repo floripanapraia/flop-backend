@@ -49,7 +49,7 @@ public class SecurityConfig {
 							.requestMatchers("/praias/todos").permitAll()
 							.requestMatchers("/praias/{idPraia}").permitAll()
 							.requestMatchers("/praias/filtrar").permitAll()
-							.requestMatchers("/praias/{praiaId}/now").permitAll()
+							.requestMatchers("/praias/{praiaId}/hoje").permitAll()
 							.requestMatchers("/praias/{praiaId}/postagens").permitAll()
 							.requestMatchers("/praias/{praiaId}/avaliacoes").permitAll()
 							// Todas as outras rotas requerem autenticação
