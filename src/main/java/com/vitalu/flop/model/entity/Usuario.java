@@ -1,7 +1,6 @@
 package com.vitalu.flop.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -83,11 +82,7 @@ public class Usuario implements UserDetails {
 	// Métodos da interface UserDetails
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
-
-		list.add(new SimpleGrantedAuthority("USER"));
-
-		return list;
+		return List.of(new SimpleGrantedAuthority(this.isAdmin ? "ADMIN" : "USER"));
 	}
 
 	@Override
