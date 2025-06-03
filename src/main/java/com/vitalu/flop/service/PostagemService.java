@@ -1,5 +1,6 @@
 package com.vitalu.flop.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.PostagemDTO;
 import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.repository.PostagemRepository;
@@ -29,11 +31,20 @@ public class PostagemService {
 	@Autowired
 	private ImagemService imagemService;
 
-	public Postagem cadastrar(Postagem postagem) throws FlopException {
-		Optional<Usuario> autor = usuarioRepository.findById(postagem.getUsuario().getIdUsuario());
-		postagem.setUsuario(
-				autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST)));
-		return postagemRepository.save(postagem);
+	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
+		Optional<Usuario> autor = usuarioRepository.findById(postagemDTO.getUsuarioId());
+
+		Usuario usuario = autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
+
+		Postagem postagem = new Postagem();
+		postagem.setUsuario(usuario);
+		postagem.setMensagem(postagemDTO.getMensagem());
+		postagem.setCriadoEm(LocalDateTime.now());
+		postagem.setImagem(postagemDTO.getImagem());
+		postagem.setExcluida(false);
+
+		postagemRepository.save(postagem);
+		return Postagem.toDTO(postagem);
 	}
 
 	// uma mensagem deve ser excluída apenas logicamente, permitido apenas para
@@ -60,8 +71,9 @@ public class PostagemService {
 		postagemRepository.deleteAll(postagens);
 	}
 
-	public List<Postagem> pesquisarTodos() {
-		return postagemRepository.findAll();
+	public List<PostagemDTO> pesquisarTodos() {
+		List<Postagem> postagens = postagemRepository.findAll();
+		return postagens.stream().map(Postagem::toDTO).toList();
 	}
 
 	public Postagem pesquisarPorId(Long id) throws FlopException {
