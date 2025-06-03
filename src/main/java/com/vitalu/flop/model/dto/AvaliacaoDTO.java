@@ -16,5 +16,6 @@ public class AvaliacaoDTO {
 	private List<Condicoes> condicoes;
 	private Long idUsuario;
 	private Long idPraia;
+	private String fotoPerfil;
 
 }
