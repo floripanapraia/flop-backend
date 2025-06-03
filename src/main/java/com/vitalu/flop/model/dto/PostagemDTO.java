@@ -11,6 +11,7 @@ public class PostagemDTO {
 
     private Long idPostagem;
     private Long usuarioId;
+    private String fotoDoUsuario;
     private String nickname;
     private Long praiaId;
     private String nomePraia;   
