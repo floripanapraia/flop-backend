@@ -76,10 +76,10 @@ public class PostagemService {
 		return postagens.stream().map(Postagem::toDTO).toList();
 	}
 
-	public Postagem pesquisarPorId(Long id) throws FlopException {
+	public PostagemDTO pesquisarPorId(Long id) throws FlopException {
 		Postagem postagem = postagemRepository.findById(id)
 				.orElseThrow(() -> new FlopException("A postagem buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
-		return postagem;
+		return Postagem.toDTO(postagem);
 	}
 
 	public List<Postagem> pesquisarComFiltros(PostagemSeletor seletor) throws FlopException {
