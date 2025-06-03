@@ -120,7 +120,7 @@ public class AvaliacaoService {
 		Pageable pageable = Pageable.unpaged();
 
 		if (seletor.temPaginacao()) {
-			pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadoEm").ascending());
+			pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadoEm").descending());
 		}
 
 		Page<Avaliacao> avaliacoesFiltradas = avaliacaoRepository.findAll(seletor, pageable);
