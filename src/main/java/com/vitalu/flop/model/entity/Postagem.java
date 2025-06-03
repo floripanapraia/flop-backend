@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vitalu.flop.model.dto.PostagemDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,5 +54,10 @@ public class Postagem {
 	@JsonBackReference
 	private List<Denuncia> denuncias;
 
-	
+	public static PostagemDTO toDTO(Postagem postagem) {
+		return new PostagemDTO(postagem.getIdPostagem(), postagem.getUsuario().getIdUsuario(),
+				postagem.getUsuario().getFotoPerfil(), postagem.getUsuario().getNickname(),
+				postagem.getPraia().getIdPraia(), postagem.getPraia().getNomePraia(), postagem.getCriadoEm(),
+				postagem.getImagem(), postagem.getMensagem(), postagem.getExcluida());
+	}
 }
