@@ -16,8 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.dto.PostagemDTO;
 import com.vitalu.flop.model.entity.Postagem;
+import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.repository.PostagemRepository;
+import com.vitalu.flop.model.repository.PraiaRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
 import com.vitalu.flop.model.seletor.PostagemSeletor;
 
@@ -29,18 +31,23 @@ public class PostagemService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	@Autowired
+	private PraiaRepository praiaRepository;
+	@Autowired
 	private ImagemService imagemService;
 
 	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
 		Optional<Usuario> autor = usuarioRepository.findById(postagemDTO.getUsuarioId());
-
 		Usuario usuario = autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
+		Optional<Praia> praia = praiaRepository.findById(postagemDTO.getPraiaId());
+		Praia praiaCadastrada = praia.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.BAD_REQUEST));
+		
 		Postagem postagem = new Postagem();
 		postagem.setUsuario(usuario);
-		postagem.setMensagem(postagemDTO.getMensagem());
+		postagem.setPraia(praiaCadastrada);
 		postagem.setCriadoEm(LocalDateTime.now());
 		postagem.setImagem(postagemDTO.getImagem());
+		postagem.setMensagem(postagemDTO.getMensagem());
 		postagem.setExcluida(false);
 
 		postagemRepository.save(postagem);
