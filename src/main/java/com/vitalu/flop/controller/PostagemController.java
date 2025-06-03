@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.PostagemDTO;
 import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.PostagemSeletor;
@@ -54,12 +55,12 @@ public class PostagemController {
 			@ApiResponse(responseCode = "200", description = "Postagem criada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Postagem.class))),
 			@ApiResponse(responseCode = "400", description = "Erro de validação ou regra de negócio", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Erro de validação: campo X é obrigatório\", \"status\": 400}"))) })
 	@PostMapping(path = "/cadastrar")
-	public ResponseEntity<Postagem> cadastrar(@Valid @RequestBody Postagem novaPostagem) throws FlopException {
+	public ResponseEntity<PostagemDTO> cadastrar(@Valid @RequestBody PostagemDTO novaPostagemDTO) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 
 		if (subject.isAdmin() == false) {
-			novaPostagem.setUsuario(subject);
-			Postagem postagemCriada = postagemService.cadastrar(novaPostagem);
+			novaPostagemDTO.setUsuarioId(subject.getIdUsuario());
+			PostagemDTO postagemCriada = postagemService.cadastrar(novaPostagemDTO);
 			return ResponseEntity.status(201).body(postagemCriada);
 		} else {
 			throw new FlopException("Administradores não podem criar postagens.", HttpStatus.BAD_REQUEST);
@@ -69,15 +70,15 @@ public class PostagemController {
 	@Operation(summary = "Listar todas as postagens", description = "Retorna uma lista de todas os postagens cadastrados no sistema.", responses = {
 			@ApiResponse(responseCode = "200", description = "Lista de postagems retornada com sucesso") })
 	@GetMapping(path = "/todos")
-	public List<Postagem> pesquisarTodos() throws FlopException {
+	public List<PostagemDTO> pesquisarTodos() throws FlopException {
 		return postagemService.pesquisarTodos();
 	}
 
 	@Operation(summary = "Pesquisar postagem por ID", description = "Busca uma postagem específica pelo seu ID.")
 	@GetMapping(path = "/{id}")
-	public ResponseEntity<Postagem> pesquisarPorId(@PathVariable Long id) throws FlopException {
-		Postagem Postagem = postagemService.pesquisarPorId(id);
-		return ResponseEntity.ok(Postagem);
+	public ResponseEntity<PostagemDTO> pesquisarPorId(@PathVariable Long id) throws FlopException {
+		PostagemDTO postagem = postagemService.pesquisarPorId(id);
+		return ResponseEntity.ok(postagem);
 	}
 
 	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de postagens de acordo com o filtro selecionado.", responses = {
