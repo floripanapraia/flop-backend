@@ -50,8 +50,8 @@ public class SecurityConfig {
 							.requestMatchers("/praias/{idPraia}").permitAll()
 							.requestMatchers("/praias/filtrar").permitAll()
 							.requestMatchers("/praias/{praiaId}/hoje").permitAll()
-							.requestMatchers("/praias/{praiaId}/postagens").permitAll()
-							.requestMatchers("/praias/{praiaId}/avaliacoes").permitAll()
+							.requestMatchers("/postagens/filtrar").permitAll()
+							.requestMatchers("/avaliacoes/filtrar").permitAll()
 							// Todas as outras rotas requerem autenticação
 							.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults()).oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()));
