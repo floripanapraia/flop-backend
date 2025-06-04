@@ -86,6 +86,15 @@ public class AvaliacaoController {
 		return ResponseEntity.ok(avaliacao);
 	}
 
+	@Operation(summary = "Buscar avaliação do usuário hoje na praia", description = "Busca a avaliação feita pelo usuário hoje em uma praia específica.")
+	@GetMapping("/usuario/{idUsuario}/praia/{idPraia}/hoje")
+	public ResponseEntity<AvaliacaoDTO> buscarAvaliacaoUsuarioHojeNaPraia(@PathVariable Long idUsuario,
+			@PathVariable Long idPraia) throws FlopException {
+
+		AvaliacaoDTO avaliacao = avaliacaoService.buscarAvaliacaoDoUsuarioHojeNaPraia(idUsuario, idPraia);
+		return ResponseEntity.ok(avaliacao);
+	}
+
 	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de avaliacoes de acordo com o filtro selecionado.", responses = {
 			@ApiResponse(responseCode = "200", description = "Avaliações filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Avaliacao.class))),
 			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
