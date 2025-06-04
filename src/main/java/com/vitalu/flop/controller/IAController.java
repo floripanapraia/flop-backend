@@ -21,9 +21,9 @@ public class IAController {
 	}
 
 	@PostMapping("/gerar-query")
-	public ResponseEntity<String> gerarQuery(@RequestBody Map<String, String> body) {
+	public ResponseEntity<Map<String, String>> gerarQuery(@RequestBody Map<String, String> body) {
 		String preferencias = body.get("preferencias");
 		String query = iaService.gerarClausulaSQL(preferencias);
-		return ResponseEntity.ok(query);
+		return ResponseEntity.ok(Map.of("query", query));
 	}
 }
