@@ -45,14 +45,10 @@ public class Avaliacao {
 	@ElementCollection
 	@Enumerated(EnumType.STRING)
 	private List<Condicoes> condicoes;
-	
+
 	public static AvaliacaoDTO toDTO(Avaliacao avaliacao) {
-		return new AvaliacaoDTO(avaliacao.getIdAvaliacao(),
-				avaliacao.getUsuario().getUsername(),
-				avaliacao.getCriadoEm(),
-				avaliacao.getCondicoes(),
-				avaliacao.getPraia().getIdPraia(),
-				avaliacao.getUsuario().getIdUsuario()
-				);
+		return new AvaliacaoDTO(avaliacao.getIdAvaliacao(), avaliacao.getUsuario().getNickname(),
+				avaliacao.getCriadoEm(), avaliacao.getCondicoes(), avaliacao.getUsuario().getIdUsuario(),
+				avaliacao.getPraia().getIdPraia(), avaliacao.getUsuario().getFotoPerfil());
 	}
 }
