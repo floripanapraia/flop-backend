@@ -1,8 +1,11 @@
 package com.vitalu.flop.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.dto.AvaliacaoDTO;
 import com.vitalu.flop.model.entity.Avaliacao;
@@ -40,14 +42,16 @@ public class AvaliacaoService {
 			throw new FlopException("Dados da avaliação inválidos.", HttpStatus.BAD_REQUEST);
 		}
 
-		Avaliacao avaliacao = new Avaliacao();
-
 		Usuario usuario = usuarioRepository.findById(avaliacaoDTO.getIdUsuario())
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
 		Praia praia = praiaRepository.findById(avaliacaoDTO.getIdPraia())
 				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
 
+		// Verificar se o usuário já fez uma avaliação hoje NESTA praia específica
+		verificarAvaliacaoHojeNaPraia(usuario.getIdUsuario(), praia.getIdPraia());
+
+		Avaliacao avaliacao = new Avaliacao();
 		avaliacao.setUsuario(usuario);
 		avaliacao.setPraia(praia);
 		avaliacao.setCondicoes(avaliacaoDTO.getCondicoes());
@@ -69,6 +73,10 @@ public class AvaliacaoService {
 
 		Avaliacao avaliacaoExistente = avaliacaoRepository.findById(idAvaliacao)
 				.orElseThrow(() -> new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND));
+
+		// Verificar se a avaliação foi criada hoje (permitir edição apenas no mesmo
+		// dia)
+		verificarEdicaoPermitida(avaliacaoExistente);
 
 		if (editarAvaliacaoDTO.getCondicoes() != null && !editarAvaliacaoDTO.getCondicoes().isEmpty()) {
 			validarCondicoes(editarAvaliacaoDTO.getCondicoes());
@@ -95,8 +103,78 @@ public class AvaliacaoService {
 		avaliacaoRepository.delete(avaliacao);
 	}
 
+//	  Verifica se o usuário já fez uma avaliação hoje NESTA praia específica
+
+	private void verificarAvaliacaoHojeNaPraia(Long idUsuario, Long idPraia) throws FlopException {
+		LocalDate hoje = LocalDate.now();
+		LocalDateTime inicioHoje = hoje.atStartOfDay();
+		LocalDateTime fimHoje = hoje.atTime(LocalTime.MAX);
+
+		// Busca avaliações do usuário criadas hoje NESTA praia específica
+		Optional<Avaliacao> avaliacaoHojeNaPraia = avaliacaoRepository
+				.findByUsuarioIdUsuarioAndPraiaIdPraiaAndCriadoEmBetween(idUsuario, idPraia, inicioHoje, fimHoje);
+
+		if (avaliacaoHojeNaPraia.isPresent()) {
+			String nomePraia = avaliacaoHojeNaPraia.get().getPraia().getNomePraia();
+			throw new FlopException("Você já fez uma avaliação hoje para a praia " + nomePraia + ". "
+					+ "Você pode editar sua avaliação existente, mas não pode criar uma nova para esta praia hoje.",
+					HttpStatus.BAD_REQUEST);
+		}
+	}
+
+//	  Verifica se a avaliação pode ser editada (apenas no mesmo dia da criação)
+
+	private void verificarEdicaoPermitida(Avaliacao avaliacao) throws FlopException {
+		LocalDate hoje = LocalDate.now();
+		LocalDate dataAvaliacao = avaliacao.getCriadoEm().toLocalDate();
+
+		if (!dataAvaliacao.equals(hoje)) {
+			throw new FlopException("Você só pode editar avaliações criadas no mesmo dia. "
+					+ "Esta avaliação foi criada em " + dataAvaliacao + " e não pode mais ser editada.",
+					HttpStatus.FORBIDDEN);
+		}
+	}
+
+//	 Busca a avaliação do usuário feita hoje para uma praia específica (se existir)
+
+	public AvaliacaoDTO buscarAvaliacaoDoUsuarioHojeNaPraia(Long idUsuario, Long idPraia) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+		Praia praia = praiaRepository.findById(idPraia)
+				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
+
+		LocalDate hoje = LocalDate.now();
+		LocalDateTime inicioHoje = hoje.atStartOfDay();
+		LocalDateTime fimHoje = hoje.atTime(LocalTime.MAX);
+
+		Optional<Avaliacao> avaliacaoHojeNaPraia = avaliacaoRepository
+				.findByUsuarioIdUsuarioAndPraiaIdPraiaAndCriadoEmBetween(idUsuario, idPraia, inicioHoje, fimHoje);
+
+		if (avaliacaoHojeNaPraia.isEmpty()) {
+			throw new FlopException("Nenhuma avaliação encontrada para hoje na praia " + praia.getNomePraia() + ".",
+					HttpStatus.NOT_FOUND);
+		}
+
+		return Avaliacao.toDTO(avaliacaoHojeNaPraia.get());
+	}
+
+//	  Busca todas as avaliações do usuário feitas hoje (em todas as praias)
+
+	public List<AvaliacaoDTO> buscarAvaliacoesDoUsuarioHoje(Long idUsuario) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+
+		LocalDate hoje = LocalDate.now();
+		LocalDateTime inicioHoje = hoje.atStartOfDay();
+		LocalDateTime fimHoje = hoje.atTime(LocalTime.MAX);
+
+		Optional<Avaliacao> avaliacoesHoje = avaliacaoRepository.findByUsuarioIdUsuarioAndCriadoEmBetween(idUsuario,
+				inicioHoje, fimHoje);
+
+		return avaliacoesHoje.stream().map(Avaliacao::toDTO).toList();
+	}
+
 	private void validarCondicoes(List<Condicoes> condicoes) throws FlopException {
-		// Mapeamento de condições incompatíveis
 		Map<Condicoes, List<Condicoes>> condicoesIncompativeis = Map.of(Condicoes.SOL,
 				List.of(Condicoes.CHUVA, Condicoes.NUBLADO), Condicoes.CHUVA, List.of(Condicoes.SOL), Condicoes.NUBLADO,
 				List.of(Condicoes.SOL), Condicoes.MAR_CALMO, List.of(Condicoes.MAR_ONDAS), Condicoes.MAR_ONDAS,
