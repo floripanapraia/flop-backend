@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class IAService {
 
-	private final OpenAIClient client;
+	private final GeminiClient client;
 
-	public IAService(OpenAIClient client) {
+	public IAService(GeminiClient client) {
 		this.client = client;
 	}
 
