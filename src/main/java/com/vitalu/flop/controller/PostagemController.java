@@ -85,7 +85,7 @@ public class PostagemController {
 			@ApiResponse(responseCode = "200", description = "Postagens filtradas com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Postagem.class))),
 			@ApiResponse(responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(description = "Detalhes do erro interno", example = "{\"message\": \"Erro interno do servidor\", \"status\": 500}"))) })
 	@PostMapping("/filtrar")
-	public List<Postagem> pesquisarComFiltros(@RequestBody PostagemSeletor seletor) throws FlopException {
+	public List<PostagemDTO> pesquisarComFiltros(@RequestBody PostagemSeletor seletor) throws FlopException {
 		return postagemService.pesquisarComFiltros(seletor);
 	}
 

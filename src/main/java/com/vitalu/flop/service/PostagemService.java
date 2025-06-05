@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -89,7 +90,7 @@ public class PostagemService {
 		return Postagem.toDTO(postagem);
 	}
 
-	public List<Postagem> pesquisarComFiltros(PostagemSeletor seletor) throws FlopException {
+	public List<PostagemDTO> pesquisarComFiltros(PostagemSeletor seletor) throws FlopException {
 		List<Postagem> postagensFiltradas;
 
 		if (seletor.temPaginacao()) {
@@ -103,7 +104,9 @@ public class PostagemService {
 					postagemRepository.findAll(seletor, Sort.by(Sort.Direction.DESC, "criadoEm")));
 		}
 
-		return postagensFiltradas;
+		return postagensFiltradas.stream()
+	            .map(Postagem::toDTO)
+	            .collect(Collectors.toList());
 	}
 
 	public void salvarImagem(MultipartFile foto, Long idPostagem, Long idUsuario) throws FlopException {
