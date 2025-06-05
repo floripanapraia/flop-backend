@@ -43,6 +43,7 @@ public class Postagem {
 	@CreationTimestamp
 	private LocalDateTime criadoEm;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String imagem;
 
 	@Size(max = 300)
