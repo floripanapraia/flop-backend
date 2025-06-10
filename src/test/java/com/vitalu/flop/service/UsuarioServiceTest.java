@@ -125,5 +125,20 @@ public class UsuarioServiceTest {
 		FlopException exception = assertThrows(FlopException.class, () -> usuarioService.excluir(99L));
 		assertEquals("Usuário não encontrado.", exception.getMessage());
 	}
+	
+	@Test
+	void deveBloquearOutroUsuarioComSucesso() throws FlopException {
+		Usuario usuario = UsuarioMockFactory.criarUsuarioPadrao();
+		Usuario admin = UsuarioMockFactory.criarUsuarioAdmin();
+		admin.setIdUsuario(999L);
+
+		when(usuarioRepository.findById(usuario.getIdUsuario())).thenReturn(Optional.of(usuario));
+		when(authService.getUsuarioAutenticado()).thenReturn(admin);
+		when(usuarioRepository.save(any())).thenReturn(usuario);
+
+		Usuario bloqueado = usuarioService.bloquearUsuario(usuario.getIdUsuario(), true);
+
+		assertTrue(bloqueado.isBloqueado());
+	}
 
 }
