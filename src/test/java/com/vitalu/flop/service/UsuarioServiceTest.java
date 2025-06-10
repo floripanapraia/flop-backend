@@ -118,4 +118,12 @@ public class UsuarioServiceTest {
 		verify(usuarioRepository).deleteById(usuario.getIdUsuario());
 	}
 
+	@Test
+	void deveLancarErroAoExcluirUsuarioInexistente() {
+		when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+		FlopException exception = assertThrows(FlopException.class, () -> usuarioService.excluir(99L));
+		assertEquals("Usuário não encontrado.", exception.getMessage());
+	}
+
 }
