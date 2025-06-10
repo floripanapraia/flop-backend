@@ -56,7 +56,7 @@ public class UsuarioServiceTest {
 		assertEquals(usuario.getEmail(), userDetails.getUsername());
 		verify(usuarioRepository, times(1)).findByEmail(usuario.getEmail());
 	}
-	
+
 	@Test
 	void deveLancarExcecaoQuandoUsuarioNaoEncontrado() {
 		String email = "inexistente@email.com";
@@ -64,7 +64,6 @@ public class UsuarioServiceTest {
 
 		assertThrows(UsernameNotFoundException.class, () -> usuarioService.loadUserByUsername(email));
 	}
-	
 
 	@Test
 	void deveLancarExcecaoQuandoUsuarioEstaBloqueado() {
@@ -125,7 +124,7 @@ public class UsuarioServiceTest {
 		FlopException exception = assertThrows(FlopException.class, () -> usuarioService.excluir(99L));
 		assertEquals("Usuário não encontrado.", exception.getMessage());
 	}
-	
+
 	@Test
 	void deveBloquearOutroUsuarioComSucesso() throws FlopException {
 		Usuario usuario = UsuarioMockFactory.criarUsuarioPadrao();
@@ -139,6 +138,17 @@ public class UsuarioServiceTest {
 		Usuario bloqueado = usuarioService.bloquearUsuario(usuario.getIdUsuario(), true);
 
 		assertTrue(bloqueado.isBloqueado());
+	}
+
+	@Test
+	void deveLancarErroAoBloquearProprioUsuario() throws FlopException {
+		Usuario admin = UsuarioMockFactory.criarUsuarioAdmin();
+		when(usuarioRepository.findById(admin.getIdUsuario())).thenReturn(Optional.of(admin));
+		when(authService.getUsuarioAutenticado()).thenReturn(admin);
+
+		FlopException exception = assertThrows(FlopException.class,
+				() -> usuarioService.bloquearUsuario(admin.getIdUsuario(), true));
+		assertEquals("Não é possível bloquear sua própria conta.", exception.getMessage());
 	}
 
 }
