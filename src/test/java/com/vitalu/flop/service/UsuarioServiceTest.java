@@ -46,4 +46,15 @@ public class UsuarioServiceTest {
 		MockitoAnnotations.openMocks(this);
 	}
 
+	@Test
+	void deveCarregarUsuarioPorEmailComSucesso() {
+		Usuario usuario = UsuarioMockFactory.criarUsuarioPadrao();
+		when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+
+		UserDetails userDetails = usuarioService.loadUserByUsername(usuario.getEmail());
+
+		assertEquals(usuario.getEmail(), userDetails.getUsername());
+		verify(usuarioRepository, times(1)).findByEmail(usuario.getEmail());
+	}
+	
 }
