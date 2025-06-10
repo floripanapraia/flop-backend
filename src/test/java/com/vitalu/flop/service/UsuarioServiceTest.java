@@ -57,4 +57,12 @@ public class UsuarioServiceTest {
 		verify(usuarioRepository, times(1)).findByEmail(usuario.getEmail());
 	}
 	
+	@Test
+	void deveLancarExcecaoQuandoUsuarioNaoEncontrado() {
+		String email = "inexistente@email.com";
+		when(usuarioRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+		assertThrows(UsernameNotFoundException.class, () -> usuarioService.loadUserByUsername(email));
+	}
+
 }
