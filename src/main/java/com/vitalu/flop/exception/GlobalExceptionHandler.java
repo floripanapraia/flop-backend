@@ -17,14 +17,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleFlopException(FlopException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.FORBIDDEN.value());
-        response.put("error", HttpStatus.FORBIDDEN.getReasonPhrase());
+        response.put("status", ex.getStatus().value());
+        response.put("error", ex.getStatus().getReasonPhrase());
 
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(response, ex.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex, HttpStatus status) {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -33,6 +33,6 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errors, status);
     }
 }
