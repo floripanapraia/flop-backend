@@ -74,4 +74,15 @@ public class UsuarioServiceTest {
 		assertThrows(DisabledException.class, () -> usuarioService.loadUserByUsername(bloqueado.getEmail()));
 	}
 
+	@Test
+	void deveCadastrarUsuarioComSucesso() throws FlopException {
+		Usuario novoUsuario = UsuarioMockFactory.criarUsuarioPadrao();
+		when(usuarioRepository.existsByEmailIgnoreCase(novoUsuario.getEmail())).thenReturn(false);
+		when(usuarioRepository.existsByNickname(novoUsuario.getUsername())).thenReturn(false);
+
+		usuarioService.cadastrar(novoUsuario);
+
+		verify(usuarioRepository).save(novoUsuario);
+	}
+
 }
