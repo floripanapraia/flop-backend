@@ -64,5 +64,14 @@ public class UsuarioServiceTest {
 
 		assertThrows(UsernameNotFoundException.class, () -> usuarioService.loadUserByUsername(email));
 	}
+	
+
+	@Test
+	void deveLancarExcecaoQuandoUsuarioEstaBloqueado() {
+		Usuario bloqueado = UsuarioMockFactory.criarUsuarioBloqueado();
+		when(usuarioRepository.findByEmail(bloqueado.getEmail())).thenReturn(Optional.of(bloqueado));
+
+		assertThrows(DisabledException.class, () -> usuarioService.loadUserByUsername(bloqueado.getEmail()));
+	}
 
 }
