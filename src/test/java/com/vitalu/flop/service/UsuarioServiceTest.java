@@ -85,4 +85,14 @@ public class UsuarioServiceTest {
 		verify(usuarioRepository).save(novoUsuario);
 	}
 
+	@Test
+	void deveLancarErroAoCadastrarComEmailDuplicado() {
+		Usuario novoUsuario = UsuarioMockFactory.criarUsuarioPadrao();
+		when(usuarioRepository.existsByEmailIgnoreCase(novoUsuario.getEmail())).thenReturn(true);
+
+		FlopException exception = assertThrows(FlopException.class, () -> usuarioService.cadastrar(novoUsuario));
+		assertEquals("O e-mail informado já está cadastrado.", exception.getMessage());
+		assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+	}
+
 }
