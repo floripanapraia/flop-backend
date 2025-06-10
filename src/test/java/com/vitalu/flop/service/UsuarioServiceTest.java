@@ -95,4 +95,17 @@ public class UsuarioServiceTest {
 		assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
 	}
 
+	@Test
+	void deveAtualizarUsuarioComSucesso() throws FlopException {
+		Usuario usuario = UsuarioMockFactory.criarUsuarioPadrao();
+		usuario.setSenha("novaSenha");
+		when(usuarioRepository.findById(usuario.getIdUsuario())).thenReturn(Optional.of(usuario));
+		when(encoder.encode("novaSenha")).thenReturn("senhaCriptografada");
+		when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+		Usuario atualizado = usuarioService.atualizar(usuario);
+
+		assertEquals("senhaCriptografada", atualizado.getSenha());
+	}
+
 }
