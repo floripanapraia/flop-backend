@@ -1,0 +1,1467 @@
+{
+	"info": {
+		"_postman_id": "c614ed53-37b2-432d-9028-3d5126e14844",
+		"name": "flop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28749808",
+		"_collection_link": "https://projeto-mtv-9868.postman.co/workspace/flop~a062360c-4029-4487-862d-2fdadff33dc9/collection/29077056-c614ed53-37b2-432d-9028-3d5126e14844?action=share&source=collection_link&creator=28749808"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to validate the response schema and ensure the response contains the expected properties\r",
+									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.isAdmin).to.exist;\r",
+									"});\r",
+									"\r",
+									"// Test to check if the response contains a raw token (string without a key)\r",
+									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
+									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
+									"\r",
+									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
+									"\r",
+									"    // Definindo a variável do token no ambiente da coleção\r",
+									"    pm.collectionVariables.set(\"token\", rawToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "123456789",
+								"username": "malufln.99@gmail.com"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "login 2FA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to validate the response schema and ensure the response contains the expected properties\r",
+									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.isAdmin).to.exist;\r",
+									"});\r",
+									"\r",
+									"// Test to check if the response contains a raw token (string without a key)\r",
+									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
+									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
+									"\r",
+									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
+									"\r",
+									"    // Definindo a variável do token no ambiente da coleção\r",
+									"    pm.collectionVariables.set(\"token\", rawToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "12345678",
+								"username": "vic@email.com"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"joao@email.com\",\r\n  \"senha\": \"123456\",\r\n  \"codigo2fa\": 123456\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/2fa/setup"
+					},
+					"response": []
+				},
+				{
+					"name": "login adm",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to validate the response schema and ensure the response contains the expected properties\r",
+									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.isAdmin).to.exist;\r",
+									"});\r",
+									"\r",
+									"// Test to check if the response contains a raw token (string without a key)\r",
+									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
+									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
+									"\r",
+									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
+									"\r",
+									"    // Definindo a variável do token no ambiente da coleção\r",
+									"    pm.collectionVariables.set(\"token\", rawToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"username": "admin@email.com",
+								"password": "tati"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar usuário",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"victoria\",\r\n  \"nickname\": \"victoria\",\r\n  \"senha\": \"12345678\",\r\n  \"email\": \"fernandeesviic@gmail.com\",\r\n  \"isAdmin\": false,\r\n  \"bloqueado\": false,\r\n  \"fotoPerfil\": \"\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/novo"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"Admin\",\r\n  \"email\": \"admin@email.com\",\r\n  \"nickname\": \"admin\",\r\n  \"senha\": \"123\",\r\n  \"bloqueado\": false,\r\n  \"fotoPerfil\": \"https://example.com/ayrton-senna.jpg\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/novo-admin"
+					},
+					"response": []
+				},
+				{
+					"name": "verificar email",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/verifyMail/juju@email.com"
+					},
+					"response": []
+				},
+				{
+					"name": "verificar OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/verifyOtp/709370/fernandeesviic@gmail.com"
+					},
+					"response": []
+				},
+				{
+					"name": "mudar senha",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\":\"senha1234\",\r\n   \"repeatPassword\":\"senha1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/changePassword/fernandeesviic@gmail.com"
+					},
+					"response": []
+				},
+				{
+					"name": "login dois fatores teste",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to validate the response schema and ensure the response contains the expected properties\r",
+									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.isAdmin).to.exist;\r",
+									"});\r",
+									"\r",
+									"// Test to check if the response contains a raw token (string without a key)\r",
+									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
+									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
+									"\r",
+									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
+									"\r",
+									"    // Definindo a variável do token no ambiente da coleção\r",
+									"    pm.collectionVariables.set(\"token\", rawToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"fernandeesviic@gmail.com\",\r\n  \"password\": \"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/login-2fa"
+					},
+					"response": []
+				},
+				{
+					"name": "verificar dois fatores teste",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"fernandeesviic@gmail.com\",\r\n  \"otp\": \"166068\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/flop/auth/verify-2fa"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "salvar foto de perfil",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fotoDePerfil",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/salvar-foto"
+					},
+					"response": []
+				},
+				{
+					"name": "atualizar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Max Bolinha Verstappen\",\r\n    \"email\": \"max@verstappen.com\",\r\n    \"nickname\": \"madmaxv\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/atualizar"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/excluir"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/todos"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/1"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"vic@email.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/filtrar"
+					},
+					"response": []
+				},
+				{
+					"name": "obter usuario autenticado",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/usuario-autenticado"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Postagem",
+			"item": [
+				{
+					"name": "salvar foto",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fotoDePerfil",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagem/salvar-foto"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"usuario\": {\r\n    \"idUsuario\": \"1\"\r\n  },\r\n  \"praia\": {\r\n    \"idPraia\": 15\r\n  },\r\n  \"mensagem\": \"testando postagem\",\r\n  \"excluida\": false\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todos",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/todos"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/12"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/4"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \r\n    \"mensagem\": \"praia\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/filtrar"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Avaliação",
+			"item": [
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmZXJuYW5kZWVzdmlpY0BnbWFpbC5jb20iLCJyb2xlcyI6IlJPTEVfVVNFUiIsImlkVXN1YXJpbyI6MSwiaXNzIjoiZmxvcCIsImV4cCI6MTc0OTYyNjQyOCwiaWF0IjoxNzQ5NTkwNDI4fQ.Qklfqrz0gDjG_dUmKS421wLo47autIccL1mHDQfZwjqZaC0EL4TwLzGeeAwho0REdb73UWuH2bDUOFM8fJewXC5wkYRn52AjeQshXwyZDysnDSaO0_EwHtSNds-WUfaR-I2syBS0GytHkGWLYcZm_edG1KhF0HdHUf17cW03NYLWopl3dcSuukzfft7BierfHmgKSMIlOV_EL7E-gKTz4pgX7jWPz7IyqemLzZXsb-bba4q1WDwPw5cph8Z0yVZGhcy8AWtCA5L4w_fSHZ3dcH0BR2rThKSK9YQZ78m7ecRNEsgxbyj68CwUgT6ZZzki_nlJFvOPQdZLFqoAhLb5ig"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"idUsuario\": 1\r\n ,\r\n \r\n    \"idPraia\": 1\r\n ,\r\n  \"condicoes\": [\"CHUVA\",\"LOTADA\",\"MUSICA\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "atualizar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"idUsuario\": 2,\r\n    \"idPraia\": 1,\r\n  \"condicoes\": [\"LIXO\",\"LOTADA\",\"MUSICA\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/atualizar/52"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/excluir/53"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/52"
+					},
+					"response": []
+				},
+				{
+					"name": "AvaliacaoUsuarioHojeNaPraia",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/usuario/1/praia/17/hoje"
+					},
+					"response": []
+				},
+				{
+					"name": "verificarAvaliacaoExistente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/usuario/2/praia/17/existe"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"idPraia\": 11\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/filtrar"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Denuncias",
+			"item": [
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"usuarioDenunciador\": {\r\n    \"idUsuario\": 3\r\n  },\r\n  \"postagem\": {\r\n    \"idPostagem\": 2\r\n  },\r\n  \"motivo\": \"INADEQUADO\",\r\n  \"status\": \"PENDENTE\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "atualizar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n \"ACEITA\"\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/atualizar/3"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/excluir/1"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/todas"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/1"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idUsuario\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/denuncias/filtrar"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Praia",
+			"item": [
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomePraia\": \"Praia do Campeche\",\r\n  \"localizacao\" : {\r\n    \"latitude\": -27.66234652156589,  \r\n    \"longitude\": -48.473551090387836\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/excluir/1"
+					},
+					"response": []
+				},
+				{
+					"name": "editar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"nomePraia\": \"Praia do Sambaqui\",\r\n \r\n    \"latitude\": -27.4860832,\r\n    \"longitude\": -48.5384513,\r\n    \"placeId\": \"ChIJBS63Ht5FJ5URaWMHdNmAJ1A\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/editar/3"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todas",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/todos"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/1"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar avaliacoes dia",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/1/avaliacoes"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar postagens dia",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/1/postagens"
+					},
+					"response": []
+				},
+				{
+					"name": "Informacoes da praia hoje",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/2/hoje"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"nomePraia\": \"Praia da saudade\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/praias/filtrar"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sugestao",
+			"item": [
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nomePraia\": \"Praia da caca\",\r\n  \"bairro\": \"Coqueiros\",\r\n  \"descricao\": \"Uma praia linda com águas calmas, ideal para famílias.\",\r\n  \"usuario\": {\r\n    \"idUsuario\": 1\r\n  }\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/sugestoes/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/sugestoes/excluir/idSugestao"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/sugestoes/idSugestao"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar com filtros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nomePraia\": \"Praia do Coco\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/sugestoes/filtrar"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todas",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/sugestoes/todos"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Localizacao",
+			"item": [
+				{
+					"name": "cadastrar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"latitude\": \"-27.692409\",\r\n  \"longitude\":\"-48.482299\"\r\n \r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/localizacao/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/flop/localizacao/excluir/1"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar todas",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/localizacao/todos"
+					},
+					"response": []
+				},
+				{
+					"name": "pesquisar por id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/localizacao/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "IA",
+			"item": [
+				{
+					"name": "recomendar",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"preferencias\": \"quero uma praia com salva vidas, estacionamento e sem lixo\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}:{{PORT}}/flop/ia/recomendar?preferencias=sol, mar calmo, limpa",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"flop",
+								"ia",
+								"recomendar"
+							],
+							"query": [
+								{
+									"key": "preferencias",
+									"value": "sol, mar calmo, limpa"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "PORT",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
