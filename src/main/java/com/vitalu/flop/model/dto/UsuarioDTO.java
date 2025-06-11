@@ -16,7 +16,6 @@ public class UsuarioDTO {
 	private LocalDateTime dataCriacao;
 	private String fotoPerfil;
 	private boolean bloqueado;
-	// private Localizacao localizacao;
 	private List<Long> avaliacaoIds;
 	private List<Long> postagemIds;
 	private List<Long> sugerirPraiaIds;

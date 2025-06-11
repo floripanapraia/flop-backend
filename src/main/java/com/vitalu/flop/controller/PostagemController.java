@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,6 +75,17 @@ public class PostagemController {
 		return postagemService.pesquisarTodos();
 	}
 
+	@Operation(summary = "Excluir postagem")
+	@ApiResponse(responseCode = "201", description = "Postagem excluída com sucesso!")
+	@DeleteMapping("/excluir/{id}")
+	public ResponseEntity<Void> excluir(@PathVariable Long id) throws FlopException {
+		Usuario subject = authService.getUsuarioAutenticado();
+
+		postagemService.excluir(id, subject.getIdUsuario());
+
+		return ResponseEntity.noContent().build();
+	}
+	
 	@Operation(summary = "Pesquisar postagem por ID", description = "Busca uma postagem específica pelo seu ID.")
 	@GetMapping(path = "/{id}")
 	public ResponseEntity<PostagemDTO> pesquisarPorId(@PathVariable Long id) throws FlopException {
@@ -94,5 +106,4 @@ public class PostagemController {
 	public int contarPaginas(@RequestBody PostagemSeletor seletor) {
 		return this.postagemService.contarPaginas(seletor);
 	}
-
 }
