@@ -12,11 +12,10 @@ public class UsuarioDTO {
 	private String nome;
 	private String nickname;
 	private String email;
-	private boolean isAdmin;
+	private int isAdmin;
 	private LocalDateTime dataCriacao;
 	private String fotoPerfil;
-	private boolean bloqueado;
-	// private Localizacao localizacao;
+	private int isBloqueado;
 	private List<Long> avaliacaoIds;
 	private List<Long> postagemIds;
 	private List<Long> sugerirPraiaIds;
