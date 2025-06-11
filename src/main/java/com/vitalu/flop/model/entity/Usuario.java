@@ -62,8 +62,6 @@ public class Usuario implements UserDetails {
 
 	private boolean bloqueado = false;
 
-//	private Localizacao localizacao;
-
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
 	@JsonManagedReference(value = "avaliacao-usuario")
 	private List<Avaliacao> avaliacao;
