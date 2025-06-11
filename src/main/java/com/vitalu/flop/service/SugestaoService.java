@@ -84,4 +84,12 @@ public class SugestaoService {
 		return sugestoes.map(SugestaoDTO::converterParaDTO);
 
 	}
+
+	public Sugestao alternarStatusAnalise(Long idSugestao) throws FlopException {
+		Sugestao sugestao = sugestaoRepository.findById(idSugestao)
+				.orElseThrow(() -> new FlopException("Esta sugestão não foi encontrada!", HttpStatus.NOT_FOUND));
+
+		sugestao.setAnalisada(!sugestao.getAnalisada());
+		return sugestaoRepository.save(sugestao);
+	}
 }
