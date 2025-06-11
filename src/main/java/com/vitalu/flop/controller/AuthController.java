@@ -93,7 +93,7 @@ public class AuthController {
 	@PostMapping("/verify-2fa")
 	public String verifyTwoFactor(@RequestBody TwoFactorVerifyRequest request) throws FlopException {
 		try {
-		
+
 			System.out.println("Email recebido: " + request.email());
 			System.out.println("OTP recebido: " + request.otp());
 
@@ -114,7 +114,7 @@ public class AuthController {
 
 		} catch (FlopException e) {
 			e.printStackTrace();
-			throw e; 
+			throw e;
 
 		} catch (Exception e) {
 			System.out.println("=== ERRO GERAL ===");
