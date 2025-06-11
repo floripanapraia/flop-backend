@@ -23,7 +23,7 @@ public class AuthService {
 		this.jwtService = jwtService;
 	}
 
-	public String authenticate(Authentication authentication) {
+	public String authenticate(Authentication authentication) throws FlopException {
 		return jwtService.generateToken(authentication);
 	}
 
