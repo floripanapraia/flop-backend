@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,9 @@ public class TwoFactorAuth {
     @Column(nullable = false)
     private Date expirationTime;
     
+    // CORRIGIDO: Adicionado JoinColumn para mapear corretamente a chave estrangeira
     @OneToOne
+    @JoinColumn(name = "user_id_usuario", nullable = false)
     private Usuario user;
     
     @Builder.Default
