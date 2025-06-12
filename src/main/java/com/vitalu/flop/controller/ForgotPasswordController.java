@@ -46,7 +46,7 @@ public class ForgotPasswordController {
 
 		int otp = otpGenerator();
 		MailBody mailBody = MailBody.builder().to(email).text("Olá! Esse é seu código de verificação: " + otp)
-				.subject("OTP for forgot password request").build();
+				.subject("Recuperção de senha Floripa Na Praia.").build();
 
 		ForgotPassword fp = ForgotPassword.builder().otp(otp)
 				// código válido por uma hora. 
