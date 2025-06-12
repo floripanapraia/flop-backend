@@ -85,7 +85,7 @@ public class AuthController {
 			return ResponseEntity.ok(response);
 
 		} catch (Exception e) {
-			LoginResponse response = new LoginResponse(false, "Erro interno do servidor", null);
+			LoginResponse response = new LoginResponse(false, "Senha incorreta.", null);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
