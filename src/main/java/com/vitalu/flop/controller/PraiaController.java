@@ -122,13 +122,6 @@ public class PraiaController {
 		return praiaService.buscarAvaliacoesDoDia(praiaId);
 	}
 
-	@Operation(summary = "Pesquisa as avaliações do dia", description = "Retorna as avaliações do dia.")
-	@GetMapping("/{praiaId}/postagens")
-	public ResponseEntity<List<Postagem>> postagensDoDia(@PathVariable Long praiaId) {
-		List<Postagem> postagensDoDia = praiaService.buscarPostagensDoDia(praiaId);
-		return ResponseEntity.ok(postagensDoDia);
-	}
-
 	@Operation(summary = "Retorna as informações da praia atualizadas.", description = "Apresenta as postagens, avaliações e imagens do dia.")
 	@GetMapping("/{praiaId}/hoje")
 	public ResponseEntity<PraiaDTO> informacoesPraiaHoje(@PathVariable Long praiaId) throws FlopException {

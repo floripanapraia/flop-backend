@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -83,8 +84,27 @@ public class PraiaService {
 				: Pageable.unpaged();
 
 		Page<Praia> pagePraias = praiaRepository.findAll(seletor, pageable);
+		
+		if (seletor.getCondicoes() != null && !seletor.getCondicoes().isEmpty()) {
+			  LocalDateTime hojeInicio = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+			  LocalDateTime hojeFim = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+
+			  List<Praia> praiasCondicoes = praiaRepository.findPraiasComCondicoesHoje(
+			      hojeInicio,
+			      hojeFim,
+			      seletor.getCondicoes(),
+			      seletor.getCondicoes().size()
+			  );
+
+			  List<PraiaDTO> dtos = praiasCondicoes.stream()
+			      .map(PraiaMapper::toDTO)
+			      .collect(Collectors.toList());
+
+			  return new PageImpl<>(dtos); // ou com paginação, como explicado antes
+			}
 
 		return pagePraias.map(this::buildDetalhesPraiaDTO);
+
 	}
 
 	public PraiaDTO pesquisarPraiasId(Long praiaId) throws FlopException {
@@ -96,29 +116,26 @@ public class PraiaService {
 
 	/** Constrói o DTO com avaliações, postagens, imagens e contagens */
 	private PraiaDTO buildDetalhesPraiaDTO(Praia praia) {
-	    PraiaDTO dto = PraiaMapper.toDTO(praia);
-	    Long id = praia.getIdPraia();
+		PraiaDTO dto = PraiaMapper.toDTO(praia);
+		Long id = praia.getIdPraia();
 
-	    // 1) Avaliações
-	    List<Avaliacao> avaliacoes = avaliacaoRepository.findByPraia_IdPraia(id);
+		// 1) Avaliações
+		List<Avaliacao> avaliacoes = avaliacaoRepository.findByPraia_IdPraia(id);
 
-	    // **seta o total de avaliações do dia**
-	    dto.setTotalAvaliacoesDoDia(avaliacoes.size());
+		// **seta o total de avaliações do dia**
+		dto.setTotalAvaliacoesDoDia(avaliacoes.size());
 
-	    // contagem por condição
-	    Map<String,Integer> condicoes = contarCondicoesAvaliacoes(avaliacoes);
-	    dto.setCondicoesAvaliacoes(condicoes);
+		// contagem por condição
+		Map<String, Integer> condicoes = contarCondicoesAvaliacoes(avaliacoes);
+		dto.setCondicoesAvaliacoes(condicoes);
 
-	    // 2) Postagens
-	    List<Postagem> postagens = postagemRepository.findByPraia_IdPraia(id);
-	    dto.setMensagensPostagens(
-	        postagens.stream().map(Postagem::getMensagem).collect(Collectors.toList())
-	    );
-	    dto.setImagensPostagens(
-	        postagens.stream().map(Postagem::getImagem).filter(Objects::nonNull).collect(Collectors.toList())
-	    );
+		// 2) Postagens
+		List<Postagem> postagens = postagemRepository.findByPraia_IdPraia(id);
+		dto.setMensagensPostagens(postagens.stream().map(Postagem::getMensagem).collect(Collectors.toList()));
+		dto.setImagensPostagens(
+				postagens.stream().map(Postagem::getImagem).filter(Objects::nonNull).collect(Collectors.toList()));
 
-	    return dto;
+		return dto;
 	}
 
 	public void excluirPraia(Long praiaId, Long usuarioId) throws FlopException {
@@ -157,14 +174,6 @@ public class PraiaService {
 		return avaliacaoRepository.findAvaliacoesDoDia(praiaId, inicioDoDia, fimDoDia);
 	}
 
-	public List<Postagem> buscarPostagensDoDia(Long praiaId) {
-		LocalDate hoje = LocalDate.now();
-		LocalDateTime inicioDoDia = hoje.atStartOfDay();
-		LocalDateTime fimDoDia = hoje.atTime(LocalTime.MAX);
-
-		return postagemRepository.findPostagensDoDia(praiaId, inicioDoDia, fimDoDia);
-	}
-
 	private static Map<String, Integer> contarCondicoesAvaliacoes(List<Avaliacao> avaliacoes) {
 		Map<String, Integer> condicoesContagem = new HashMap<>();
 		for (Avaliacao avaliacao : avaliacoes) {
@@ -186,21 +195,6 @@ public class PraiaService {
 		Map<String, Integer> condicoesContagem = contarCondicoesAvaliacoes(avaliacoesDoDia);
 		dto.setCondicoesAvaliacoes(condicoesContagem);
 
-		List<Postagem> postagensDoDia = buscarPostagensDoDia(praiaId);
-		List<String> mensagensPostagens = new ArrayList<>();
-		List<String> imagensPostagens = new ArrayList<>();
-		for (Postagem postagem : postagensDoDia) {
-			mensagensPostagens.add(postagem.getMensagem());
-			if (postagem.getImagem() != null) {
-				imagensPostagens.add(postagem.getImagem());
-			}
-		}
-		dto.setMensagensPostagens(mensagensPostagens);
-		dto.setImagensPostagens(imagensPostagens);
-
 		return dto;
 	}
-
-	// TODO MÉTODOS DE IA
-
 }
