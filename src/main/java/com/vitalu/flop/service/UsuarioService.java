@@ -1,6 +1,7 @@
 package com.vitalu.flop.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.mapper.UsuarioMapper;
+import com.vitalu.flop.model.dto.UsuarioDTO;
 import com.vitalu.flop.model.entity.Usuario;
+import com.vitalu.flop.model.repository.PostagemRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
 import com.vitalu.flop.model.seletor.UsuarioSeletor;
 
@@ -24,6 +28,8 @@ public class UsuarioService implements UserDetailsService {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	@Autowired
+	private PostagemRepository postagemRepository;
 
 	@Autowired
 	private ImagemService imagemService;
@@ -34,6 +40,8 @@ public class UsuarioService implements UserDetailsService {
 
 	@Autowired
 	private PasswordEncoder encoder;
+	@Autowired
+	private UsuarioMapper usuarioMapper;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -84,25 +92,26 @@ public class UsuarioService implements UserDetailsService {
 		usuarioRepository.deleteById(idUsuario);
 	}
 
-	public List<Usuario> pesquisarTodos() {
-		return usuarioRepository.findAll();
+	public List<UsuarioDTO> pesquisarTodos() {
+		List<Usuario> usuarios = usuarioRepository.findAll();
+		return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
-	public Usuario pesquisarPorId(Long id) throws FlopException {
-		return usuarioRepository.findById(id)
+	public UsuarioDTO pesquisarPorId(Long id) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(id)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+		return usuarioMapper.toDTO(usuario);
 	}
 
-	public List<Usuario> pesquisarComFiltros(UsuarioSeletor seletor) {
+	public List<UsuarioDTO> pesquisarComFiltros(UsuarioSeletor seletor) {
+		List<Usuario> usuarios;
 		if (seletor.temPaginacao()) {
-			int pageNumber = seletor.getPagina();
-			int pageSize = seletor.getLimite();
-
-			PageRequest page = PageRequest.of(pageNumber - 1, pageSize);
-			return usuarioRepository.findAll(seletor, page).toList();
+			PageRequest page = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite());
+			usuarios = usuarioRepository.findAll(seletor, page).toList();
+		} else {
+			usuarios = usuarioRepository.findAll(seletor);
 		}
-
-		return usuarioRepository.findAll(seletor);
+		return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
 	public void salvarFotoDePerfil(MultipartFile foto, Long usuarioId) throws FlopException {
