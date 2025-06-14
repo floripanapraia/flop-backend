@@ -20,7 +20,10 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long>, Jpa
 			@Param("fimDia") LocalDateTime fimDia);
 	
 	 List<Avaliacao> findByPraia_IdPraia  (Long idPraia);
-	 
+
+	Optional<Avaliacao> findByUsuarioIdUsuarioAndCriadoEmBetween(Long idUsuario, LocalDateTime inicio,
+			LocalDateTime fim);
+
 	Optional<Avaliacao> findByUsuarioIdUsuarioAndPraiaIdPraiaAndCriadoEmBetween(
 			Long idUsuario, 
 			Long idPraia, 

@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.dto.AvaliacaoDTO;
@@ -87,7 +86,6 @@ public class AvaliacaoService {
 		if (!avaliacaoExistente.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
 			throw new FlopException("Você não tem permissão para atualizar esta avaliação", HttpStatus.FORBIDDEN);
 		}
-
 		// Verificar se a avaliação foi criada hoje (permitir edição apenas no mesmo
 		// dia)
 		verificarEdicaoPermitida(avaliacaoExistente);
@@ -171,6 +169,21 @@ public class AvaliacaoService {
 		}
 
 		return Avaliacao.toDTO(avaliacaoHojeNaPraia.get());
+	}
+
+//	  Busca todas as avaliações do usuário feitas hoje (em todas as praias)
+	public List<AvaliacaoDTO> buscarAvaliacoesDoUsuarioHoje(Long idUsuario) throws FlopException {
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+
+		LocalDate hoje = LocalDate.now();
+		LocalDateTime inicioHoje = hoje.atStartOfDay();
+		LocalDateTime fimHoje = hoje.atTime(LocalTime.MAX);
+
+		Optional<Avaliacao> avaliacoesHoje = avaliacaoRepository.findByUsuarioIdUsuarioAndCriadoEmBetween(idUsuario,
+				inicioHoje, fimHoje);
+
+		return avaliacoesHoje.stream().map(Avaliacao::toDTO).toList();
 	}
 
 	private void validarCondicoes(List<Condicoes> condicoes) throws FlopException {

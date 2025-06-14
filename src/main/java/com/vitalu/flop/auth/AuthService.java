@@ -25,6 +25,16 @@ public class AuthService {
 	}
 
 	public String authenticate(Authentication authentication) throws FlopException {
+		String email = authentication.getName();
+		Usuario usuario = userRepository.findByEmail(email)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.UNAUTHORIZED));
+
+		if (Boolean.TRUE.equals(usuario.isBloqueado())) {
+			throw new FlopException(
+					"Sua conta foi bloqueada. Entre em contato com o administrador para mais informações.",
+					HttpStatus.FORBIDDEN);
+		}
+
 		return jwtService.generateToken(authentication);
 	}
 	

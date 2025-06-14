@@ -35,8 +35,17 @@ public class PostagemService {
 	private PraiaRepository praiaRepository;
 	@Autowired
 	private ImagemService imagemService;
+//	@Autowired
+//	private GeminiService geminiService;
 
 	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
+		// 1. Validação do conteúdo com Gemini
+//		if (geminiService.isContentInappropriate(postagemDTO.getMensagem())) {
+//			throw new FlopException("Sua mensagem contém conteúdo impróprio e não pode ser publicada.",
+//					HttpStatus.BAD_REQUEST);
+//		}
+
+		// 2. Lógica de negócio pré-existente
 		Optional<Usuario> autor = usuarioRepository.findById(postagemDTO.getUsuarioId());
 		Usuario usuario = autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
