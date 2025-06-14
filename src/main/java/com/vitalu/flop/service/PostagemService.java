@@ -35,14 +35,17 @@ public class PostagemService {
 	private PraiaRepository praiaRepository;
 	@Autowired
 	private ImagemService imagemService;
+	@Autowired
+	private GeminiService geminiService;
 
 	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
 		Optional<Usuario> autor = usuarioRepository.findById(postagemDTO.getUsuarioId());
 		Usuario usuario = autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
 		Optional<Praia> praia = praiaRepository.findById(postagemDTO.getPraiaId());
-		Praia praiaCadastrada = praia.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.BAD_REQUEST));
-		
+		Praia praiaCadastrada = praia
+				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.BAD_REQUEST));
+
 		Postagem postagem = new Postagem();
 		postagem.setUsuario(usuario);
 		postagem.setPraia(praiaCadastrada);
@@ -104,9 +107,7 @@ public class PostagemService {
 					postagemRepository.findAll(seletor, Sort.by(Sort.Direction.DESC, "criadoEm")));
 		}
 
-		return postagensFiltradas.stream()
-	            .map(Postagem::toDTO)
-	            .collect(Collectors.toList());
+		return postagensFiltradas.stream().map(Postagem::toDTO).collect(Collectors.toList());
 	}
 
 	public void salvarImagem(MultipartFile foto, Long idPostagem, Long idUsuario) throws FlopException {
