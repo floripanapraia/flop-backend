@@ -21,5 +21,7 @@ public interface PostagemRepository extends JpaRepository<Postagem, Long>, JpaSp
 	List<Postagem> findByUsuarioIdUsuario(Long idUsuario);
 	
     List<Postagem> findByPraia_IdPraia (Long idPraia);
+    
+    int countByUsuarioIdUsuarioAndExcluidaIsTrue(Long idUsuario);
 
 }
