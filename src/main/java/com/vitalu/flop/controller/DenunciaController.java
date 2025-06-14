@@ -4,24 +4,28 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.AnaliseDenunciaDTO;
 import com.vitalu.flop.model.dto.DenunciaDTO;
 import com.vitalu.flop.model.entity.Denuncia;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.enums.StatusDenuncia;
 import com.vitalu.flop.model.seletor.DenunciaSeletor;
 import com.vitalu.flop.service.DenunciaService;
+
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
@@ -91,6 +95,17 @@ public class DenunciaController {
 	@PostMapping("/filtrar")
 	public List<DenunciaDTO> pesquisarComFiltros(@RequestBody DenunciaSeletor seletor) {
 		return denunciaService.pesquisarComFiltros(seletor);
+	}
+
+	@Operation(summary = "Analisar denúncias de uma postagem", description = "Aceita ou recusa todas as denúncias de uma postagem específica e atualiza a postagem conforme a ação.", responses = {
+			@ApiResponse(responseCode = "200", description = "Denúncias analisadas com sucesso"),
+			@ApiResponse(responseCode = "404", description = "Postagem não encontrada") })
+	@PutMapping("/analisar/postagem/{idPostagem}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Void> analisarDenuncias(@PathVariable Long idPostagem,
+			@RequestBody AnaliseDenunciaDTO request) throws FlopException {
+		denunciaService.analisarDenunciasDaPostagem(idPostagem, request.getNovoStatus());
+		return ResponseEntity.ok().build();
 	}
 
 }
