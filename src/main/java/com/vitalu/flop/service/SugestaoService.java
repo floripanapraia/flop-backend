@@ -86,7 +86,7 @@ public class SugestaoService {
 	}
 
 	public Sugestao alternarStatusAnalise(Long idSugestao) throws FlopException {
-		Sugestao sugestao = sugestaoRepository.findById(idSugestao)
+		Sugestao sugestao = sugestaoRepository.findByIdSugestao(idSugestao)
 				.orElseThrow(() -> new FlopException("Esta sugestão não foi encontrada!", HttpStatus.NOT_FOUND));
 
 		sugestao.setAnalisada(!sugestao.getAnalisada());
