@@ -19,5 +19,7 @@ public class UsuarioDTO {
 	private List<Long> avaliacaoIds;
 	private List<Long> postagemIds;
 	private List<Long> sugerirPraiaIds;
+	
+	private int totalPostagensBloqueadas; 
 
 }
