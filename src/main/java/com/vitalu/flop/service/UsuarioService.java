@@ -66,7 +66,8 @@ public class UsuarioService implements UserDetailsService {
 		usuarioExistente.setEmail(usuarioASerAtualizado.getEmail());
 		usuarioExistente.setFotoPerfil(usuarioASerAtualizado.getFotoPerfil());
 
-		if (usuarioASerAtualizado.getSenha() != null && !usuarioASerAtualizado.getSenha().isEmpty()) {
+		if (usuarioASerAtualizado.getSenha() != null && !usuarioASerAtualizado.getSenha().isEmpty()
+				&& !usuarioASerAtualizado.getSenha().equals("NO_PASSWORD_UPDATE")) {
 			usuarioExistente.setSenha(encoder.encode(usuarioASerAtualizado.getSenha()));
 		}
 
@@ -104,6 +105,11 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepository.findAll(seletor);
 	}
 
+	public Usuario buscarPorEmail(String email) throws FlopException {
+	    return usuarioRepository.findByEmail(email)
+	            .orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+	}
+	
 	public void salvarFotoDePerfil(MultipartFile foto, Long usuarioId) throws FlopException {
 		Usuario usuario = usuarioRepository.findById(usuarioId)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));

@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,8 +42,17 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/auth/*", "/public").permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(auth -> auth
+						// Rotas públicas que não precisam de autenticação
+						.requestMatchers("/auth/*", "/public").permitAll().requestMatchers("/forgotPassword/**")
+						.permitAll()
+						// Rotas de praias que estarão públicas
+						.requestMatchers("/praias/todos").permitAll().requestMatchers("/praias/{idPraia}").permitAll()
+						.requestMatchers("/praias/filtrar").permitAll().requestMatchers("/praias/{praiaId}/hoje")
+						.permitAll().requestMatchers("/postagens/filtrar").permitAll()
+						.requestMatchers("/avaliacoes/filtrar").permitAll()
+						// Todas as outras rotas requerem autenticação
+						.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults()).oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()));
 
 		return http.build();
@@ -64,6 +75,11 @@ public class SecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+		return authConfig.getAuthenticationManager();
 	}
 
 	@Bean

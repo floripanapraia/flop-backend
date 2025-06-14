@@ -46,7 +46,8 @@ public class PraiaController {
 
 	@Operation(summary = "Inserir nova praia.", responses = {
 			@ApiResponse(responseCode = "200", description = "Praia criada com sucesso!", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Praia.class))),
-			@ApiResponse(responseCode = "400", description = "Erro de validação ou regra de negócio.", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Erro de validação: campo X é obrigatório\", \"status\": 400}"))) })
+			@ApiResponse(responseCode = "400", description = "Erro de validação ou regra de negócio.", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Erro de validação: campo X é obrigatório\", \"status\": 400}"))),
+			@ApiResponse(responseCode = "401", description = "Usuário não autenticado")})
 	@PostMapping(path = "/cadastrar")
 	public ResponseEntity<Praia> cadastrarPraia(@Valid @RequestBody PraiaDTO novaPraia) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
@@ -62,6 +63,7 @@ public class PraiaController {
 	@ApiResponse(responseCode = "204", description = "Praia excluída com sucesso")
 	@ApiResponse(responseCode = "403", description = "Apenas administradores podem excluir praias")
 	@ApiResponse(responseCode = "404", description = "Praia não encontrada")
+	@ApiResponse(responseCode = "401", description = "Usuário não autenticado")
 	@DeleteMapping("/excluir/{praiaId}")
 	public ResponseEntity<Void> excluirPraia(@PathVariable Long praiaId) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
@@ -73,18 +75,23 @@ public class PraiaController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "Excluir praia")
+	@ApiResponse(responseCode = "204", description = "Praia editada com sucesso")
+	@ApiResponse(responseCode = "403", description = "Apenas administradores podem editar praias")
+	@ApiResponse(responseCode = "404", description = "Praia não encontrada")
+	@ApiResponse(responseCode = "401", description = "Usuário não autenticado")
 	@PutMapping("/editar/{praiaId}")
 	public ResponseEntity<Praia> editarPraia(@PathVariable Long praiaId, @RequestBody PraiaDTO praiaEditadaDto)
 			throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 		if (subject.isAdmin() == true) {
-			Praia praiaAtualizada = praiaService.editarPraia(praiaEditadaDto, subject.getIdUsuario());
+			Praia praiaAtualizada = praiaService.editarPraia(praiaEditadaDto, praiaId);
 			return ResponseEntity.ok(praiaAtualizada);
 		} else {
-			throw new FlopException("Usuários não podem editar praias.", HttpStatus.BAD_REQUEST);
+			throw new FlopException("Apenas administradores podem editar praias!", HttpStatus.UNAUTHORIZED);
 		}
 	}
-
+	
 	@Operation(summary = "Listar todas as praias.", description = "Retorna uma lista de todas as praias cadastrados no sistema.", responses = {
 			@ApiResponse(responseCode = "200", description = "Lista de praias retornada com sucesso") })
 	@GetMapping(path = "/todos")
@@ -94,8 +101,8 @@ public class PraiaController {
 
 	@Operation(summary = "Pesquisar praia por ID.", description = "Busca uma praia específica através do seu ID.")
 	@GetMapping(path = "/{idPraia}")
-	public ResponseEntity<PraiaDTO> pesquisarPraiasId(@PathVariable("idPraia") Long praiaId) throws FlopException {
-		PraiaDTO praia = praiaService.pesquisarPraiasId(praiaId);
+	public ResponseEntity<PraiaDTO> pesquisarPraiasId(@PathVariable("idPraia") Long idPraia) throws FlopException {
+		PraiaDTO praia = praiaService.pesquisarPraiasId(idPraia);
 		return ResponseEntity.ok(praia);
 	}
 
@@ -115,15 +122,8 @@ public class PraiaController {
 		return praiaService.buscarAvaliacoesDoDia(praiaId);
 	}
 
-	@Operation(summary = "Pesquisa as avaliações do dia", description = "Retorna as avaliações do dia.")
-	@GetMapping("/{praiaId}/postagens")
-	public ResponseEntity<List<Postagem>> postagensDoDia(@PathVariable Long praiaId) {
-		List<Postagem> postagensDoDia = praiaService.buscarPostagensDoDia(praiaId);
-		return ResponseEntity.ok(postagensDoDia);
-	}
-
 	@Operation(summary = "Retorna as informações da praia atualizadas.", description = "Apresenta as postagens, avaliações e imagens do dia.")
-	@GetMapping("/{praiaId}/now")
+	@GetMapping("/{praiaId}/hoje")
 	public ResponseEntity<PraiaDTO> informacoesPraiaHoje(@PathVariable Long praiaId) throws FlopException {
 		PraiaDTO praiaHoje = praiaService.obterInformacoesPraiaHoje(praiaId);
 		return ResponseEntity.ok(praiaHoje);

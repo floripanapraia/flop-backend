@@ -1,7 +1,6 @@
 package com.vitalu.flop.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -62,8 +63,6 @@ public class Usuario implements UserDetails {
 
 	private boolean bloqueado = false;
 
-//	private Localizacao localizacao;
-
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
 	@JsonManagedReference(value = "avaliacao-usuario")
 	private List<Avaliacao> avaliacao;
@@ -76,14 +75,17 @@ public class Usuario implements UserDetails {
 	@JsonManagedReference(value = "usuario-sugestoes")
 	private List<Sugestao> sugestoes;
 
+	@OneToOne(mappedBy = "user")
+	private ForgotPassword forgotPassword;
+	
+	// ADICIONADO: Relacionamento com TwoFactorAuth
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TwoFactorAuth twoFactorAuth;
+
 	// Métodos da interface UserDetails
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
-
-		list.add(new SimpleGrantedAuthority("USER"));
-
-		return list;
+		return List.of(new SimpleGrantedAuthority(this.isAdmin ? "ADMIN" : "USER"));
 	}
 
 	@Override

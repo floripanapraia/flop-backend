@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vitalu.flop.model.dto.PostagemDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,8 +14,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -44,6 +43,7 @@ public class Postagem {
 	@CreationTimestamp
 	private LocalDateTime criadoEm;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String imagem;
 
 	@Size(max = 300)
@@ -51,20 +51,14 @@ public class Postagem {
 
 	private Boolean excluida;
 
-//	@OneToOne(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "idLocalizacao", referencedColumnName = "idLocalizacao")
-//	private Localizacao localizacao;
-
-  @ManyToMany
-  @JoinTable(
-      name = "postagem_curtidas",
-      joinColumns = @JoinColumn(name = "postagem_id"),
-      inverseJoinColumns = @JoinColumn(name = "usuario_id")
-  )
-  private List<Usuario> usuariosCurtiram;
-
 	@OneToMany(mappedBy = "postagem")
 	@JsonBackReference
 	private List<Denuncia> denuncias;
 
+	public static PostagemDTO toDTO(Postagem postagem) {
+		return new PostagemDTO(postagem.getIdPostagem(), postagem.getUsuario().getIdUsuario(),
+				postagem.getUsuario().getFotoPerfil(), postagem.getUsuario().getNickname(),
+				postagem.getPraia().getIdPraia(), postagem.getPraia().getNomePraia(), postagem.getCriadoEm(),
+				postagem.getImagem(), postagem.getMensagem(), postagem.getExcluida());
+	}
 }

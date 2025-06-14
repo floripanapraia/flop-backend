@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,17 +20,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.mapper.PraiaMapper;
 import com.vitalu.flop.model.dto.PraiaDTO;
-import com.vitalu.flop.model.dto.SugestaoDTO;
 import com.vitalu.flop.model.entity.Avaliacao;
-import com.vitalu.flop.model.entity.Localizacao;
 import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Praia;
-import com.vitalu.flop.model.entity.Sugestao;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.enums.Condicoes;
 import com.vitalu.flop.model.repository.AvaliacaoRepository;
-import com.vitalu.flop.model.repository.LocalizacaoRepository;
 import com.vitalu.flop.model.repository.PostagemRepository;
 import com.vitalu.flop.model.repository.PraiaRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
@@ -43,9 +43,6 @@ public class PraiaService {
 	private UsuarioRepository usuarioRepository;
 
 	@Autowired
-	private LocalizacaoRepository localizacaoRepository;
-
-	@Autowired
 	private AvaliacaoRepository avaliacaoRepository;
 
 	@Autowired
@@ -53,61 +50,92 @@ public class PraiaService {
 
 	public Praia cadastrarPraia(PraiaDTO dto) throws FlopException {
 
-		Localizacao local = localizacaoRepository.save(dto.getLocalizacao());
-
 		Praia novaPraia = new Praia();
 		novaPraia.setNomePraia(dto.getNomePraia());
-		novaPraia.setLocalizacao(local);
+		novaPraia.setLatitude(dto.getLatitude());
+		novaPraia.setLongitude(dto.getLongitude());
+		novaPraia.setPlaceId(dto.getPlaceId());
+		novaPraia.setImagem(dto.getImagem());
 
 		return praiaRepository.save(novaPraia);
 	}
 
 	public void excluirPraia(Long praiaId) throws FlopException {
-	    Praia praia = praiaRepository.findById(praiaId)
-	            .orElseThrow(() -> new FlopException("Praia não encontrada", HttpStatus.NOT_FOUND));
-	    
-	    // Exclui a localização associada se existir
-	    if (praia.getLocalizacao() != null) {
-	        localizacaoRepository.deleteById(praia.getLocalizacao().getIdLocalizacao());
-	    }
-	    
-	    praiaRepository.deleteById(praiaId);
+		praiaRepository.findById(praiaId)
+				.orElseThrow(() -> new FlopException("Praia não encontrada", HttpStatus.NOT_FOUND));
+
+		praiaRepository.deleteById(praiaId);
 	}
-	
+
 	public List<PraiaDTO> pesquisarPraiaTodas() throws FlopException {
 		List<Praia> praias = praiaRepository.findAll();
-		List<PraiaDTO> praiasDTO = new ArrayList<PraiaDTO>();
+		List<PraiaDTO> praiasDTO = new ArrayList<>();
 
 		for (Praia praia : praias) {
-			PraiaDTO dto = converterParaDTO(praia);
-			praiasDTO.add(dto);
+			praiasDTO.add(buildDetalhesPraiaDTO(praia));
 		}
+
 		return praiasDTO;
 	}
 
-	public PraiaDTO pesquisarPraiasId(Long praiaId) throws FlopException {
-		Praia sugestao = praiaRepository.findById(praiaId)
-				.orElseThrow(() -> new FlopException("Esta praia não foi encontrada!", HttpStatus.NOT_FOUND));
+	public Page<PraiaDTO> pesquisarPraiaFiltros(PraiaSeletor seletor) throws FlopException {
+		Pageable pageable = seletor.temPaginacao()
+				? PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("nomePraia").ascending())
+				: Pageable.unpaged();
 
-		PraiaDTO dto = converterParaDTO(sugestao);
-		return dto;
+		Page<Praia> pagePraias = praiaRepository.findAll(seletor, pageable);
+		
+		if (seletor.getCondicoes() != null && !seletor.getCondicoes().isEmpty()) {
+			  LocalDateTime hojeInicio = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+			  LocalDateTime hojeFim = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+
+			  List<Praia> praiasCondicoes = praiaRepository.findPraiasComCondicoesHoje(
+			      hojeInicio,
+			      hojeFim,
+			      seletor.getCondicoes(),
+			      seletor.getCondicoes().size()
+			  );
+
+			  List<PraiaDTO> dtos = praiasCondicoes.stream()
+			      .map(PraiaMapper::toDTO)
+			      .collect(Collectors.toList());
+
+			  return new PageImpl<>(dtos); // ou com paginação, como explicado antes
+			}
+
+		return pagePraias.map(this::buildDetalhesPraiaDTO);
+
 	}
 
-	public Page<PraiaDTO> pesquisarPraiaFiltros(PraiaSeletor seletor) throws FlopException {
-	    Pageable pageable = Pageable.unpaged();
+	public PraiaDTO pesquisarPraiasId(Long praiaId) throws FlopException {
+		Praia praia = praiaRepository.findById(praiaId)
+				.orElseThrow(() -> new FlopException("Esta praia não foi encontrada!", HttpStatus.NOT_FOUND));
 
-	    if (seletor.temPaginacao()) {
-	        pageable = PageRequest.of(seletor.getPagina() - 1, seletor.getLimite(), Sort.by("criadaEm").ascending());
-	    }
+		return buildDetalhesPraiaDTO(praia);
+	}
 
-	    Page<Praia> praias = praiaRepository.findAll(seletor, pageable);
+	/** Constrói o DTO com avaliações, postagens, imagens e contagens */
+	private PraiaDTO buildDetalhesPraiaDTO(Praia praia) {
+		PraiaDTO dto = PraiaMapper.toDTO(praia);
+		Long id = praia.getIdPraia();
 
-	    Page<PraiaDTO> praiasDTO = praias.map(praia -> {
-	        PraiaDTO dto = converterParaDTO(praia);
-	        return dto;
-	    });
+		// 1) Avaliações
+		List<Avaliacao> avaliacoes = avaliacaoRepository.findByPraia_IdPraia(id);
 
-	    return praiasDTO;
+		// **seta o total de avaliações do dia**
+		dto.setTotalAvaliacoesDoDia(avaliacoes.size());
+
+		// contagem por condição
+		Map<String, Integer> condicoes = contarCondicoesAvaliacoes(avaliacoes);
+		dto.setCondicoesAvaliacoes(condicoes);
+
+		// 2) Postagens
+		List<Postagem> postagens = postagemRepository.findByPraia_IdPraia(id);
+		dto.setMensagensPostagens(postagens.stream().map(Postagem::getMensagem).collect(Collectors.toList()));
+		dto.setImagensPostagens(
+				postagens.stream().map(Postagem::getImagem).filter(Objects::nonNull).collect(Collectors.toList()));
+
+		return dto;
 	}
 
 	public void excluirPraia(Long praiaId, Long usuarioId) throws FlopException {
@@ -125,27 +153,15 @@ public class PraiaService {
 		}
 	}
 
-	public Praia editarPraia(PraiaDTO praiaEditadaDto, Long usuarioId) throws FlopException {
-		Usuario usuario = usuarioRepository.findById(usuarioId)
-				.orElseThrow(() -> new FlopException("Usuário não localizado.", HttpStatus.NOT_FOUND));
-
-		if (!usuario.isAdmin()) {
-			throw new FlopException("Apenas administradores podem editar praias!", HttpStatus.UNAUTHORIZED);
-		}
-
-		Praia existente = praiaRepository.findById(praiaEditadaDto.getIdPraia())
+	public Praia editarPraia(PraiaDTO praiaEditadaDto, Long praiaId) throws FlopException {
+		Praia existente = praiaRepository.findById(praiaId)
 				.orElseThrow(() -> new FlopException("Praia não localizada.", HttpStatus.NOT_FOUND));
 
 		existente.setNomePraia(praiaEditadaDto.getNomePraia());
 		existente.setImagem(praiaEditadaDto.getImagem());
-
-		// Atualizar a localização se for fornecida no DTO
-		if (praiaEditadaDto.getLocalizacao().getIdLocalizacao() != null) {
-			Localizacao novaLocalizacao = localizacaoRepository
-					.findById(praiaEditadaDto.getLocalizacao().getIdLocalizacao())
-					.orElseThrow(() -> new FlopException("Localização não localizada.", HttpStatus.NOT_FOUND));
-			existente.setLocalizacao(novaLocalizacao);
-		}
+		existente.setLatitude(praiaEditadaDto.getLatitude());
+		existente.setLongitude(praiaEditadaDto.getLongitude());
+		existente.setPlaceId(praiaEditadaDto.getPlaceId());
 
 		return praiaRepository.save(existente);
 	}
@@ -158,16 +174,7 @@ public class PraiaService {
 		return avaliacaoRepository.findAvaliacoesDoDia(praiaId, inicioDoDia, fimDoDia);
 	}
 
-	public List<Postagem> buscarPostagensDoDia(Long praiaId) {
-		LocalDate hoje = LocalDate.now();
-		LocalDateTime inicioDoDia = hoje.atStartOfDay();
-		LocalDateTime fimDoDia = hoje.atTime(LocalTime.MAX);
-
-		return postagemRepository.findPostagensDoDia(praiaId, inicioDoDia, fimDoDia);
-	}
-
-	private Map<String, Integer> contarCondicoesAvaliacoes(List<Avaliacao> avaliacoes) {
-		// Conta cada condição adicionando num Map CONDICAO-QUANTIDADE
+	private static Map<String, Integer> contarCondicoesAvaliacoes(List<Avaliacao> avaliacoes) {
 		Map<String, Integer> condicoesContagem = new HashMap<>();
 		for (Avaliacao avaliacao : avaliacoes) {
 			for (Condicoes condicao : avaliacao.getCondicoes()) {
@@ -178,43 +185,16 @@ public class PraiaService {
 		return condicoesContagem;
 	}
 
-	private PraiaDTO converterParaDTO(Praia praia) {
-		PraiaDTO dto = new PraiaDTO();
-		dto.setIdPraia(praia.getIdPraia());
-		dto.setNomePraia(praia.getNomePraia());
-		dto.setImagem(praia.getImagem());
-		dto.setLocalizacao(praia.getLocalizacao() != null ? praia.getLocalizacao() : null);
-
-		// Contando as condições das avaliações do dia
-		List<Avaliacao> avaliacoes = buscarAvaliacoesDoDia(praia.getIdPraia());
-		Map<String, Integer> condicoesContagem = contarCondicoesAvaliacoes(avaliacoes);
-		dto.setCondicoesAvaliacoes(condicoesContagem);
-
-		// Adicionando as postagens e imagens do dia
-		List<String> mensagensPostagens = new ArrayList<>();
-		List<String> imagensPostagens = new ArrayList<>();
-		List<Postagem> postagens = buscarPostagensDoDia(praia.getIdPraia());
-		for (Postagem postagem : postagens) {
-			mensagensPostagens.add(postagem.getMensagem());
-			if (postagem.getImagem() != null) {
-				imagensPostagens.add(postagem.getImagem());
-			}
-		}
-		dto.setMensagensPostagens(mensagensPostagens);
-		dto.setImagensPostagens(imagensPostagens);
-
-		return dto;
-	}
-
 	public PraiaDTO obterInformacoesPraiaHoje(Long praiaId) throws FlopException {
 		Praia praia = praiaRepository.findById(praiaId)
 				.orElseThrow(() -> new FlopException("Praia não localizada.", HttpStatus.NOT_FOUND));
+		PraiaDTO dto = PraiaMapper.toDTO(praia);
 
-		PraiaDTO praiaHojeDTO = converterParaDTO(praia);
+		List<Avaliacao> avaliacoesDoDia = buscarAvaliacoesDoDia(praiaId);
+		dto.setTotalAvaliacoesDoDia(avaliacoesDoDia.size());
+		Map<String, Integer> condicoesContagem = contarCondicoesAvaliacoes(avaliacoesDoDia);
+		dto.setCondicoesAvaliacoes(condicoesContagem);
 
-		return praiaHojeDTO;
+		return dto;
 	}
-
-	// TODO MÉTODOS DE IA
-
 }
