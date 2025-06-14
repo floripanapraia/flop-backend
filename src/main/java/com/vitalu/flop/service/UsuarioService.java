@@ -114,6 +114,11 @@ public class UsuarioService implements UserDetailsService {
 		return usuarios.stream().map(usuarioMapper::toDTO).collect(Collectors.toList());
 	}
 
+	public Usuario buscarPorEmail(String email) throws FlopException {
+	    return usuarioRepository.findByEmail(email)
+	            .orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));
+	}
+	
 	public void salvarFotoDePerfil(MultipartFile foto, Long usuarioId) throws FlopException {
 		Usuario usuario = usuarioRepository.findById(usuarioId)
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.NOT_FOUND));

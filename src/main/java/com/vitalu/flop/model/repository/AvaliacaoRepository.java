@@ -23,7 +23,7 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long>, Jpa
 
 	Optional<Avaliacao> findByUsuarioIdUsuarioAndCriadoEmBetween(Long idUsuario, LocalDateTime inicio,
 			LocalDateTime fim);
-	
+
 	Optional<Avaliacao> findByUsuarioIdUsuarioAndPraiaIdPraiaAndCriadoEmBetween(
 			Long idUsuario, 
 			Long idPraia, 

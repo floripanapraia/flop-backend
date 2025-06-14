@@ -45,9 +45,11 @@ public class AvaliacaoController {
 	@PostMapping(path = "/cadastrar")
 	public ResponseEntity<AvaliacaoDTO> cadastrar(@Valid @RequestBody AvaliacaoDTO novaAvaliacaoDTO)
 			throws FlopException {
+		if (novaAvaliacaoDTO == null) {
+			throw new FlopException("Dados da avaliação inválidos.", HttpStatus.BAD_REQUEST);
+		}
 
 		Usuario usuarioAutenticado = authService.getUsuarioAutenticado();
-
 		if (usuarioAutenticado.isAdmin()) {
 			throw new FlopException("Administradores não podem fazer avaliações.", HttpStatus.BAD_REQUEST);
 		}
@@ -93,6 +95,17 @@ public class AvaliacaoController {
 
 		AvaliacaoDTO avaliacao = avaliacaoService.buscarAvaliacaoDoUsuarioHojeNaPraia(idUsuario, idPraia);
 		return ResponseEntity.ok(avaliacao);
+	}
+	
+	@Operation(summary = "Verificar avaliação existente", description = "Verifica se o usuário já fez uma avaliação hoje na praia específica.")
+	@GetMapping("/usuario/{idUsuario}/praia/{idPraia}/existe")
+	public ResponseEntity<Boolean> verificarAvaliacaoExistente(@PathVariable Long idUsuario, @PathVariable Long idPraia) {
+	    try {
+	        boolean existe = avaliacaoService.verificarAvaliacaoExistente(idUsuario, idPraia);
+	        return ResponseEntity.ok(existe);
+	    } catch (FlopException e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);  // Em caso de erro, retorna false
+	    }
 	}
 
 	@Operation(summary = "Pesquisar com filtro", description = "Retorna uma lista de avaliacoes de acordo com o filtro selecionado.", responses = {

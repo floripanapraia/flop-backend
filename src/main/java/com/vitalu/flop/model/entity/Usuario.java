@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -76,6 +77,10 @@ public class Usuario implements UserDetails {
 
 	@OneToOne(mappedBy = "user")
 	private ForgotPassword forgotPassword;
+	
+	// ADICIONADO: Relacionamento com TwoFactorAuth
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TwoFactorAuth twoFactorAuth;
 
 	// Métodos da interface UserDetails
 	@Override
