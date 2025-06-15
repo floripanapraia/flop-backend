@@ -37,22 +37,16 @@ public class AuthService {
 
 		return jwtService.generateToken(authentication);
 	}
-	
-	
-	//gera token JWT para um usuario especifico apos verificação 2FA
-	public String generateTokenForUser(Usuario usuario) {
-        // Cria um Authentication object com o Usuario como principal
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-            usuario, 
-            null, 
-            usuario.getAuthorities()
-        );
-        
-        return jwtService.generateToken(authentication);
-    }
-	
-	
-	
+
+	// gera token JWT para um usuario especifico apos verificação 2FA
+	public String generateTokenForUser(Usuario usuario) throws FlopException {
+		// Cria um Authentication object com o Usuario como principal
+		Authentication authentication = new UsernamePasswordAuthenticationToken(usuario, null,
+				usuario.getAuthorities());
+
+		return jwtService.generateToken(authentication);
+	}
+
 	public Usuario getUsuarioAutenticado() throws FlopException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Usuario authenticatedUser = null;

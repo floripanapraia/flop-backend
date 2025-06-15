@@ -33,7 +33,7 @@ public class PostagemSeletor extends BaseSeletor implements Specification<Postag
 		}
 
 		if (this.getIdUsuario() != null) {
-			predicates.add(cb.equal(root.get("usuario").get("usuarioId"), this.getIdUsuario()));
+			predicates.add(cb.equal(root.get("usuario").get("idUsuario"), this.getIdUsuario()));
 		}
 
 		if (this.getIdPraia() != null) {
