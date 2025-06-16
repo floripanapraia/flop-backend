@@ -9,7 +9,7 @@ import com.vitalu.flop.model.repository.PraiaRepository;
 
 @Service
 public class LocalizacaoService {
-	private static final double LIMITE_METROS = 1000;
+	private static final double LIMITE_METROS = 5000;
 
 	@Autowired
 	private PraiaRepository praiaRepository;
@@ -21,7 +21,7 @@ public class LocalizacaoService {
 			throw new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND);
 		}
 		if (distancia > LIMITE_METROS) {
-			throw new FlopException("Você só pode postar ou avaliar se estiver até 1 km da praia!!!", HttpStatus.FORBIDDEN);
+			throw new FlopException("Você só pode postar ou avaliar se estiver próximo a esta praia!", HttpStatus.FORBIDDEN);
 		}
 	}
 }
