@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.dto.AvaliacaoDTO;
+import com.vitalu.flop.model.dto.CriarAvaliacaoDTO;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.seletor.AvaliacaoSeletor;
@@ -42,8 +43,9 @@ public class AvaliacaoController {
 	@Operation(summary = "Cadastrar avaliação", description = "Cadastra uma nova avaliação de praia.")
 	@ApiResponse(responseCode = "201", description = "Avaliação cadastrada com sucesso")
 	@ApiResponse(responseCode = "400", description = "Dados inválidos ou usuário não autorizado")
+	@ApiResponse(responseCode = "403", description = "Fora do raio permitido")
 	@PostMapping(path = "/cadastrar")
-	public ResponseEntity<AvaliacaoDTO> cadastrar(@Valid @RequestBody AvaliacaoDTO novaAvaliacaoDTO)
+	public ResponseEntity<AvaliacaoDTO> cadastrar(@Valid @RequestBody CriarAvaliacaoDTO novaAvaliacaoDTO)
 			throws FlopException {
 		if (novaAvaliacaoDTO == null) {
 			throw new FlopException("Dados da avaliação inválidos.", HttpStatus.BAD_REQUEST);
