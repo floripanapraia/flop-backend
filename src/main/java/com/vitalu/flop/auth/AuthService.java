@@ -25,24 +25,28 @@ public class AuthService {
 	}
 
 	public String authenticate(Authentication authentication) throws FlopException {
+		String email = authentication.getName();
+		Usuario usuario = userRepository.findByEmail(email)
+				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.UNAUTHORIZED));
+
+		if (Boolean.TRUE.equals(usuario.isBloqueado())) {
+			throw new FlopException(
+					"Sua conta foi bloqueada. Entre em contato com o administrador para mais informações.",
+					HttpStatus.FORBIDDEN);
+		}
+
 		return jwtService.generateToken(authentication);
 	}
-	
-	
-	//gera token JWT para um usuario especifico apos verificação 2FA
-	public String generateTokenForUser(Usuario usuario) {
-        // Cria um Authentication object com o Usuario como principal
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-            usuario, 
-            null, 
-            usuario.getAuthorities()
-        );
-        
-        return jwtService.generateToken(authentication);
-    }
-	
-	
-	
+
+	// gera token JWT para um usuario especifico apos verificação 2FA
+	public String generateTokenForUser(Usuario usuario) throws FlopException {
+		// Cria um Authentication object com o Usuario como principal
+		Authentication authentication = new UsernamePasswordAuthenticationToken(usuario, null,
+				usuario.getAuthorities());
+
+		return jwtService.generateToken(authentication);
+	}
+
 	public Usuario getUsuarioAutenticado() throws FlopException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Usuario authenticatedUser = null;

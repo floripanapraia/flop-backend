@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DenunciaDTO {
-
 	private Long id;
 	private String nomeDenunciante;
 	private Long postagemId;

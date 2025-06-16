@@ -89,6 +89,11 @@ public class Usuario implements UserDetails {
 	}
 
 	@Override
+	public boolean isAccountNonLocked() {
+		return !this.isBloqueado();
+	}
+
+	@Override
 	public String getPassword() {
 		return this.senha;
 	}

@@ -21,6 +21,8 @@ import com.vitalu.flop.model.repository.PostagemRepository;
 import com.vitalu.flop.model.repository.UsuarioRepository;
 import com.vitalu.flop.model.seletor.DenunciaSeletor;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class DenunciaService {
 	@Autowired
@@ -51,9 +53,6 @@ public class DenunciaService {
 	public void atualizar(Long idDenuncia, StatusDenuncia novoStatus) throws FlopException {
 		Denuncia denuncia = denunciaRepository.findById(idDenuncia)
 				.orElseThrow(() -> new FlopException("Denúncia não encontrada.", HttpStatus.BAD_REQUEST));
-		Postagem postagem = denuncia.getPostagem();
-
-		atualizarStatusPruu(postagem, denuncia.getStatus(), novoStatus);
 
 		denuncia.setStatus(novoStatus);
 		denunciaRepository.save(denuncia);
@@ -71,52 +70,76 @@ public class DenunciaService {
 					HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	 public List<DenunciaDTO> pesquisarTodas() {
-	        List<Denuncia> denuncias =  denunciaRepository.findAll();
-	        return toDenunciaDTO(denuncias);
-	    }
 
-	    public DenunciaDTO pesquisarPorId(Long idDenuncia) throws FlopException {
-	        Denuncia denuncia = denunciaRepository.findById(idDenuncia).orElseThrow(() -> new FlopException("A denúncia buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
-	        return Denuncia.toDTO(denuncia);
-	    }
+	public List<DenunciaDTO> pesquisarTodas() {
+		List<Denuncia> denuncias = denunciaRepository.findAll();
+		return toDenunciaDTO(denuncias);
+	}
 
-	    public List<DenunciaDTO> pesquisarComFiltros(DenunciaSeletor seletor) {
-	        List<Denuncia> denuncias;
+	public DenunciaDTO pesquisarPorId(Long idDenuncia) throws FlopException {
+		Denuncia denuncia = denunciaRepository.findById(idDenuncia)
+				.orElseThrow(() -> new FlopException("A denúncia buscada não foi encontrada.", HttpStatus.BAD_REQUEST));
+		return Denuncia.toDTO(denuncia);
+	}
 
-	        if (seletor.temPaginacao()) {
-	            int pageNumber = seletor.getPagina();
-	            int pageSize = seletor.getLimite();
+	public List<DenunciaDTO> pesquisarComFiltros(DenunciaSeletor seletor) {
+		List<Denuncia> denuncias;
 
-	            PageRequest page = PageRequest.of(pageNumber - 1, pageSize);
-	            denuncias = denunciaRepository.findAll(seletor, page).toList();
-	        }
+		if (seletor.temPaginacao()) {
+			int pageNumber = seletor.getPagina();
+			int pageSize = seletor.getLimite();
 
-	        denuncias = denunciaRepository.findAll(seletor);
-
-	        return toDenunciaDTO(denuncias);
-	    }
-
-	    public List<DenunciaDTO> toDenunciaDTO(List<Denuncia> denuncias) {
-	        List<DenunciaDTO> denunciasDTO = new ArrayList<>();
-
-	        for (Denuncia d : denuncias) {
-	            DenunciaDTO dto = Denuncia.toDTO(d);
-	            denunciasDTO.add(dto);
-
-	        }
-	        return denunciasDTO;
-	    }
-
-	void atualizarStatusPruu(Postagem postagem, StatusDenuncia statusAtual, StatusDenuncia novoStatus) {
-		if (novoStatus == StatusDenuncia.ACEITA) {
-			postagem.setExcluida(true);
-		} else if (statusAtual == StatusDenuncia.ACEITA
-				&& (novoStatus == StatusDenuncia.RECUSADA || novoStatus == StatusDenuncia.PENDENTE)) {
-			postagem.setExcluida(false);
+			PageRequest page = PageRequest.of(pageNumber - 1, pageSize);
+			denuncias = denunciaRepository.findAll(seletor, page).toList();
 		}
 
+		denuncias = denunciaRepository.findAll(seletor);
+
+		return toDenunciaDTO(denuncias);
+	}
+
+	public List<DenunciaDTO> toDenunciaDTO(List<Denuncia> denuncias) {
+		List<DenunciaDTO> denunciasDTO = new ArrayList<>();
+
+		for (Denuncia d : denuncias) {
+			DenunciaDTO dto = Denuncia.toDTO(d);
+			denunciasDTO.add(dto);
+
+		}
+		return denunciasDTO;
+	}
+
+	// garante que todas as operações sejam executadas como uma única transação
+	// se tiver erro, todas as alterações são revertidas e a consistência se mantém
+	@Transactional
+	public void analisarDenunciasDaPostagem(Long idPostagem, StatusDenuncia novoStatus) throws FlopException {
+		// Valida se o novoStatus é uma ação de análise válida (ACEITA ou RECUSADA)
+		if (novoStatus != StatusDenuncia.ACEITA && novoStatus != StatusDenuncia.RECUSADA) {
+			throw new FlopException("Ação de análise inválida. Use ACEITA ou RECUSADA.", HttpStatus.BAD_REQUEST);
+		}
+
+		// Busca a postagem e suas denúncias associadas
+		Postagem postagem = postagemRepository.findById(idPostagem)
+				.orElseThrow(() -> new FlopException("Postagem não encontrada.", HttpStatus.NOT_FOUND));
+
+		List<Denuncia> denunciasDaPostagem = postagem.getDenuncias();
+
+		if (denunciasDaPostagem == null || denunciasDaPostagem.isEmpty()) {
+			return;
+		}
+
+		// Atualiza o status de todas as denúncias para o novoStatus
+		for (Denuncia denuncia : denunciasDaPostagem) {
+			denuncia.setStatus(novoStatus);
+		}
+		denunciaRepository.saveAll(denunciasDaPostagem); // Salva todas as denúncias modificadas de uma vez
+
+		// Atualiza o status de exclusão da postagem com base na ação
+		if (novoStatus == StatusDenuncia.ACEITA) {
+			postagem.setExcluida(true);
+		} else if (novoStatus == StatusDenuncia.RECUSADA) {
+			postagem.setExcluida(false);
+		}
 		postagemRepository.save(postagem);
 	}
 

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -100,6 +101,13 @@ public class SugestaoController {
 			throws FlopException {
 		Page<SugestaoDTO> resultado = sugestaoService.pesquisarSugestaoFiltros(seletor);
 		return ResponseEntity.ok(resultado);
+	}
+
+	@PatchMapping("/{id}/analisar")
+	public ResponseEntity<SugestaoDTO> alternarAnalise(@PathVariable Long id) throws FlopException {
+		Sugestao sugestaoAtualizada = sugestaoService.alternarStatusAnalise(id);
+		SugestaoDTO dto = SugestaoDTO.converterParaDTO(sugestaoAtualizada);
+		return ResponseEntity.ok(dto);
 	}
 
 }
