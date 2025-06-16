@@ -82,10 +82,17 @@ public class AvaliacaoService {
 		return dto;
 	}
 
-	public AvaliacaoDTO atualizar(Long idAvaliacao, AvaliacaoDTO editarAvaliacaoDTO) throws FlopException {
+	public AvaliacaoDTO atualizar(Long idAvaliacao, CriarAvaliacaoDTO editarAvaliacaoDTO) throws FlopException {
 
 		Avaliacao avaliacaoExistente = avaliacaoRepository.findById(idAvaliacao)
 				.orElseThrow(() -> new FlopException("Avaliação não encontrada.", HttpStatus.NOT_FOUND));
+		
+		localizacaoService.validarProximidadePraia(
+				editarAvaliacaoDTO.getIdPraia(),
+				editarAvaliacaoDTO.getLatitudeUser(),
+				editarAvaliacaoDTO.getLongitudeUser()
+		    );
+
 
 		Usuario usuarioLogado = authService.getUsuarioAutenticado();
 		if (!avaliacaoExistente.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
