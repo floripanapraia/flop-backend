@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.CriarPostagemDTO;
 import com.vitalu.flop.model.dto.PostagemDTO;
 import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Usuario;
@@ -53,10 +54,12 @@ public class PostagemController {
 	}
 
 	@Operation(summary = "Inserir nova postagem", description = "Adiciona uma nova postagem ao sistema.", responses = {
+			@ApiResponse(responseCode = "403", description = "Fora do raio permitido"),
 			@ApiResponse(responseCode = "200", description = "Postagem criada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Postagem.class))),
 			@ApiResponse(responseCode = "400", description = "Erro de validação ou regra de negócio", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"message\": \"Erro de validação: campo X é obrigatório\", \"status\": 400}"))) })
+	
 	@PostMapping(path = "/cadastrar")
-	public ResponseEntity<PostagemDTO> cadastrar(@Valid @RequestBody PostagemDTO novaPostagemDTO) throws FlopException {
+	public ResponseEntity<PostagemDTO> cadastrar(@Valid @RequestBody CriarPostagemDTO novaPostagemDTO) throws FlopException {
 		Usuario subject = authService.getUsuarioAutenticado();
 
 		if (subject.isAdmin() == false) {
