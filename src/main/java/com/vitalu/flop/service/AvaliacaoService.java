@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.vitalu.flop.auth.AuthService;
 import com.vitalu.flop.exception.FlopException;
 import com.vitalu.flop.model.dto.AvaliacaoDTO;
+import com.vitalu.flop.model.dto.CriarAvaliacaoDTO;
 import com.vitalu.flop.model.entity.Avaliacao;
 import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
@@ -40,21 +42,24 @@ public class AvaliacaoService {
 	@Autowired
 	private AuthService authService;
 
-	public AvaliacaoDTO cadastrar(AvaliacaoDTO avaliacaoDTO) throws FlopException {
+	@Autowired
+	private LocalizacaoService localizacaoService;
 
-		if (avaliacaoDTO == null) {
-			throw new FlopException("Dados da avaliação inválidos.", HttpStatus.BAD_REQUEST);
+	public AvaliacaoDTO cadastrar(CriarAvaliacaoDTO novaAvaliacaoDTO) throws FlopException {
+		if (novaAvaliacaoDTO.getLatitudeUser() == null || novaAvaliacaoDTO.getLongitudeUser() == null) {
+			throw new FlopException("É necessário permitir o acesso à sua localização. Sem as coordenadas do usuário, não será possível avaliar a praia.", HttpStatus.BAD_REQUEST);
 		}
 
-		Usuario usuario = usuarioRepository.findById(avaliacaoDTO.getIdUsuario())
+		Usuario usuario = usuarioRepository.findById(novaAvaliacaoDTO.getIdUsuario())
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
-		if (!usuario.getIdUsuario().equals(avaliacaoDTO.getIdUsuario())) {
+		if (!usuario.getIdUsuario().equals(novaAvaliacaoDTO.getIdUsuario())) {
 			throw new FlopException("Você não pode criar avaliação para outro usuário.", HttpStatus.FORBIDDEN);
 		}
 
-		Praia praia = praiaRepository.findById(avaliacaoDTO.getIdPraia())
+		Praia praia = praiaRepository.findById(novaAvaliacaoDTO.getIdPraia())
 				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.NOT_FOUND));
+		localizacaoService.validarProximidadePraia(novaAvaliacaoDTO.getIdPraia(), novaAvaliacaoDTO.getLatitudeUser(), novaAvaliacaoDTO.getLongitudeUser());
 
 		// Verificar se o usuário já fez uma avaliação hoje NESTA praia específica
 		verificarAvaliacaoHojeNaPraia(usuario.getIdUsuario(), praia.getIdPraia());
@@ -62,9 +67,9 @@ public class AvaliacaoService {
 		Avaliacao avaliacao = new Avaliacao();
 		avaliacao.setUsuario(usuario);
 		avaliacao.setPraia(praia);
-		avaliacao.setCondicoes(avaliacaoDTO.getCondicoes());
+		avaliacao.setCondicoes(novaAvaliacaoDTO.getCondicoes());
 
-		validarCondicoes(avaliacaoDTO.getCondicoes());
+		validarCondicoes(novaAvaliacaoDTO.getCondicoes());
 		Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
 		return Avaliacao.toDTO(avaliacaoSalva);
 	}
@@ -226,7 +231,7 @@ public class AvaliacaoService {
 		Optional<Avaliacao> avaliacaoExistente = avaliacaoRepository
 				.findByUsuarioIdUsuarioAndPraiaIdPraiaAndCriadoEmBetween(idUsuario, idPraia, inicioHoje, fimHoje);
 
-		return avaliacaoExistente.isPresent(); 
+		return avaliacaoExistente.isPresent();
 	}
 
 }

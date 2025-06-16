@@ -26,4 +26,15 @@ public interface PraiaRepository extends JpaRepository<Praia, Long>, JpaSpecific
 	List<Praia> findPraiasComCondicoesHoje(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim,
 			@Param("condicoes") List<Condicoes> condicoes, @Param("qtdCondicoes") long qtdCondicoes);
 
+	@Query(value = """
+			SELECT ST_Distance_Sphere(
+			  POINT(:longitudeUser, :latitudeUser),
+			  POINT(p.longitude, p.latitude)
+			)
+			FROM praia p
+			WHERE p.id_praia = :praiaId
+			""", nativeQuery = true)
+	Double distanciaEmMetros(@Param("praiaId") Long praiaId, @Param("latitudeUser") double latitudeUser,
+			@Param("longitudeUser") double longitudeUser);
+
 }
