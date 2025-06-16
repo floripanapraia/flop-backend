@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.CriarPostagemDTO;
 import com.vitalu.flop.model.dto.PostagemDTO;
 import com.vitalu.flop.model.entity.Postagem;
 import com.vitalu.flop.model.entity.Praia;
@@ -39,6 +40,8 @@ public class PostagemService {
 	private ImagemService imagemService;
 	@Autowired
 	private GeminiService geminiService;
+
+	private LocalizacaoService localizacaoService;
 
 	// Lista de padrões Regex para validação prévia.
 	private static final List<Pattern> PADROES_INVALIDOS = List.of(
@@ -105,35 +108,48 @@ public class PostagemService {
 		return false;
 	}
 
-	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
+	public PostagemDTO cadastrar(CriarPostagemDTO novaPostagemDTO) throws FlopException {
 		// Validação PRÉVIA com Regex e Palavras-Chave
-		if (mensagemContemPadroesInvalidos(postagemDTO.getMensagem()) || 
-				mensagemContemPalavrasProibidas(postagemDTO.getMensagem())) {
+		if (mensagemContemPadroesInvalidos(novaPostagemDTO.getMensagem()) || 
+				mensagemContemPalavrasProibidas(novaPostagemDTO.getMensagem())) {
 			throw new FlopException(
 					"Sua mensagem parece conter links, palavras impróprias ou dados pessoais, que não são permitidos.",
 					HttpStatus.BAD_REQUEST);
 		}
 
 		// Validação do conteúdo com Gemini (só roda se a validação prévia passar)
-		if (geminiService.isMensagemConsideradaOfensiva(postagemDTO.getMensagem())) {
+		if (geminiService.isMensagemConsideradaOfensiva(novaPostagemDTO.getMensagem())) {
 			throw new FlopException("Sua mensagem foi considerada imprópria ou excessivamente negativa pela moderação.",
 					HttpStatus.BAD_REQUEST);
 		}
 
 		// Lógica de negócio
-		Optional<Usuario> autor = usuarioRepository.findById(postagemDTO.getUsuarioId());
+		 if (novaPostagemDTO.getLatitudeUser() == null || novaPostagemDTO.getLongitudeUser() == null) {
+	            throw new FlopException(
+	                "É necessário permitir o acesso à sua localização. Sem as coordenadas do usuário, não será possível postar na praia.",
+	                HttpStatus.BAD_REQUEST
+	            );
+	        }
+
+		Optional<Usuario> autor = usuarioRepository.findById(novaPostagemDTO.getUsuarioId());
 		Usuario usuario = autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
-		Optional<Praia> praia = praiaRepository.findById(postagemDTO.getPraiaId());
+		Optional<Praia> praia = praiaRepository.findById(novaPostagemDTO.getPraiaId());
 		Praia praiaCadastrada = praia
 				.orElseThrow(() -> new FlopException("Praia não encontrada.", HttpStatus.BAD_REQUEST));
+		
+		  localizacaoService.validarProximidadePraia(
+				  novaPostagemDTO.getPraiaId(),
+				  novaPostagemDTO.getLatitudeUser(),
+				  novaPostagemDTO.getLongitudeUser()
+		        );
 
 		Postagem postagem = new Postagem();
 		postagem.setUsuario(usuario);
 		postagem.setPraia(praiaCadastrada);
 		postagem.setCriadoEm(LocalDateTime.now());
-		postagem.setImagem(postagemDTO.getImagem());
-		postagem.setMensagem(postagemDTO.getMensagem());
+		postagem.setImagem(novaPostagemDTO.getImagem());
+		postagem.setMensagem(novaPostagemDTO.getMensagem());
 		postagem.setExcluida(false);
 
 		postagemRepository.save(postagem);
