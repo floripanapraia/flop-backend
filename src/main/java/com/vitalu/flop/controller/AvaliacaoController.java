@@ -66,7 +66,7 @@ public class AvaliacaoController {
 	@Operation(summary = "Atualizar avaliação", description = "Atualiza as condições de uma avaliação existente.")
 	@PutMapping(path = "/atualizar/{idAvaliacao}")
 	public ResponseEntity<AvaliacaoDTO> atualizar(@PathVariable Long idAvaliacao,
-			@RequestBody AvaliacaoDTO editarAvaliacao) throws FlopException {
+			@RequestBody CriarAvaliacaoDTO editarAvaliacao) throws FlopException {
 
 		AvaliacaoDTO atualizada = avaliacaoService.atualizar(idAvaliacao, editarAvaliacao);
 		return ResponseEntity.status(200).body(atualizada);
