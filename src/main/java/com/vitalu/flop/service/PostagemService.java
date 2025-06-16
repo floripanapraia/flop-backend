@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,50 @@ public class PostagemService {
 //	@Autowired
 //	private GeminiService geminiService;
 
+	// Lista de padrões Regex para validação prévia.
+	private static final List<Pattern> PADROES_INVALIDOS = List.of(
+			// Regex para URLs (http, https, www)
+			Pattern.compile("(?i)(https?://|www\\.)\\S+"),
+			// Regex para endereços de e-mail
+			Pattern.compile("(?i)\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b"),
+			// Regex para números de telefone (formatos brasileiros e sequências longas de
+			// dígitos)
+			Pattern.compile("(?:\\(?\\d{2}\\)?\\s?)?(?:9\\d{4}|\\d{4})[-.\\s]?\\d{4}|\\d{8,}"),
+			// Regex para CPF (XXX.XXX.XXX-XX)
+			Pattern.compile("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}"),
+			// Regex para CNPJ (XX.XXX.XXX/XXXX-XX)
+			Pattern.compile("\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}"));
+
+	/**
+	 * Valida a mensagem contra uma lista de padrões indesejados (links, telefones,
+	 * etc.).
+	 * 
+	 * @param mensagem O texto da postagem.
+	 * @return true se a mensagem contém um padrão inválido, false caso contrário.
+	 */
+	private boolean mensagemContemPadroesInvalidos(String mensagem) {
+		for (Pattern pattern : PADROES_INVALIDOS) {
+			if (pattern.matcher(mensagem).find()) {
+				return true; // Encontrou um padrão inválido
+			}
+		}
+		return false; // A mensagem está limpa
+	}
+
 	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
-		// 1. Validação do conteúdo com Gemini
+		// Validação PRÉVIA com Regex para economizar tokens
+		if (mensagemContemPadroesInvalidos(postagemDTO.getMensagem())) {
+			throw new FlopException(
+					"Sua mensagem parece conter links, números de telefone ou dados pessoais, que não são permitidos.",
+					HttpStatus.BAD_REQUEST);
+		}
+
+		// Validação do conteúdo com Gemini (só roda se a validação prévia passar)
 //		if (geminiService.isContentInappropriate(postagemDTO.getMensagem())) {
-//			throw new FlopException("Sua mensagem contém conteúdo impróprio e não pode ser publicada.",
-//					HttpStatus.BAD_REQUEST);
+//			throw new FlopException("Sua mensagem contém conteúdo impróprio e não pode ser publicada.", HttpStatus.BAD_REQUEST);
 //		}
 
-		// 2. Lógica de negócio pré-existente
+		// Lógica de negócio
 		Optional<Usuario> autor = usuarioRepository.findById(postagemDTO.getUsuarioId());
 		Usuario usuario = autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
