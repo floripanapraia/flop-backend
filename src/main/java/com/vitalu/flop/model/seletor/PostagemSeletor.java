@@ -32,6 +32,7 @@ public class PostagemSeletor extends BaseSeletor implements Specification<Postag
 			predicates.add(cb.like(root.get("mensagem"), "%" + this.getMensagem() + "%"));
 		}
 
+		
 		if (this.getIdUsuario() != null) {
 			predicates.add(cb.equal(root.get("usuario").get("idUsuario"), this.getIdUsuario()));
 		}
@@ -59,6 +60,8 @@ public class PostagemSeletor extends BaseSeletor implements Specification<Postag
 			}
 			// Se vier outro valor inesperado, não adiciona filtro de imagem.
 		}
+		
+	    predicates.add(cb.isFalse(root.get("excluida")));
 
 		return cb.and(predicates.toArray(new Predicate[0]));
 	}
