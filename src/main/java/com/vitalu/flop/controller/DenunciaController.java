@@ -47,8 +47,8 @@ public class DenunciaController {
 		Usuario subject = authService.getUsuarioAutenticado();
 
 		denuncia.setUsuarioDenunciador(subject);
-
-		return ResponseEntity.ok(denunciaService.cadastrar(denuncia));
+		denunciaService.cadastrar(denuncia);
+		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "Atualizar status da denuncia", description = "Atualiza o status da denuncia", responses = {
