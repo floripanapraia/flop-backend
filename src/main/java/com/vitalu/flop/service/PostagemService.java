@@ -129,7 +129,8 @@ public class PostagemService {
 			throw new FlopException("Você não é o dono desta postagem, portanto não pode excluí-la.",
 					HttpStatus.FORBIDDEN);
 		}
-
+		
+		postagem.setExcluida(true);
 		postagemRepository.save(postagem);
 	}
 
