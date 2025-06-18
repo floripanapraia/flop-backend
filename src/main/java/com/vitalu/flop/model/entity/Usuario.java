@@ -76,6 +76,7 @@ public class Usuario implements UserDetails {
 	private List<Sugestao> sugestoes;
 
 	@OneToOne(mappedBy = "user")
+	@JsonManagedReference(value = "usuario-forgotPassword")
 	private ForgotPassword forgotPassword;
 	
 	// ADICIONADO: Relacionamento com TwoFactorAuth

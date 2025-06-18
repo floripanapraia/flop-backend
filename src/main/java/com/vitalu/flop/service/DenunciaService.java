@@ -40,7 +40,7 @@ public class DenunciaService {
 		}
 
 		Postagem postDenunciado = postagemRepository.findById(denuncia.getPostagem().getIdPostagem())
-				.orElseThrow(() -> new FlopException("Pruu não encontrado.", HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new FlopException("Denúncia não encontrado.", HttpStatus.BAD_REQUEST));
 		Usuario autorDaDenuncia = usuarioRepository.findById(denuncia.getUsuarioDenunciador().getIdUsuario())
 				.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
