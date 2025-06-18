@@ -2,6 +2,8 @@ package com.vitalu.flop.model.entity;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,5 +35,6 @@ public class ForgotPassword {
 	private Date expirationTime;
 
 	@OneToOne
+	@JsonBackReference("usuario-forgotPassword")
 	private Usuario user;
 }
