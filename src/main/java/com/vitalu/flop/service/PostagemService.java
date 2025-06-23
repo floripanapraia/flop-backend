@@ -2,6 +2,7 @@ package com.vitalu.flop.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -36,8 +37,8 @@ public class PostagemService {
 	private PraiaRepository praiaRepository;
 	@Autowired
 	private ImagemService imagemService;
-//	@Autowired
-//	private GeminiService geminiService;
+	@Autowired
+	private GeminiService geminiService;
 
 	// Lista de padrões Regex para validação prévia.
 	private static final List<Pattern> PADROES_INVALIDOS = List.of(
@@ -52,6 +53,10 @@ public class PostagemService {
 			Pattern.compile("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}"),
 			// Regex para CNPJ (XX.XXX.XXX/XXXX-XX)
 			Pattern.compile("\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}"));
+
+	// Lista de palavras proibidas
+	// Adicionar outras palavras proibidas conforme necessário
+	private static final List<String> PALAVRAS_PROIBIDAS = Arrays.asList("ódio", "lixo", "porco", "nojento", "matar", "morrer", "imbecil", "idiota", "retardado");
 
 	/**
 	 * Valida a mensagem contra uma lista de padrões indesejados (links, telefones,
@@ -69,18 +74,35 @@ public class PostagemService {
 		return false; // A mensagem está limpa
 	}
 
+	/**
+	 * Valida a mensagem contra uma lista de palavras proibidas.
+	 */
+	private boolean mensagemContemPalavrasProibidas(String mensagem) {
+		if (mensagem == null || mensagem.isBlank())
+			return false;
+		String mensagemLowerCase = mensagem.toLowerCase();
+		for (String palavra : PALAVRAS_PROIBIDAS) {
+			if (mensagemLowerCase.contains(palavra)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
-		// Validação PRÉVIA com Regex para economizar tokens
-		if (mensagemContemPadroesInvalidos(postagemDTO.getMensagem())) {
+		// Validação PRÉVIA com Regex e Palavras-Chave
+		if (mensagemContemPadroesInvalidos(postagemDTO.getMensagem())
+				|| mensagemContemPalavrasProibidas(postagemDTO.getMensagem())) {
 			throw new FlopException(
-					"Sua mensagem parece conter links, números de telefone ou dados pessoais, que não são permitidos.",
+					"Sua mensagem parece conter links, palavras impróprias ou dados pessoais, que não são permitidos.",
 					HttpStatus.BAD_REQUEST);
 		}
 
 		// Validação do conteúdo com Gemini (só roda se a validação prévia passar)
-//		if (geminiService.isContentInappropriate(postagemDTO.getMensagem())) {
-//			throw new FlopException("Sua mensagem contém conteúdo impróprio e não pode ser publicada.", HttpStatus.BAD_REQUEST);
-//		}
+		if (geminiService.isMensagemConsideradaOfensiva(postagemDTO.getMensagem())) {
+			throw new FlopException("Sua mensagem foi considerada imprópria ou excessivamente negativa pela moderação.",
+					HttpStatus.BAD_REQUEST);
+		}
 
 		// Lógica de negócio
 		Optional<Usuario> autor = usuarioRepository.findById(postagemDTO.getUsuarioId());
