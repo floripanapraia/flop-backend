@@ -68,6 +68,10 @@ public class PostagemService {
     "traveco", // Homofobia/Transfobia
     "vadia", "piranha", // Misoginia
     "mongol", "aleijado", "retardado", // Capacitismo
+		
+    // Violência e Conteúdo Explícito
+    "suicídio", "tortura", "sequestro", "decapitar", "esfaquear",
+    "pedofilia", "incesto", "pornô"
 );
 
 	/**
