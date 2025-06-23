@@ -58,6 +58,10 @@ public class PostagemService {
 	// Adicionar outras palavras proibidas conforme necessário
 	private static final List<String> PALAVRAS_PROIBIDAS = Arrays.asList(
     "morrer", "imbecil", "idiota", "estupro", "assassinar", "violência",
+
+    // Xingamentos e Palavrões
+    "merda", "bosta", "caralho", "porra", "puta", "foder", "arrombado", "desgraçado",
+    "escroto", "babaca", "otário", "vagabundo", "filho da puta",
 );
 
 	/**
