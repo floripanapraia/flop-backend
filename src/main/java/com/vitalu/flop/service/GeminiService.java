@@ -25,7 +25,6 @@ public class GeminiService {
     private final RestTemplate restTemplate = new RestTemplate();
     private ObjectMapper objectMapper;
 
-    // --- MUDANÇA 1: USANDO O MODELO "PRO" ---
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=";
 
     // Estruturas de classes para o JSON
@@ -44,7 +43,7 @@ public class GeminiService {
     }
 
     public boolean isMensagemConsideradaOfensiva(String message) throws FlopException {
-        // --- MUDANÇA 2: PROMPT COM TOLERÂNCIA ZERO ---
+        // PROMPT COM TOLERÂNCIA ZERO ---
         String prompt = "TAREFA: Classificação de Conteúdo. Você é um moderador de conteúdo para uma rede social sobre praias com uma política de tolerância zero. " +
                         "Sua única função é classificar o texto fornecido. INSTRUÇÕES: Se o texto contiver QUALQUER um dos seguintes elementos - " +
                         "ofensa, agressão, ameaça velada, generalização negativa sobre um grupo de pessoas, linguagem depreciativa, " +
