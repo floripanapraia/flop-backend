@@ -90,7 +90,7 @@ public class PostagemService {
 	}
 
 	public PostagemDTO cadastrar(PostagemDTO postagemDTO) throws FlopException {
-		// Validação PRÉVIA com Regex para economizar tokens
+		// Validação PRÉVIA com Regex e Palavras-Chave
 		if (mensagemContemPadroesInvalidos(postagemDTO.getMensagem()) || 
 				mensagemContemPalavrasProibidas(postagemDTO.getMensagem())) {
 			throw new FlopException(
