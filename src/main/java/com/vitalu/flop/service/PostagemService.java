@@ -124,6 +124,13 @@ public class PostagemService {
 		}
 
 		// Lógica de negócio
+		if (novaPostagemDTO.getLatitudeUser() == null || novaPostagemDTO.getLongitudeUser() == null) {
+			throw new FlopException(
+					"É necessário permitir o acesso à sua localização. Sem as coordenadas do usuário, não será possível postar na praia.",
+					HttpStatus.BAD_REQUEST);
+		}
+
+		// Lógica de negócio
 		 if (novaPostagemDTO.getLatitudeUser() == null || novaPostagemDTO.getLongitudeUser() == null) {
 	            throw new FlopException(
 	                "É necessário permitir o acesso à sua localização. Sem as coordenadas do usuário, não será possível postar na praia.",
