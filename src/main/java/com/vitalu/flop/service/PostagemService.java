@@ -62,6 +62,12 @@ public class PostagemService {
     // Xingamentos e Palavrões
     "merda", "bosta", "caralho", "porra", "puta", "foder", "arrombado", "desgraçado",
     "escroto", "babaca", "otário", "vagabundo", "filho da puta",
+
+    // Termos Discriminatórios
+    "macaco", "crioulo", "negrada", // Racismo
+    "traveco", // Homofobia/Transfobia
+    "vadia", "piranha", // Misoginia
+    "mongol", "aleijado", "retardado", // Capacitismo
 );
 
 	/**
