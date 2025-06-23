@@ -56,7 +56,9 @@ public class PostagemService {
 
 	// Lista de palavras proibidas
 	// Adicionar outras palavras proibidas conforme necessário
-	private static final List<String> PALAVRAS_PROIBIDAS = Arrays.asList("ódio", "porco", "morrer", "imbecil", "idiota", "estupro", "assassinar", "violência", "racista");
+	private static final List<String> PALAVRAS_PROIBIDAS = Arrays.asList(
+    "morrer", "imbecil", "idiota", "estupro", "assassinar", "violência",
+);
 
 	/**
 	 * Valida a mensagem contra uma lista de padrões indesejados (links, telefones,
