@@ -26,5 +26,19 @@ public class PostagemMockFactory {
         postagem.setDenuncias(new ArrayList<>());
         return postagem;
     }
+    
+
+    /**
+     * Cria uma postagem que foi marcada como excluída.
+     *
+     * @return uma instância de {@link Postagem} com o campo 'excluida' como true.
+     */
+    public static Postagem criarPostagemExcluida() {
+        Postagem postagem = criarPostagemPadrao();
+        postagem.setIdPostagem(2L);
+        postagem.setExcluida(true);
+        postagem.setMensagem("Esta postagem foi removida.");
+        return postagem;
+    }
 
 }
