@@ -59,6 +59,8 @@ class PostagemServiceTest {
 	private ImagemService imagemService;
 	@Mock
 	private LocalizacaoService localizacaoService;
+	@Mock
+    private GeminiService geminiService; // Mock para o novo serviço de IA
 
 	private Postagem postagemValida;
 	private Usuario usuarioDono;
