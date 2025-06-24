@@ -135,21 +135,33 @@ class PostagemServiceTest {
 			postagemService.excluir(99L, usuarioDono.getIdUsuario());
 		});
 	}
-	
+
 	// Testes para o método pesquisarPorId()
-    @Test
-    @DisplayName("Deve retornar PostagemDTO ao pesquisar por ID existente")
-    void testPesquisarPorId_QuandoIdExiste_DeveRetornarDTO() throws FlopException {
-        // Arrange
-        when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+	@Test
+	@DisplayName("Deve retornar PostagemDTO ao pesquisar por ID existente")
+	void testPesquisarPorId_QuandoIdExiste_DeveRetornarDTO() throws FlopException {
+		// Arrange
+		when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
 
-        // Act
-        PostagemDTO resultado = postagemService.pesquisarPorId(postagemValida.getIdPostagem());
+		// Act
+		PostagemDTO resultado = postagemService.pesquisarPorId(postagemValida.getIdPostagem());
 
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(postagemValida.getIdPostagem(), resultado.getIdPostagem());
-        assertEquals(postagemValida.getMensagem(), resultado.getMensagem());
-    }
+		// Assert
+		assertNotNull(resultado);
+		assertEquals(postagemValida.getIdPostagem(), resultado.getIdPostagem());
+		assertEquals(postagemValida.getMensagem(), resultado.getMensagem());
+	}
 
+	@Test
+	@DisplayName("Deve lançar FlopException ao pesquisar por ID inexistente")
+	void testPesquisarPorId_QuandoIdNaoExiste_DeveLancarExcecao() {
+		// Arrange
+		when(postagemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> {
+			postagemService.pesquisarPorId(99L);
+		});
+		assertEquals("A postagem buscada não foi encontrada.", exception.getMessage());
+	}
 }
