@@ -70,4 +70,17 @@ public class DenunciaMockFactory {
 		denuncia.setStatus(StatusDenuncia.PENDENTE);
 		return denuncia;
 	}
+
+	/**
+	 * Cria uma denúncia por motivo de conteúdo ILEGAL.
+	 *
+	 * @return uma instância de {@link Denuncia} com motivo ILEGAL.
+	 */
+	public static Denuncia criarDenunciaPorConteudoIlegal() {
+		Denuncia denuncia = criarDenunciaPendente();
+		denuncia.setIdDenuncia(5L);
+		denuncia.setMotivo(MotivosDenuncia.ILEGAL);
+		denuncia.setStatus(StatusDenuncia.PENDENTE);
+		return denuncia;
+	}
 }
