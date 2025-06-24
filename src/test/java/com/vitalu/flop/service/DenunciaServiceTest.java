@@ -156,5 +156,38 @@ class DenunciaServiceTest {
 		assertEquals("Não é possível excluir denúncias que não foram feitas por você.", exception.getMessage());
 		verify(denunciaRepository, never()).deleteById(anyLong());
 	}
+	
+	// Testes para o método analisarDenunciasDaPostagem()
+    @Test
+    @DisplayName("Deve ACEITAR todas as denúncias e MARCAR postagem como excluída")
+    void testAnalisarDenuncias_ComAcaoAceita_DeveAtualizarDenunciasEPostagem() throws FlopException {
+        // Arrange
+        Denuncia denuncia1 = DenunciaMockFactory.criarDenunciaPendente();
+        denuncia1.setIdDenuncia(1L);
+        Denuncia denuncia2 = DenunciaMockFactory.criarDenunciaPendente();
+        denuncia2.setIdDenuncia(2L);
+        
+        postagemValida.setDenuncias(List.of(denuncia1, denuncia2));
+        postagemValida.setExcluida(false);
 
+        when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+
+        // Act
+        denunciaService.analisarDenunciasDaPostagem(postagemValida.getIdPostagem(), StatusDenuncia.ACEITA);
+
+        // Assert
+        // Captura a lista de denúncias salvas
+        ArgumentCaptor<List<Denuncia>> denunciasCaptor = ArgumentCaptor.forClass(List.class);
+        verify(denunciaRepository).saveAll(denunciasCaptor.capture());
+        List<Denuncia> denunciasSalvas = denunciasCaptor.getValue();
+        assertEquals(2, denunciasSalvas.size());
+        assertTrue(denunciasSalvas.stream().allMatch(d -> d.getStatus() == StatusDenuncia.ACEITA));
+
+        // Captura a postagem salva
+        ArgumentCaptor<Postagem> postagemCaptor = ArgumentCaptor.forClass(Postagem.class);
+        verify(postagemRepository).save(postagemCaptor.capture());
+        Postagem postagemSalva = postagemCaptor.getValue();
+        assertTrue(postagemSalva.getExcluida());
+    }
+    
 }
