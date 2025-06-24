@@ -127,17 +127,34 @@ class DenunciaServiceTest {
 	}
 
 	// Testes para o método excluir()
-    @Test
-    @DisplayName("Deve excluir denúncia quando o usuário for o autor")
-    void testExcluir_QuandoUsuarioForAutor_DeveDeletarDenuncia() throws FlopException {
-        // Arrange
-        Long idUsuarioAutor = denunciaValida.getUsuarioDenunciador().getIdUsuario();
-        when(denunciaRepository.findById(denunciaValida.getIdDenuncia())).thenReturn(Optional.of(denunciaValida));
-        
-        // Act
-        denunciaService.excluir(denunciaValida.getIdDenuncia(), idUsuarioAutor);
-        
-        // Assert
-        verify(denunciaRepository, times(1)).deleteById(denunciaValida.getIdDenuncia());
-    }
+	@Test
+	@DisplayName("Deve excluir denúncia quando o usuário for o autor")
+	void testExcluir_QuandoUsuarioForAutor_DeveDeletarDenuncia() throws FlopException {
+		// Arrange
+		Long idUsuarioAutor = denunciaValida.getUsuarioDenunciador().getIdUsuario();
+		when(denunciaRepository.findById(denunciaValida.getIdDenuncia())).thenReturn(Optional.of(denunciaValida));
+
+		// Act
+		denunciaService.excluir(denunciaValida.getIdDenuncia(), idUsuarioAutor);
+
+		// Assert
+		verify(denunciaRepository, times(1)).deleteById(denunciaValida.getIdDenuncia());
+	}
+
+	@Test
+	@DisplayName("Deve lançar FlopException ao tentar excluir denúncia de outro usuário")
+	void testExcluir_QuandoUsuarioNaoForAutor_DeveLancarExcecao() {
+		// Arrange
+		Long idUsuarioNaoAutor = 99L;
+		when(denunciaRepository.findById(denunciaValida.getIdDenuncia())).thenReturn(Optional.of(denunciaValida));
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> {
+			denunciaService.excluir(denunciaValida.getIdDenuncia(), idUsuarioNaoAutor);
+		});
+
+		assertEquals("Não é possível excluir denúncias que não foram feitas por você.", exception.getMessage());
+		verify(denunciaRepository, never()).deleteById(anyLong());
+	}
+
 }
