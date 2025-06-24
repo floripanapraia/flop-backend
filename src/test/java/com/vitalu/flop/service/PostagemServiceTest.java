@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,10 +84,44 @@ class PostagemServiceTest {
 		usuarioAdmin = UsuarioMockFactory.criarUsuarioAdmin(); // ID 1L, mas vamos mudar para 2L para diferenciar
 		usuarioAdmin.setIdUsuario(2L);
 
+		// Constrói específicamente para o teste de cadastro
+		usuarioValido = UsuarioMockFactory.criarUsuarioPadrao();
+		praiaValida = PraiaMockFactory.criarPraiaPadrao();
+
+		// Usa o construtor vazio e os setters para maior clareza
+		postagemDTOValida = new CriarPostagemDTO();
+		postagemDTOValida.setUsuarioId(1L); // Campo herdado de PostagemDTO
+		postagemDTOValida.setPraiaId(1L); // Campo herdado de PostagemDTO
+		postagemDTOValida.setMensagem("Que dia lindo na praia hoje!");
+		postagemDTOValida.setImagem(null);
+		postagemDTOValida.setLatitudeUser(-22.9711); // Campo de CriarPostagemDTO
+		postagemDTOValida.setLongitudeUser(-43.1822); // Campo de CriarPostagemDTO
 	}
 
 	// Testes para o método cadastrar()
-	// TODO
+	@Test
+	@DisplayName("Deve cadastrar a postagem quando todos os dados são válidos")
+	void testCadastrar_ComDadosValidos_DeveRetornarPostagemDTO() throws FlopException {
+		// Arrange (Configuração)
+		// Simula o comportamento esperado dos mocks para um cenário de sucesso
+		when(geminiService.isMensagemConsideradaOfensiva(anyString())).thenReturn(false);
+		when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(usuarioValido));
+		when(praiaRepository.findById(anyLong())).thenReturn(Optional.of(praiaValida));
+		// Garante que a validação de proximidade não lance exceção
+		doNothing().when(localizacaoService).validarProximidadePraia(anyLong(), anyDouble(), anyDouble());
+		// Quando o repositório salvar, ele deve retornar a postagem
+		when(postagemRepository.save(any(Postagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		// Act (Ação)
+		PostagemDTO resultado = postagemService.cadastrar(postagemDTOValida);
+
+		// Assert (Verificação)
+		assertNotNull(resultado);
+		assertEquals(postagemDTOValida.getMensagem(), resultado.getMensagem());
+		assertEquals(usuarioValido.getNickname(), resultado.getNickname());
+		// Garante que o método save foi chamado exatamente uma vez
+		verify(postagemRepository, times(1)).save(any(Postagem.class));
+	}
 
 	// Testes para o método excluir()
 	@Test
