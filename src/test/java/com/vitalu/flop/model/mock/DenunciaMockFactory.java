@@ -25,4 +25,16 @@ public class DenunciaMockFactory {
 		return denuncia;
 	}
 
+	/**
+	 * Cria uma denúncia com status ACEITA.
+	 *
+	 * @return uma instância de {@link Denuncia} com status ACEITA.
+	 */
+	public static Denuncia criarDenunciaAceita() {
+		Denuncia denuncia = criarDenunciaPendente();
+		denuncia.setIdDenuncia(2L);
+		denuncia.setStatus(StatusDenuncia.ACEITA);
+		denuncia.setMotivo(MotivosDenuncia.SPAM_PROPAGANDA);
+		return denuncia;
+	}
 }
