@@ -65,4 +65,24 @@ class PostagemServiceTest {
 		usuarioAdmin = UsuarioMockFactory.criarUsuarioAdmin(); // ID 1L, mas vamos mudar para 2L para diferenciar
 		usuarioAdmin.setIdUsuario(2L);
 	}
+
+	// Testes para o método excluir()
+	@Test
+	@DisplayName("Deve marcar postagem como excluída quando o usuário é o dono")
+	void testExcluir_QuandoUsuarioEhDono_DeveMarcarComoExcluida() throws FlopException {
+		// Arrange
+		when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+		when(usuarioRepository.findById(usuarioDono.getIdUsuario())).thenReturn(Optional.of(usuarioDono));
+
+		// Act
+		postagemService.excluir(postagemValida.getIdPostagem(), usuarioDono.getIdUsuario());
+
+		// Assert
+		ArgumentCaptor<Postagem> postagemCaptor = ArgumentCaptor.forClass(Postagem.class);
+		verify(postagemRepository).save(postagemCaptor.capture());
+
+		Postagem postagemSalva = postagemCaptor.getValue();
+		assertTrue(postagemSalva.getExcluida());
+	}
+
 }
