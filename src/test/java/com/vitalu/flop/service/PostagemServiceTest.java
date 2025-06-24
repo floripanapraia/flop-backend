@@ -123,6 +123,19 @@ class PostagemServiceTest {
 		verify(postagemRepository, times(1)).save(any(Postagem.class));
 	}
 
+	@Test
+	@DisplayName("Deve lançar exceção se a mensagem contiver URL")
+	void testCadastrar_ComMensagemContendoUrl_DeveLancarExcecao() {
+		// Arrange
+		postagemDTOValida.setMensagem("Visite www.meusite.com");
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> postagemService.cadastrar(postagemDTOValida));
+		assertEquals("Sua mensagem parece conter links, palavras impróprias ou dados pessoais, que não são permitidos.",
+				exception.getMessage());
+		verify(postagemRepository, never()).save(any()); // Verifica que não tentou salvar
+	}
+
 	// Testes para o método excluir()
 	@Test
 	@DisplayName("Deve marcar postagem como excluída quando o usuário é o dono")
