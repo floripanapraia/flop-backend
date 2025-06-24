@@ -164,4 +164,26 @@ class PostagemServiceTest {
 		});
 		assertEquals("A postagem buscada não foi encontrada.", exception.getMessage());
 	}
+
+    // Testes para salvarImagem
+    @Test
+    @DisplayName("Deve salvar a imagem na postagem com sucesso")
+    void testSalvarImagem_ComUsuarioAutorizado_DeveSalvarImagem() throws FlopException {
+        // Arrange
+        MockMultipartFile mockFile = new MockMultipartFile("file", "test.jpg", "image/jpeg", "some-image-bytes".getBytes());
+        String base64Image = "data:image/jpeg;base64,c29tZS1pbWFnZS1ieXRlcw==";
+        
+        when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+        when(imagemService.processarImagem(mockFile)).thenReturn(base64Image);
+
+        // Act
+        postagemService.salvarImagem(mockFile, postagemValida.getIdPostagem(), usuarioDono.getIdUsuario());
+
+        // Assert
+        ArgumentCaptor<Postagem> postagemCaptor = ArgumentCaptor.forClass(Postagem.class);
+        verify(postagemRepository).save(postagemCaptor.capture());
+        
+        Postagem postagemSalva = postagemCaptor.getValue();
+        assertEquals(base64Image, postagemSalva.getImagem());
+    }
 }
