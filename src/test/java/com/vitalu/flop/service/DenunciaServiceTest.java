@@ -57,4 +57,23 @@ class DenunciaServiceTest {
 		usuarioValido = UsuarioMockFactory.criarUsuarioPadrao();
 		postagemValida = PostagemMockFactory.criarPostagemPadrao();
 	}
+
+    // Testes para o método cadastrar()
+    @Test
+    @DisplayName("Deve cadastrar denúncia com sucesso quando os dados são válidos")
+    void testCadastrar_ComDadosValidos_DeveRetornarDenunciaSalva() throws FlopException {
+        // Arrange
+        when(postagemRepository.findById(anyLong())).thenReturn(Optional.of(postagemValida));
+        when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(usuarioValido));
+        when(denunciaRepository.save(any(Denuncia.class))).thenReturn(denunciaValida);
+
+        // Act
+        Denuncia denunciaSalva = denunciaService.cadastrar(denunciaValida);
+
+        // Assert
+        assertNotNull(denunciaSalva);
+        assertEquals(StatusDenuncia.PENDENTE, denunciaSalva.getStatus());
+        verify(denunciaRepository, times(1)).save(any(Denuncia.class));
+    }
+
 }
