@@ -58,22 +58,38 @@ class DenunciaServiceTest {
 		postagemValida = PostagemMockFactory.criarPostagemPadrao();
 	}
 
-    // Testes para o método cadastrar()
-    @Test
-    @DisplayName("Deve cadastrar denúncia com sucesso quando os dados são válidos")
-    void testCadastrar_ComDadosValidos_DeveRetornarDenunciaSalva() throws FlopException {
-        // Arrange
-        when(postagemRepository.findById(anyLong())).thenReturn(Optional.of(postagemValida));
-        when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(usuarioValido));
-        when(denunciaRepository.save(any(Denuncia.class))).thenReturn(denunciaValida);
+	// Testes para o método cadastrar()
+	@Test
+	@DisplayName("Deve cadastrar denúncia com sucesso quando os dados são válidos")
+	void testCadastrar_ComDadosValidos_DeveRetornarDenunciaSalva() throws FlopException {
+		// Arrange
+		when(postagemRepository.findById(anyLong())).thenReturn(Optional.of(postagemValida));
+		when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(usuarioValido));
+		when(denunciaRepository.save(any(Denuncia.class))).thenReturn(denunciaValida);
 
-        // Act
-        Denuncia denunciaSalva = denunciaService.cadastrar(denunciaValida);
+		// Act
+		Denuncia denunciaSalva = denunciaService.cadastrar(denunciaValida);
 
-        // Assert
-        assertNotNull(denunciaSalva);
-        assertEquals(StatusDenuncia.PENDENTE, denunciaSalva.getStatus());
-        verify(denunciaRepository, times(1)).save(any(Denuncia.class));
-    }
+		// Assert
+		assertNotNull(denunciaSalva);
+		assertEquals(StatusDenuncia.PENDENTE, denunciaSalva.getStatus());
+		verify(denunciaRepository, times(1)).save(any(Denuncia.class));
+	}
+
+	@Test
+	@DisplayName("Deve lançar FlopException ao cadastrar com postagem inexistente")
+	void testCadastrar_ComPostagemInexistente_DeveLancarExcecao() {
+		// Arrange
+		when(postagemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> {
+			denunciaService.cadastrar(denunciaValida);
+		});
+
+		assertEquals("Denúncia não encontrado.", exception.getMessage());
+		assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+		verify(denunciaRepository, never()).save(any());
+	}
 
 }
