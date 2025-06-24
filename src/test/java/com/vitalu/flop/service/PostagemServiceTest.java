@@ -165,25 +165,47 @@ class PostagemServiceTest {
 		assertEquals("A postagem buscada não foi encontrada.", exception.getMessage());
 	}
 
-    // Testes para salvarImagem
-    @Test
-    @DisplayName("Deve salvar a imagem na postagem com sucesso")
-    void testSalvarImagem_ComUsuarioAutorizado_DeveSalvarImagem() throws FlopException {
-        // Arrange
-        MockMultipartFile mockFile = new MockMultipartFile("file", "test.jpg", "image/jpeg", "some-image-bytes".getBytes());
-        String base64Image = "data:image/jpeg;base64,c29tZS1pbWFnZS1ieXRlcw==";
-        
-        when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
-        when(imagemService.processarImagem(mockFile)).thenReturn(base64Image);
+	// Testes para salvarImagem
+	@Test
+	@DisplayName("Deve salvar a imagem na postagem com sucesso")
+	void testSalvarImagem_ComUsuarioAutorizado_DeveSalvarImagem() throws FlopException {
+		// Arrange
+		MockMultipartFile mockFile = new MockMultipartFile("file", "test.jpg", "image/jpeg",
+				"some-image-bytes".getBytes());
+		String base64Image = "data:image/jpeg;base64,c29tZS1pbWFnZS1ieXRlcw==";
 
-        // Act
-        postagemService.salvarImagem(mockFile, postagemValida.getIdPostagem(), usuarioDono.getIdUsuario());
+		when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+		when(imagemService.processarImagem(mockFile)).thenReturn(base64Image);
 
-        // Assert
-        ArgumentCaptor<Postagem> postagemCaptor = ArgumentCaptor.forClass(Postagem.class);
-        verify(postagemRepository).save(postagemCaptor.capture());
-        
-        Postagem postagemSalva = postagemCaptor.getValue();
-        assertEquals(base64Image, postagemSalva.getImagem());
-    }
+		// Act
+		postagemService.salvarImagem(mockFile, postagemValida.getIdPostagem(), usuarioDono.getIdUsuario());
+
+		// Assert
+		ArgumentCaptor<Postagem> postagemCaptor = ArgumentCaptor.forClass(Postagem.class);
+		verify(postagemRepository).save(postagemCaptor.capture());
+
+		Postagem postagemSalva = postagemCaptor.getValue();
+		assertEquals(base64Image, postagemSalva.getImagem());
+	}
+
+	@Test
+	@DisplayName("Deve lançar FlopException ao tentar salvar imagem sem permissão")
+	void testSalvarImagem_ComUsuarioNaoAutorizado_DeveLancarExcecao() {
+		// Arrange
+		MockMultipartFile mockFile = new MockMultipartFile("file", "test.jpg", "image/jpeg",
+				"some-image-bytes".getBytes());
+		Long idUsuarioNaoAutorizado = 99L;
+
+		when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> {
+			postagemService.salvarImagem(mockFile, postagemValida.getIdPostagem(), idUsuarioNaoAutorizado);
+		});
+
+		assertEquals("Você não tem permissão para fazer esta ação.", exception.getMessage());
+		assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+		verify(postagemRepository, never()).save(any());
+	}
+
 }
