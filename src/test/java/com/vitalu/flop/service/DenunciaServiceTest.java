@@ -214,4 +214,20 @@ class DenunciaServiceTest {
 		assertFalse(postagemCaptor.getValue().getExcluida());
 	}
 
+	@Test
+	@DisplayName("Deve lançar FlopException ao analisar com status inválido (PENDENTE)")
+	void testAnalisarDenuncias_ComStatusInvalido_DeveLancarExcecao() {
+		// Arrange
+		Long idPostagem = 1L;
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> {
+			denunciaService.analisarDenunciasDaPostagem(idPostagem, StatusDenuncia.PENDENTE);
+		});
+
+		assertEquals("Ação de análise inválida. Use ACEITA ou RECUSADA.", exception.getMessage());
+		verify(postagemRepository, never()).save(any());
+		verify(denunciaRepository, never()).saveAll(any());
+	}
+
 }
