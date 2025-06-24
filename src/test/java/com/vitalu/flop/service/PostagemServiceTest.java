@@ -1,11 +1,17 @@
 package com.vitalu.flop.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +71,9 @@ class PostagemServiceTest {
 		usuarioAdmin = UsuarioMockFactory.criarUsuarioAdmin(); // ID 1L, mas vamos mudar para 2L para diferenciar
 		usuarioAdmin.setIdUsuario(2L);
 	}
+
+	// Testes para o método cadastrar()
+	// TODO
 
 	// Testes para o método excluir()
 	@Test
@@ -240,6 +249,20 @@ class PostagemServiceTest {
 
 		// Assert
 		assertEquals(1, totalPaginas);
+	}
+
+	@Test
+	@DisplayName("Deve retornar 0 quando não há paginação e nem registros")
+	void testContarPaginas_SemPaginacaoSemRegistros_DeveRetornarZero() {
+		// Arrange
+		PostagemSeletor seletor = new PostagemSeletor();
+		when(postagemRepository.count(seletor)).thenReturn(0L);
+
+		// Act
+		int totalPaginas = postagemService.contarPaginas(seletor);
+
+		// Assert
+		assertEquals(0, totalPaginas);
 	}
 
 }
