@@ -124,4 +124,16 @@ class PostagemServiceTest {
 		verify(postagemRepository, never()).save(any());
 	}
 
+	@Test
+	@DisplayName("Deve lançar FlopException ao tentar excluir postagem inexistente")
+	void testExcluir_QuandoPostagemNaoEncontrada_DeveLancarExcecao() {
+		// Arrange
+		when(postagemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+		// Act & Assert
+		assertThrows(FlopException.class, () -> {
+			postagemService.excluir(99L, usuarioDono.getIdUsuario());
+		});
+	}
+
 }
