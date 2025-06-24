@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -173,6 +174,22 @@ class PostagemServiceTest {
 		assertEquals(
 				"É necessário permitir o acesso à sua localização. Sem as coordenadas do usuário, não será possível postar na praia.",
 				exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Deve lançar exceção se o usuário estiver longe da praia")
+	void testCadastrar_QuandoUsuarioLongeDaPraia_DeveLancarExcecao() throws FlopException {
+		// Arrange
+		when(geminiService.isMensagemConsideradaOfensiva(anyString())).thenReturn(false);
+		when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(usuarioValido));
+		when(praiaRepository.findById(anyLong())).thenReturn(Optional.of(praiaValida));
+		// Simula que a validação de proximidade falhou e lançou uma exceção
+		doThrow(new FlopException("Você está muito longe para postar nesta praia.", HttpStatus.FORBIDDEN))
+				.when(localizacaoService).validarProximidadePraia(anyLong(), anyDouble(), anyDouble());
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> postagemService.cadastrar(postagemDTOValida));
+		assertEquals("Você está muito longe para postar nesta praia.", exception.getMessage());
 	}
 
 	// Testes para o método excluir()
