@@ -28,10 +28,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.vitalu.flop.exception.FlopException;
+import com.vitalu.flop.model.dto.CriarPostagemDTO;
 import com.vitalu.flop.model.dto.PostagemDTO;
 import com.vitalu.flop.model.entity.Postagem;
+import com.vitalu.flop.model.entity.Praia;
 import com.vitalu.flop.model.entity.Usuario;
 import com.vitalu.flop.model.mock.PostagemMockFactory;
+import com.vitalu.flop.model.mock.PraiaMockFactory;
 import com.vitalu.flop.model.mock.UsuarioMockFactory;
 import com.vitalu.flop.model.repository.PostagemRepository;
 import com.vitalu.flop.model.repository.PraiaRepository;
@@ -60,11 +63,15 @@ class PostagemServiceTest {
 	@Mock
 	private LocalizacaoService localizacaoService;
 	@Mock
-    private GeminiService geminiService; // Mock para o novo serviço de IA
+	private GeminiService geminiService; // Mock para o novo serviço de IA
 
 	private Postagem postagemValida;
 	private Usuario usuarioDono;
 	private Usuario usuarioAdmin;
+
+	private CriarPostagemDTO postagemDTOValida;
+	private Usuario usuarioValido;
+	private Praia praiaValida;
 
 	@BeforeEach
 	void setUp() {
@@ -72,6 +79,7 @@ class PostagemServiceTest {
 		usuarioDono = UsuarioMockFactory.criarUsuarioPadrao(); // ID 1L, admin=false
 		usuarioAdmin = UsuarioMockFactory.criarUsuarioAdmin(); // ID 1L, mas vamos mudar para 2L para diferenciar
 		usuarioAdmin.setIdUsuario(2L);
+
 	}
 
 	// Testes para o método cadastrar()
