@@ -92,4 +92,22 @@ class DenunciaServiceTest {
 		verify(denunciaRepository, never()).save(any());
 	}
 
+	// Testes para o método atualizar()
+	@Test
+	@DisplayName("Deve atualizar o status da denúncia com sucesso")
+	void testAtualizar_ComDadosValidos_DeveAlterarStatus() throws FlopException {
+		// Arrange
+		when(denunciaRepository.findById(anyLong())).thenReturn(Optional.of(denunciaValida));
+
+		// Act
+		denunciaService.atualizar(denunciaValida.getIdDenuncia(), StatusDenuncia.ACEITA);
+
+		// Assert
+		ArgumentCaptor<Denuncia> denunciaCaptor = ArgumentCaptor.forClass(Denuncia.class);
+		verify(denunciaRepository, times(1)).save(denunciaCaptor.capture());
+
+		Denuncia denunciaAtualizada = denunciaCaptor.getValue();
+		assertEquals(StatusDenuncia.ACEITA, denunciaAtualizada.getStatus());
+	}
+
 }
