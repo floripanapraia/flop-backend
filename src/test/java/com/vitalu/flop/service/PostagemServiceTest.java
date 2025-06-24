@@ -160,6 +160,21 @@ class PostagemServiceTest {
 				exception.getMessage());
 	}
 
+	@Test
+	@DisplayName("Deve lançar exceção se as coordenadas do usuário forem nulas")
+	void testCadastrar_ComCoordenadasNulas_DeveLancarExcecao() throws FlopException {
+		// Arrange
+		postagemDTOValida.setLatitudeUser(null);
+		postagemDTOValida.setLongitudeUser(null);
+		when(geminiService.isMensagemConsideradaOfensiva(anyString())).thenReturn(false);
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> postagemService.cadastrar(postagemDTOValida));
+		assertEquals(
+				"É necessário permitir o acesso à sua localização. Sem as coordenadas do usuário, não será possível postar na praia.",
+				exception.getMessage());
+	}
+
 	// Testes para o método excluir()
 	@Test
 	@DisplayName("Deve marcar postagem como excluída quando o usuário é o dono")
