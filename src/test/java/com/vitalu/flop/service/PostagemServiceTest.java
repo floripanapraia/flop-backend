@@ -136,6 +136,18 @@ class PostagemServiceTest {
 		verify(postagemRepository, never()).save(any()); // Verifica que não tentou salvar
 	}
 
+	@Test
+	@DisplayName("Deve lançar exceção se a mensagem contiver palavra proibida")
+	void testCadastrar_ComMensagemContendoPalavraProibida_DeveLancarExcecao() {
+		// Arrange
+		postagemDTOValida.setMensagem("Que dia de merda!");
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> postagemService.cadastrar(postagemDTOValida));
+		assertEquals("Sua mensagem parece conter links, palavras impróprias ou dados pessoais, que não são permitidos.",
+				exception.getMessage());
+	}
+
 	// Testes para o método excluir()
 	@Test
 	@DisplayName("Deve marcar postagem como excluída quando o usuário é o dono")
