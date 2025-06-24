@@ -85,4 +85,22 @@ class PostagemServiceTest {
 		assertTrue(postagemSalva.getExcluida());
 	}
 
+	@Test
+	@DisplayName("Deve marcar postagem como excluída quando o usuário é admin")
+	void testExcluir_QuandoUsuarioEhAdmin_DeveMarcarComoExcluida() throws FlopException {
+		// Arrange
+		when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+		when(usuarioRepository.findById(usuarioAdmin.getIdUsuario())).thenReturn(Optional.of(usuarioAdmin));
+
+		// Act
+		postagemService.excluir(postagemValida.getIdPostagem(), usuarioAdmin.getIdUsuario());
+
+		// Assert
+		ArgumentCaptor<Postagem> postagemCaptor = ArgumentCaptor.forClass(Postagem.class);
+		verify(postagemRepository).save(postagemCaptor.capture());
+
+		Postagem postagemSalva = postagemCaptor.getValue();
+		assertTrue(postagemSalva.getExcluida());
+	}
+
 }
