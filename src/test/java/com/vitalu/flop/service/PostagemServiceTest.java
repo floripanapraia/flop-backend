@@ -135,5 +135,21 @@ class PostagemServiceTest {
 			postagemService.excluir(99L, usuarioDono.getIdUsuario());
 		});
 	}
+	
+	// Testes para o método pesquisarPorId()
+    @Test
+    @DisplayName("Deve retornar PostagemDTO ao pesquisar por ID existente")
+    void testPesquisarPorId_QuandoIdExiste_DeveRetornarDTO() throws FlopException {
+        // Arrange
+        when(postagemRepository.findById(postagemValida.getIdPostagem())).thenReturn(Optional.of(postagemValida));
+
+        // Act
+        PostagemDTO resultado = postagemService.pesquisarPorId(postagemValida.getIdPostagem());
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(postagemValida.getIdPostagem(), resultado.getIdPostagem());
+        assertEquals(postagemValida.getMensagem(), resultado.getMensagem());
+    }
 
 }
