@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+
+volumes:
+  # Define um volume nomeado para persistir os dados do banco de dados
+  db_data:
