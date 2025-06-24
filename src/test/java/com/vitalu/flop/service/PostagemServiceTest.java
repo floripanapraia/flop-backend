@@ -103,4 +103,25 @@ class PostagemServiceTest {
 		assertTrue(postagemSalva.getExcluida());
 	}
 
+	@Test
+	@DisplayName("Deve lançar FlopException ao tentar excluir postagem de outro usuário sem ser admin")
+	void testExcluir_QuandoUsuarioNaoAutorizado_DeveLancarExcecao() {
+		// Arrange
+		Usuario usuarioNaoAutorizado = UsuarioMockFactory.criarUsuarioPadrao();
+		usuarioNaoAutorizado.setIdUsuario(3L);
+
+		when(postagemRepository.findById(anyLong())).thenReturn(Optional.of(postagemValida));
+		when(usuarioRepository.findById(usuarioNaoAutorizado.getIdUsuario()))
+				.thenReturn(Optional.of(usuarioNaoAutorizado));
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> {
+			postagemService.excluir(postagemValida.getIdPostagem(), usuarioNaoAutorizado.getIdUsuario());
+		});
+
+		assertEquals("Você não é o dono desta postagem, portanto não pode excluí-la.", exception.getMessage());
+		assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+		verify(postagemRepository, never()).save(any());
+	}
+
 }
