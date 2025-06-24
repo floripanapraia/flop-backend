@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+	# Serviço do Banco de Dados MySQL
+	db:
+	  image: mysql:8.0
+	  container_name: flop-db
+	  restart: unless-stopped
+	  environment:
+	    # Essas variáveis são do nosso arquivo .env
+	    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+	    MYSQL_DATABASE: ${MYSQL_DATABASE}
+	  ports:
+	    # Mapeia a porta do host para a do contêiner para podermos conectar com um cliente de BD
+	    - "3306:3306"
+	  volumes:
+	    - db_data:/var/lib/mysql
+
+	# Serviço do Backend Java
+	backend:
+	  build: ./backend
+	  container_name: flop-backend
+	  restart: unless-stopped
+	  depends_on:
+	    - db # Garante que o serviço de BD inicie antes do backend
+	  ports:
+	    - "8080:8080"
+	  environment:
+	    # Mapeia as variáveis do .env para as propriedades do Spring Boot
+	    SPRING_APPLICATION_NAME: flop
+	    SPRING_DATASOURCE_URL: ${DB_URL}
+	    SPRING_DATASOURCE_USERNAME: ${DB_USER}
+	    SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+	    SPRING_JPA_HIBERNATE_DDL_AUTO: update
+	    SERVER_PORT: 8080
+	    SERVER_SERVLET_CONTEXT_PATH: /flop
+	    # Referencia as chaves montadas pelo volume
+	    JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+	    JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+	    SPRING_MAIL_HOST: ${MAIL_HOST}
+	    SPRING_MAIL_PORT: ${MAIL_PORT}
+	    SPRING_MAIL_USERNAME: ${MAIL_USER}
+	    SPRING_MAIL_PASSWORD: ${MAIL_PASS}
+	    GEMINI_API_KEY: ${GEMINI_API_KEY}
+	  volumes:
+	    # Monta a pasta local 'backend/keys' para '/app/keys' dentro do contêiner
+	    - ./backend/keys:/app/keys
+	  
+	# Serviço do Frontend React
+	frontend:
+	  build: ./frontend
+	  container_name: flop-frontend
+	  restart: unless-stopped
+	  ports:
+	    # Mapeia a porta 3000 do host para a 80 do contêiner (Nginx)
+	    - "3000:80"
+	  depends_on:
+	    - backend
+		
+volumes:
+  # Define um volume nomeado para persistir os dados do banco de dados
+  db_data:
