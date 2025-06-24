@@ -42,7 +42,7 @@ public class PostagemService {
 	private GeminiService geminiService;
 
 	private LocalizacaoService localizacaoService;
-
+  
 	// Lista de padrões Regex para validação prévia.
 	private static final List<Pattern> PADROES_INVALIDOS = List.of(
 			// Regex para URLs (http, https, www)
@@ -130,14 +130,6 @@ public class PostagemService {
 					HttpStatus.BAD_REQUEST);
 		}
 
-		// Lógica de negócio
-		 if (novaPostagemDTO.getLatitudeUser() == null || novaPostagemDTO.getLongitudeUser() == null) {
-	            throw new FlopException(
-	                "É necessário permitir o acesso à sua localização. Sem as coordenadas do usuário, não será possível postar na praia.",
-	                HttpStatus.BAD_REQUEST
-	            );
-	        }
-
 		Optional<Usuario> autor = usuarioRepository.findById(novaPostagemDTO.getUsuarioId());
 		Usuario usuario = autor.orElseThrow(() -> new FlopException("Usuário não encontrado.", HttpStatus.BAD_REQUEST));
 
@@ -150,6 +142,9 @@ public class PostagemService {
 				  novaPostagemDTO.getLatitudeUser(),
 				  novaPostagemDTO.getLongitudeUser()
 		        );
+
+		localizacaoService.validarProximidadePraia(novaPostagemDTO.getPraiaId(), novaPostagemDTO.getLatitudeUser(),
+				novaPostagemDTO.getLongitudeUser());
 
 		Postagem postagem = new Postagem();
 		postagem.setUsuario(usuario);
