@@ -207,25 +207,39 @@ class PostagemServiceTest {
 		assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
 		verify(postagemRepository, never()).save(any());
 	}
-	
-	 // Testes para contarPaginas
-    @Test
-    @DisplayName("Deve retornar o número total de páginas quando há paginação")
-    void testContarPaginas_ComPaginacao_DeveRetornarTotalDePaginas() {
-        // Arrange
-        PostagemSeletor seletor = new PostagemSeletor();
-        seletor.setLimite(10);
-        seletor.setPagina(1);
-        
-        Page<Postagem> pageMock = mock(Page.class);
-        when(pageMock.getTotalPages()).thenReturn(5);
-        when(postagemRepository.findAll(eq(seletor), any(PageRequest.class))).thenReturn(pageMock);
 
-        // Act
-        int totalPaginas = postagemService.contarPaginas(seletor);
+	// Testes para contarPaginas
+	@Test
+	@DisplayName("Deve retornar o número total de páginas quando há paginação")
+	void testContarPaginas_ComPaginacao_DeveRetornarTotalDePaginas() {
+		// Arrange
+		PostagemSeletor seletor = new PostagemSeletor();
+		seletor.setLimite(10);
+		seletor.setPagina(1);
 
-        // Assert
-        assertEquals(5, totalPaginas);
-    }
-    
+		Page<Postagem> pageMock = mock(Page.class);
+		when(pageMock.getTotalPages()).thenReturn(5);
+		when(postagemRepository.findAll(eq(seletor), any(PageRequest.class))).thenReturn(pageMock);
+
+		// Act
+		int totalPaginas = postagemService.contarPaginas(seletor);
+
+		// Assert
+		assertEquals(5, totalPaginas);
+	}
+
+	@Test
+	@DisplayName("Deve retornar 1 quando não há paginação mas existem registros")
+	void testContarPaginas_SemPaginacaoComRegistros_DeveRetornarUm() {
+		// Arrange
+		PostagemSeletor seletor = new PostagemSeletor(); // Sem limite e página
+		when(postagemRepository.count(seletor)).thenReturn(15L);
+
+		// Act
+		int totalPaginas = postagemService.contarPaginas(seletor);
+
+		// Assert
+		assertEquals(1, totalPaginas);
+	}
+
 }
