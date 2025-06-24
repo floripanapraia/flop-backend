@@ -148,6 +148,18 @@ class PostagemServiceTest {
 				exception.getMessage());
 	}
 
+	@Test
+	@DisplayName("Deve lançar exceção se o Gemini considerar a mensagem ofensiva")
+	void testCadastrar_QuandoGeminiConsideraOfensiva_DeveLancarExcecao() throws FlopException {
+		// Arrange
+		when(geminiService.isMensagemConsideradaOfensiva(anyString())).thenReturn(true);
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> postagemService.cadastrar(postagemDTOValida));
+		assertEquals("Sua mensagem foi considerada imprópria ou excessivamente negativa pela moderação.",
+				exception.getMessage());
+	}
+
 	// Testes para o método excluir()
 	@Test
 	@DisplayName("Deve marcar postagem como excluída quando o usuário é o dono")
