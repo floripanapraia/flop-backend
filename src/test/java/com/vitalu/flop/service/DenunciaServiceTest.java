@@ -110,4 +110,20 @@ class DenunciaServiceTest {
 		assertEquals(StatusDenuncia.ACEITA, denunciaAtualizada.getStatus());
 	}
 
+	@Test
+	@DisplayName("Deve lançar FlopException ao tentar atualizar denúncia inexistente")
+	void testAtualizar_ComDenunciaInexistente_DeveLancarExcecao() {
+		// Arrange
+		when(denunciaRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+		// Act & Assert
+		FlopException exception = assertThrows(FlopException.class, () -> {
+			denunciaService.atualizar(99L, StatusDenuncia.ACEITA);
+		});
+
+		assertEquals("Denúncia não encontrada.", exception.getMessage());
+		assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+		verify(denunciaRepository, never()).save(any());
+	}
+
 }
