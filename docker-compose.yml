@@ -16,6 +16,36 @@ services:
 	  volumes:
 	    - db_data:/var/lib/mysql
 
+	# Serviço do Backend Java
+	backend:
+	  build: ./backend
+	  container_name: flop-backend
+	  restart: unless-stopped
+	  depends_on:
+	    - db # Garante que o serviço de BD inicie antes do backend
+	  ports:
+	    - "8080:8080"
+	  environment:
+	    # Mapeia as variáveis do .env para as propriedades do Spring Boot
+	    SPRING_APPLICATION_NAME: flop
+	    SPRING_DATASOURCE_URL: ${DB_URL}
+	    SPRING_DATASOURCE_USERNAME: ${DB_USER}
+	    SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+	    SPRING_JPA_HIBERNATE_DDL_AUTO: update
+	    SERVER_PORT: 8080
+	    SERVER_SERVLET_CONTEXT_PATH: /flop
+	    # Referencia as chaves montadas pelo volume
+	    JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+	    JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+	    SPRING_MAIL_HOST: ${MAIL_HOST}
+	    SPRING_MAIL_PORT: ${MAIL_PORT}
+	    SPRING_MAIL_USERNAME: ${MAIL_USER}
+	    SPRING_MAIL_PASSWORD: ${MAIL_PASS}
+	    GEMINI_API_KEY: ${GEMINI_API_KEY}
+	  volumes:
+	    # Monta a pasta local 'backend/keys' para '/app/keys' dentro do contêiner
+	    - ./backend/keys:/app/keys
+	  
 volumes:
   # Define um volume nomeado para persistir os dados do banco de dados
   db_data:
