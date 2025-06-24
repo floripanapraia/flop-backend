@@ -46,6 +46,17 @@ services:
 	    # Monta a pasta local 'backend/keys' para '/app/keys' dentro do contêiner
 	    - ./backend/keys:/app/keys
 	  
+	# Serviço do Frontend React
+	frontend:
+	  build: ./frontend
+	  container_name: flop-frontend
+	  restart: unless-stopped
+	  ports:
+	    # Mapeia a porta 3000 do host para a 80 do contêiner (Nginx)
+	    - "3000:80"
+	  depends_on:
+	    - backend
+		
 volumes:
   # Define um volume nomeado para persistir os dados do banco de dados
   db_data:
