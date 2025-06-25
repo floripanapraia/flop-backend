@@ -1,21 +1,19 @@
 # ===================================================================
-# SCRIPT PARA TESTE DE CARGA - CENÁRIO 2: CRIAR POSTAGEM
+# SCRIPT PARA TESTE DE CARGA - CENARIO 2: CRIAR POSTAGEM
 # ===================================================================
 
-# FORÇA A CODIFICAÇÃO DE SAÍDA PARA UTF-8 PARA CORRIGIR ACENTOS
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $corTitulo = "Green"
-$corComando = "Cyan"
 $corInfo = "Yellow"
 
 Clear-Host
 Write-Host "===========================================================" -ForegroundColor $corTitulo
-Write-Host "  Iniciando Teste de Carga: Cenário 2 - Criar Postagem" -ForegroundColor $corTitulo
+Write-Host "  Iniciando Teste de Carga: Cenario 2 - Criar Postagem" -ForegroundColor $corTitulo
 Write-Host "===========================================================" -ForegroundColor $corTitulo
 Write-Host ""
 
-# --- DEFINIÇÃO DE CAMINHOS DINÂMICOS ---
+# --- DEFINICAO DE CAMINHOS DINAMICOS ---
 $projectRoot = Resolve-Path "$PSScriptRoot/.." 
 
 $collectionFile = "$projectRoot/collections/Cenario2_CriarPostagem.postman_collection.json"
@@ -23,19 +21,19 @@ $dataFile = "$projectRoot/data/dados_cenario2_criar_postagem.csv"
 $environmentFile = "$projectRoot/flop_local.postman_environment.json"
 $reportFile = "$projectRoot/relatorio_cenario2.html"
 
-# Executa o comando Newman diretamente
+# Executa o comando Newman com o valor do reporters entre aspas
 newman run "$collectionFile" `
     -e "$environmentFile" `
     -d "$dataFile" `
     -n 20 `
-    --reporters cli,html `
+    --reporters "cli,html" `
     --reporter-html-export "$reportFile"
 
-# Mensagem de conclusão
+# Mensagem de conclusao
 Write-Host ""
 Write-Host "===========================================================" -ForegroundColor $corTitulo
-Write-Host "  Teste do Cenário 2 CONCLUÍDO." -ForegroundColor $corTitulo
-Write-Host "  Verifique o relatório em: `"$reportFile`"" -ForegroundColor $corTitulo
+Write-Host "  Teste do Cenario 2 CONCLUIDO." -ForegroundColor $corTitulo
+Write-Host "  Verifique o relatorio em: `"$reportFile`"" -ForegroundColor $corTitulo
 Write-Host "===========================================================" -ForegroundColor $corTitulo
 Write-Host ""
 
