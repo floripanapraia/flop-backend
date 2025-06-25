@@ -1,0 +1,102 @@
+{
+  "info": {
+    "_postman_id": "c3c3d9d9-52a9-4c89-a37c-25ca0f17e5f3",
+    "name": "Cenario 3 - Editar Usuario",
+    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains a token and assign its value to the variable token\", function () {",
+                  "    const rawToken = pm.response.text();",
+                  "    pm.expect(rawToken).to.be.a('string').that.is.not.empty;",
+                  "    pm.collectionVariables.set(\"token\", rawToken);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{BASE_URL}}:{{PORT}}/flop/auth/login"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "atualizar",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "token": "{{token}}"
+              }
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nome\": \"{{novoNome}}\",\n    \"nickname\": \"{{novoNickname}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/atualizar"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost"
+    },
+    {
+      "key": "PORT",
+      "value": "8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
