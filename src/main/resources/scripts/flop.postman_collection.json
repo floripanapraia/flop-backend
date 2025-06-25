@@ -11,6 +11,81 @@
 			"name": "Auth",
 			"item": [
 				{
+					"name": "login 2FA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to validate the response schema and ensure the response contains the expected properties\r",
+									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.isAdmin).to.exist;\r",
+									"});\r",
+									"\r",
+									"// Test to check if the response contains a raw token (string without a key)\r",
+									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
+									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
+									"\r",
+									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
+									"\r",
+									"    // Definindo a variável do token no ambiente da coleção\r",
+									"    pm.collectionVariables.set(\"token\", rawToken);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"fernandeesviic@gmail.com\",\r\n  \"password\": \"senha1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/login-2fa"
+					},
+					"response": []
+				},
+				{
+					"name": "verificar otp 2FA",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"fernandeesviic@gmail.com\",\r\n  \"otp\": \"692168\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/flop/auth/verify-2fa"
+					},
+					"response": []
+				},
+				{
 					"name": "login",
 					"event": [
 						{
@@ -49,71 +124,13 @@
 						"auth": {
 							"type": "basic",
 							"basic": {
-								"password": "123456789",
-								"username": "malufln.99@gmail.com"
+								"password": "12345678",
+								"username": "fernandeesviic@gmail.com"
 							}
 						},
 						"method": "POST",
 						"header": [],
 						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/login"
-					},
-					"response": []
-				},
-				{
-					"name": "login 2FA",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"// Test to validate the response schema and ensure the response contains the expected properties\r",
-									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
-									"    const responseData = pm.response.json();\r",
-									"\r",
-									"    pm.expect(responseData).to.be.an('object');\r",
-									"    pm.expect(responseData.isAdmin).to.exist;\r",
-									"});\r",
-									"\r",
-									"// Test to check if the response contains a raw token (string without a key)\r",
-									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
-									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
-									"\r",
-									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
-									"\r",
-									"    // Definindo a variável do token no ambiente da coleção\r",
-									"    pm.collectionVariables.set(\"token\", rawToken);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": {
-								"password": "12345678",
-								"username": "vic@email.com"
-							}
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"joao@email.com\",\r\n  \"senha\": \"123456\",\r\n  \"codigo2fa\": 123456\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/2fa/setup"
 					},
 					"response": []
 				},
@@ -191,7 +208,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"nome\": \"Admin\",\r\n  \"email\": \"admin@email.com\",\r\n  \"nickname\": \"admin\",\r\n  \"senha\": \"123\",\r\n  \"bloqueado\": false,\r\n  \"fotoPerfil\": \"https://example.com/ayrton-senna.jpg\"\r\n}\r\n",
+							"raw": "{\r\n  \"nome\": \"Admina\",\r\n  \"email\": \"victoriafernandesgalvao@hotmail.com\",\r\n  \"nickname\": \"admina\",\r\n  \"senha\": \"123\",\r\n  \"bloqueado\": false,\r\n  \"fotoPerfil\": \"https://example.com/ayrton-senna.jpg\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -201,7 +218,12 @@
 						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/novo-admin"
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "Recuperação senha",
+			"item": [
 				{
 					"name": "verificar email",
 					"request": {
@@ -210,7 +232,7 @@
 						},
 						"method": "POST",
 						"header": [],
-						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/verifyMail/juju@email.com"
+						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/verifyMail/fernandeesviic@gmail.com"
 					},
 					"response": []
 				},
@@ -219,7 +241,7 @@
 					"request": {
 						"method": "POST",
 						"header": [],
-						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/verifyOtp/709370/fernandeesviic@gmail.com"
+						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/verifyOtp/319092/fernandeesviic@gmail.com"
 					},
 					"response": []
 				},
@@ -238,81 +260,6 @@
 							}
 						},
 						"url": "{{BASE_URL}}:{{PORT}}/flop/forgotPassword/changePassword/fernandeesviic@gmail.com"
-					},
-					"response": []
-				},
-				{
-					"name": "login dois fatores teste",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"// Test to validate the response schema and ensure the response contains the expected properties\r",
-									"pm.test(\"Validate the response schema for the presence of access_token, token_type, user_id, and isAdmin properties\", function () {\r",
-									"    const responseData = pm.response.json();\r",
-									"\r",
-									"    pm.expect(responseData).to.be.an('object');\r",
-									"    pm.expect(responseData.isAdmin).to.exist;\r",
-									"});\r",
-									"\r",
-									"// Test to check if the response contains a raw token (string without a key)\r",
-									"pm.test(\"Response contains a token and assign its value to the variable token\", function () {\r",
-									"    const rawToken = pm.response.text(); // Captura a resposta como texto puro\r",
-									"\r",
-									"    pm.expect(rawToken).to.be.a('string').that.is.not.empty;\r",
-									"\r",
-									"    // Definindo a variável do token no ambiente da coleção\r",
-									"    pm.collectionVariables.set(\"token\", rawToken);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"fernandeesviic@gmail.com\",\r\n  \"password\": \"12345678\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{BASE_URL}}:{{PORT}}/flop/auth/login-2fa"
-					},
-					"response": []
-				},
-				{
-					"name": "verificar dois fatores teste",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"fernandeesviic@gmail.com\",\r\n  \"otp\": \"166068\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "http://localhost:8080/flop/auth/verify-2fa"
 					},
 					"response": []
 				}
@@ -358,7 +305,7 @@
 						"auth": {
 							"type": "bearer",
 							"bearer": {
-								"token": "{{token}}"
+								"token": "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmZXJuYW5kZWVzdmlpY0BnbWFpbC5jb20iLCJyb2xlcyI6IlVTRVIiLCJpZFVzdWFyaW8iOjEsImlzcyI6ImZsb3AiLCJleHAiOjE3NTAzMDI1MzUsImlhdCI6MTc1MDI2NjUzNX0.CtM3FWZO2-MgHurIYUZqO_m5cFUB1deey9bgBGWXpTrNvuXFC_Fx2kgMe3GZqUgR4iYNJUpMvme65H-RhNz4yp1IDew556yRBJ8hDDBL24y1d8d1enrOhIKlVrVGCFVA00tl79iyA-vlKNzq0a8Ib21f7L7BOJj-JVG9hSsMW8YdeSB_ENorLecIztOolRA9vp3R9X1hC3hklPcgrC7kf1aqqd209XjCTfPrlYKfdUOEg9xwol0yJswCsAz6Z3hnO2sd4Coxz0kxGp0C2IUu5Uzje5jl8YSZ8vH4O2vwpRQJFr9NRegIInNqzRQOtQlXwl1LutYSx7UzsLz2uy41cw"
 							}
 						},
 						"method": "PUT",
@@ -371,7 +318,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"nome\": \"Max Bolinha Verstappen\",\r\n    \"email\": \"max@verstappen.com\",\r\n    \"nickname\": \"madmaxv\"\r\n}",
+							"raw": "{\r\n    \"nome\": \"vixtoria\",\r\n    \"email\": \"fernandeesviic@gmail.com\",\r\n    \"nickname\": \"vic\",\r\n    \"senha\": \"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -441,7 +388,7 @@
 								"type": "text"
 							}
 						],
-						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/1"
+						"url": "{{BASE_URL}}:{{PORT}}/flop/usuarios/3"
 					},
 					"response": []
 				},
@@ -464,7 +411,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"vic@email.com\"\r\n}",
+							"raw": "{\r\n    \"email\": \"fernandeesviic@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -545,7 +492,79 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"usuario\": {\r\n    \"idUsuario\": \"1\"\r\n  },\r\n  \"praia\": {\r\n    \"idPraia\": 15\r\n  },\r\n  \"mensagem\": \"testando postagem\",\r\n  \"excluida\": false\r\n}\r\n",
+							"raw": "{\r\n  \"usuario\": {\r\n    \"idUsuario\": \"1\"\r\n  },\r\n\r\n  \"praiaId\": 34,\r\n   \"excluida\": true,\r\n  \"mensagem\": \"Testando filtro true!\",\r\n  \"imagem\": null,\r\n  \"longitudeUser\": -48.5057429,\r\n  \"latitudeUser\": -27.7039016\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar - validação REGEX",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ2aWN0b3JpYS5tb250ZWlyb0Bpc2VtZWFyLm9yZy5iciIsInJvbGVzIjoiVVNFUiIsImlkVXN1YXJpbyI6MiwiaXNzIjoiZmxvcCIsImV4cCI6MTc1MDY4NDM0NSwiaWF0IjoxNzUwNjQ4MzQ1fQ.IWtjNwrCDdVewd9GZ5iLpYpzjw75tJZgSGc8onUfXX3JzVaVkPT9EC7ig808ovns4Ak0QoVSktKnIfo22yNVAP-w3b9YlCgtLdatJw7oDgHkyQ2KU4XBHv2UIWagLDVAUBIQ6AxRuOQ55R-1uAg64CqvUFhIuwy4EcrTnOWYjbHRfq-tFgTVkpaw2S7Pwp_cZMYNV7UNrkHICeAIbf2rAAcgL9SOD7uWcXxaOaLinqB89qNNxl6TRAYxqAswxgaeplfeZOx1JM0d3bbfjSeJajnJWRRPAWO3gCEwuMOokpilfr8-oSNQWuesqSyoaQ6LynQwpghtel0BVh8EPg9uuw"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"praiaId\": 1,\r\n    \"mensagem\": \"A praia está ótima, confira meu site www.meublogdepraia.com para mais fotos!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar - validação PALAVRAS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ2aWN0b3JpYS5tb250ZWlyb0Bpc2VtZWFyLm9yZy5iciIsInJvbGVzIjoiVVNFUiIsImlkVXN1YXJpbyI6MiwiaXNzIjoiZmxvcCIsImV4cCI6MTc1MDY4NTUxOSwiaWF0IjoxNzUwNjQ5NTE5fQ.G-6O8rCstt3etWknbT-bkWOkz5XVlty8SiWGgeLaQ0WnrpyS6QzdE-b1iYw8oyJjIy7Gnb4VxfFafg_wisE4HQmLXy9ck70CQfwLXl_yrq8LW22FBVn7KhTEGpWKQF1y0JdJ4r6e10o7VXnB9qWZfVio-Akapb27PwzlUulTvtWkAyQEjTs2iakVzMfvj8qdRbZScdxuVkQt68kDUHuVOvTw99PNtuA1tHa2gReSCIOyLmlRguB8aa1OfN9UIru0RfwQYRI8_2L0bLaI6C7HLBl1jNB-57K35OHLJbbIUj3yiDmJxrIFuHVH3tJdmrcFmZSU6vRukEcGTcIiXqeLjg"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"praiaId\": 1,\r\n    \"mensagem\": \"Que ódio dessa gente porca que suja a areia.\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "cadastrar - validação IA",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ2aWN0b3JpYS5tb250ZWlyb0Bpc2VtZWFyLm9yZy5iciIsInJvbGVzIjoiVVNFUiIsImlkVXN1YXJpbyI6MiwiaXNzIjoiZmxvcCIsImV4cCI6MTc1MDY4NTUxOSwiaWF0IjoxNzUwNjQ5NTE5fQ.G-6O8rCstt3etWknbT-bkWOkz5XVlty8SiWGgeLaQ0WnrpyS6QzdE-b1iYw8oyJjIy7Gnb4VxfFafg_wisE4HQmLXy9ck70CQfwLXl_yrq8LW22FBVn7KhTEGpWKQF1y0JdJ4r6e10o7VXnB9qWZfVio-Akapb27PwzlUulTvtWkAyQEjTs2iakVzMfvj8qdRbZScdxuVkQt68kDUHuVOvTw99PNtuA1tHa2gReSCIOyLmlRguB8aa1OfN9UIru0RfwQYRI8_2L0bLaI6C7HLBl1jNB-57K35OHLJbbIUj3yiDmJxrIFuHVH3tJdmrcFmZSU6vRukEcGTcIiXqeLjg"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"praiaId\": 1,\r\n    \"mensagem\": \"Se eu vejo mais um com caixa de som alta na minha frente, não respondo por mim.\" \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -584,7 +603,7 @@
 					"response": []
 				},
 				{
-					"name": "excluir Copy",
+					"name": "excluir",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -594,7 +613,7 @@
 						},
 						"method": "DELETE",
 						"header": [],
-						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/12"
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/1"
 					},
 					"response": []
 				},
@@ -621,7 +640,7 @@
 								}
 							}
 						},
-						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/4"
+						"url": "{{BASE_URL}}:{{PORT}}/flop/postagens/1"
 					},
 					"response": []
 				},
@@ -638,7 +657,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n   \r\n    \"mensagem\": \"praia\"\r\n    \r\n}",
+							"raw": "{\r\n   \r\n    \"mensagem\": \"testan\"\r\n    \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -660,14 +679,14 @@
 						"auth": {
 							"type": "bearer",
 							"bearer": {
-								"token": "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmZXJuYW5kZWVzdmlpY0BnbWFpbC5jb20iLCJyb2xlcyI6IlJPTEVfVVNFUiIsImlkVXN1YXJpbyI6MSwiaXNzIjoiZmxvcCIsImV4cCI6MTc0OTYyNjQyOCwiaWF0IjoxNzQ5NTkwNDI4fQ.Qklfqrz0gDjG_dUmKS421wLo47autIccL1mHDQfZwjqZaC0EL4TwLzGeeAwho0REdb73UWuH2bDUOFM8fJewXC5wkYRn52AjeQshXwyZDysnDSaO0_EwHtSNds-WUfaR-I2syBS0GytHkGWLYcZm_edG1KhF0HdHUf17cW03NYLWopl3dcSuukzfft7BierfHmgKSMIlOV_EL7E-gKTz4pgX7jWPz7IyqemLzZXsb-bba4q1WDwPw5cph8Z0yVZGhcy8AWtCA5L4w_fSHZ3dcH0BR2rThKSK9YQZ78m7ecRNEsgxbyj68CwUgT6ZZzki_nlJFvOPQdZLFqoAhLb5ig"
+								"token": "{{token}}"
 							}
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\r\n    \"idUsuario\": 1\r\n ,\r\n \r\n    \"idPraia\": 1\r\n ,\r\n  \"condicoes\": [\"CHUVA\",\"LOTADA\",\"MUSICA\"]\r\n}",
+							"raw": "{\r\n\r\n \r\n    \"idPraia\": 1\r\n ,\r\n  \"condicoes\": [\"CHUVA\",\"LOTADA\",\"MUSICA\"]\r\n  ,\r\n   \"latitudeUser\": -27.6115724\r\n   ,\r\n    \"longitudeUser\": -48.58135919999999\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -734,7 +753,7 @@
 						},
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/52"
+						"url": "{{BASE_URL}}:{{PORT}}/flop/avaliacoes/1"
 					},
 					"response": []
 				},
@@ -781,7 +800,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"idPraia\": 11\r\n}\r\n",
+							"raw": "{\r\n  \"idPraia\": 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1179,6 +1198,21 @@
 							}
 						},
 						"url": "{{BASE_URL}}:{{PORT}}/flop/sugestoes/cadastrar"
+					},
+					"response": []
+				},
+				{
+					"name": "analisar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": "{{BASE_URL}}:{{PORT}}/sugestoes/1/analisar"
 					},
 					"response": []
 				},
