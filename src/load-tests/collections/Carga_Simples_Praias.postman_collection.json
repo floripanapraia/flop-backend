@@ -17,6 +17,7 @@
           ],
           "port": "{{PORT}}",
           "path": [
+            "flop",
             "praias",
             "{{idPraia}}"
           ]
