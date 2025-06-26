@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório de Teste de Carga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f2937;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        tfoot td {
+            font-weight: bold;
+            background-color: #f9fafb;
+        }
+
+        .metrics {
+            margin-top: 30px;
+            background-color: #fff;
+            padding: 15px;
+            border-left: 4px solid #2563eb;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Relatório de Teste de Carga</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Métrica</th>
+                <th>Executado</th>
+                <th>Falhou</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Iterações</td>
+                <td>100</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Requisições</td>
+                <td>100</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Scripts de Teste</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Scripts Pré-Requisição</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>Asserções</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="metrics">
+        <p><strong>Duração total da execução:</strong> 10,9s</p>
+        <p><strong>Total de dados recebidos:</strong> 24,79kB (aproximadamente)</p>
+        <p><strong>Tempo médio de resposta:</strong> 40ms (mín: 14ms, máx: 77ms, desvio padrão: 10ms)</p>
+    </div>
+
+</body>
+
+</html>
