@@ -100,8 +100,13 @@ public class GeminiService {
 			return true;
 
 		} catch (HttpClientErrorException e) {
-			// Se a API retornar um erro (ex: 400 por bloqueio de segurança intrínseco),
-			// é mais seguro tratar a mensagem como ofensiva.
+			// LOG DE DIAGNÓSTICO
+		    System.err.println("==================== ERRO NA API GEMINI ====================");
+		    System.err.println("STATUS CODE: " + e.getStatusCode());
+		    System.err.println("CORPO DA RESPOSTA: " + e.getResponseBodyAsString());
+		    System.err.println("==========================================================");
+
+		    // Para todos os outros erros da API, mantém a lógica de segurança.
 			return true;
 		} catch (Exception e) {
 			throw new FlopException("Erro ao validar o conteúdo com a IA: " + e.getClass().getSimpleName(),
