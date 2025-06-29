@@ -19,66 +19,93 @@ import java.util.List;
 @Service
 public class GeminiService {
 
-    @Value("${gemini.api.key}")
-    private String apiKey;
+	@Value("${gemini.api.key}")
+	private String apiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private ObjectMapper objectMapper;
+	private final RestTemplate restTemplate = new RestTemplate();
+	private ObjectMapper objectMapper;
 
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=";
+	private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=";
 
-    // Estruturas de classes para o JSON
-    private record Part(String text) {}
-    private record Content(List<Part> parts, String role) {}
-    private record SafetySetting(String category, String threshold) {}
-    private record GeminiRequest(List<Content> contents, List<SafetySetting> safetySettings) {}
-    private record GeminiResponse(List<Candidate> candidates) {}
-    private record Candidate(Content content) {}
+	// Estruturas de classes para o JSON
+	private record Part(String text) {
+	}
 
+	private record Content(List<Part> parts, String role) {
+	}
 
-    @PostConstruct
-    public void init() {
-        this.objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+	private record SafetySetting(String category, String threshold) {
+	}
 
-    public boolean isMensagemConsideradaOfensiva(String message) throws FlopException {
-        // PROMPT COM TOLERÂNCIA ZERO ---
-        String prompt = "TAREFA: Classificação de Conteúdo. Você é um moderador de conteúdo para uma rede social sobre praias com uma política de tolerância zero. " +
-                        "Sua única função é classificar o texto fornecido. INSTRUÇÕES: Se o texto contiver QUALQUER um dos seguintes elementos - " +
-                        "ofensa, agressão, ameaça velada, generalização negativa sobre um grupo de pessoas, linguagem depreciativa, " +
-                        "ou um tom excessivamente reclamão ou raivoso - você DEVE responder 'SIM'. Caso contrário, responda 'NAO'. " +
-                        "Responda APENAS com 'SIM' ou 'NAO'. TEXTO PARA ANÁLISE: \"" + message + "\"";
+	private record GeminiRequest(List<Content> contents, List<SafetySetting> safetySettings) {
+	}
 
-        String apiUrl = GEMINI_API_URL + apiKey;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+	private record GeminiResponse(List<Candidate> candidates) {
+	}
 
-        List<SafetySetting> safetySettings = List.of(
-            new SafetySetting("HARM_CATEGORY_HARASSMENT", "BLOCK_MEDIUM_AND_ABOVE"),
-            new SafetySetting("HARM_CATEGORY_HATE_SPEECH", "BLOCK_MEDIUM_AND_ABOVE"),
-            new SafetySetting("HARM_CATEGORY_SEXUALLY_EXPLICIT", "BLOCK_MEDIUM_AND_ABOVE"),
-            new SafetySetting("HARM_CATEGORY_DANGEROUS_CONTENT", "BLOCK_MEDIUM_AND_ABOVE")
-        );
+	private record Candidate(Content content) {
+	}
 
-        List<Content> contents = List.of(new Content(List.of(new Part(prompt)), "user"));
-        GeminiRequest requestBody = new GeminiRequest(contents, safetySettings);
-        HttpEntity<GeminiRequest> entity = new HttpEntity<>(requestBody, headers);
+	@PostConstruct
+	public void init() {
+		this.objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
 
-        try {
-            GeminiResponse response = restTemplate.postForObject(apiUrl, entity, GeminiResponse.class);
+	public boolean isMensagemConsideradaOfensiva(String message) throws FlopException {
+		/*
+		 * PROMPT REVISADO - Foco em ataques diretos, não em reclamações ou opiniões.
+		 * Usando a técnica de "few-shot" com exemplos para ensinar a IA sobre o
+		 * contexto.
+		 */
+		String prompt = "TAREFA: Você é um moderador de conteúdo para uma comunidade online sobre praias. Sua função é classificar um texto como 'SIM' (inapropriado) ou 'NAO' (apropriado).\n\n"
+				+ "INSTRUÇÕES:\n" + "Responda 'SIM' se o texto contiver QUALQUER um dos seguintes:\n"
+				+ "1. Ofensas diretas, assédio ou insultos a uma pessoa ou grupo.\n"
+				+ "2. Ameaças ou incitação à violência.\n"
+				+ "3. Discurso de ódio ou generalizações pejorativas sobre grupos de pessoas.\n"
+				+ "4. Conteúdo sexualmente explícito ou vulgar.\n\n"
+				+ "IMPORTANTE: Reclamações sobre a condição da praia, críticas a serviços ou expressões de frustração SÃO PERMITIDAS e devem ser classificadas como 'NAO', desde que não violem as regras acima. Responda APENAS com 'SIM' ou 'NAO'.\n\n"
+				+ "-- EXEMPLOS --\n" + "TEXTO: 'A praia estava imunda hoje, um nojo. As autoridades não fazem nada!'\n"
+				+ "CLASSIFICAÇÃO: NAO\n\n" + "TEXTO: 'Todo mundo que vai na praia X é um bando de mal-educado.'\n"
+				+ "CLASSIFICAÇÃO: SIM\n\n" + "TEXTO: 'Amei o dia! Sol, mar e a melhor companhia. S2 S2'\n"
+				+ "CLASSIFICAÇÃO: NAO\n\n" + "TEXTO: 'Se eu pego quem deixou esse lixo todo aqui, vai se ver comigo.'\n"
+				+ "CLASSIFICAÇÃO: SIM\n\n" + "TEXTO: 'O cara que aluga cadeira de sol na praia Y é um ladrão!'\n"
+				+ "CLASSIFICAÇÃO: SIM\n\n" + "-- FIM DOS EXEMPLOS --\n\n" + "TEXTO PARA ANÁLISE: \"" + message + "\"\n"
+				+ "CLASSIFICAÇÃO:"; // A IA vai completar aqui com SIM ou NAO
 
-            if (response != null && response.candidates() != null && !response.candidates().isEmpty()) {
-                String respostaDaIA = response.candidates().get(0).content().parts().get(0).text();
-                return "SIM".equalsIgnoreCase(respostaDaIA.trim());
-            }
-            
-            return true;
+		String apiUrl = GEMINI_API_URL + apiKey;
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
-        } catch (HttpClientErrorException e) {
-            return true;
-        } catch (Exception e) {
-            throw new FlopException("Erro ao validar o conteúdo com a IA: " + e.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+		List<SafetySetting> safetySettings = List.of(
+				new SafetySetting("HARM_CATEGORY_HARASSMENT", "BLOCK_MEDIUM_AND_ABOVE"),
+				new SafetySetting("HARM_CATEGORY_HATE_SPEECH", "BLOCK_MEDIUM_AND_ABOVE"),
+				new SafetySetting("HARM_CATEGORY_SEXUALLY_EXPLICIT", "BLOCK_MEDIUM_AND_ABOVE"),
+				new SafetySetting("HARM_CATEGORY_DANGEROUS_CONTENT", "BLOCK_MEDIUM_AND_ABOVE"));
+
+		List<Content> contents = List.of(new Content(List.of(new Part(prompt)), "user"));
+		GeminiRequest requestBody = new GeminiRequest(contents, safetySettings);
+		HttpEntity<GeminiRequest> entity = new HttpEntity<>(requestBody, headers);
+
+		try {
+			GeminiResponse response = restTemplate.postForObject(apiUrl, entity, GeminiResponse.class);
+
+			if (response != null && response.candidates() != null && !response.candidates().isEmpty()) {
+				String respostaDaIA = response.candidates().get(0).content().parts().get(0).text();
+				// A IA responderá apenas com 'SIM' ou 'NAO', então a comparação direta é
+				// segura.
+				return "SIM".equalsIgnoreCase(respostaDaIA.trim());
+			}
+
+			// Se a IA não der uma resposta clara, é mais seguro bloquear a mensagem.
+			return true;
+
+		} catch (HttpClientErrorException e) {
+			// Se a API retornar um erro (ex: 400 por bloqueio de segurança intrínseco),
+			// é mais seguro tratar a mensagem como ofensiva.
+			return true;
+		} catch (Exception e) {
+			throw new FlopException("Erro ao validar o conteúdo com a IA: " + e.getClass().getSimpleName(),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
