@@ -101,7 +101,7 @@ INSERT INTO `forgot_password` (`fpid`, `expiration_time`, `otp`, `user_id_usuari
 -- -----------------------------------------------------
 -- Inserindo dados na tabela `praia`
 -- -----------------------------------------------------
-INSERT INTO flop_db.praia (nome_praia, place_id, latitude, longitude) VALUES
+INSERT INTO `praia` (nome_praia, place_id, latitude, longitude) VALUES
 ('Praia da Cachoeira do Bom Jesus', 'ChIJy7yS3VNCJ5UR1m_jcRrLf2k', -27.4209406, -48.4357595),
 ('Praia de Cacupé', 'ChIJKcwI8KdHJ5URIGiN-IniflE', -27.5369634, -48.5249751),
 ('Praia da Caiacanga', 'ChIJ3aCVe5kvJ5UREIZeI9SlAa8', -27.7663142, -48.5741032),
