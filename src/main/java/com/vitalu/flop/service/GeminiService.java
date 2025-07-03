@@ -76,9 +76,24 @@ public class GeminiService {
             return true;
 
         } catch (HttpClientErrorException e) {
-            return true;
-        } catch (Exception e) {
-            throw new FlopException("Erro ao validar o conteúdo com a IA: " + e.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+			// LOG DE DIAGNÓSTICO
+			System.err.println("==================== ERRO NA API GEMINI ====================");
+			System.err.println("STATUS CODE: " + e.getStatusCode());
+			System.err.println("CORPO DA RESPOSTA: " + e.getResponseBodyAsString());
+			System.err.println("==========================================================");
+
+			// Lançar uma exceção mais específica para o erro de limite de uso
+			if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+				throw new FlopException(
+						"Nosso sistema de moderação está sobrecarregado. Por favor, tente novamente em um minuto.",
+						HttpStatus.SERVICE_UNAVAILABLE); // HTTP 503
+			}
+
+			// Para todos os outros erros da API, mantém a lógica de segurança.
+			return true;
+		} catch (Exception e) {
+			throw new FlopException("Erro ao validar o conteúdo com a IA: " + e.getClass().getSimpleName(),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
