@@ -40,7 +40,7 @@ public class PostagemService {
 	private ImagemService imagemService;
 	@Autowired
 	private GeminiService geminiService;
-
+	@Autowired
 	private LocalizacaoService localizacaoService;
   
 	// Lista de padrões Regex para validação prévia.
