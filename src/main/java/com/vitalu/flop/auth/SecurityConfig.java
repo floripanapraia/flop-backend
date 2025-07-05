@@ -61,16 +61,15 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:3000/")); // Libera a origem do React
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // Métodos HTTP
-																										// permitidos
+		configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://www.floripanapraia.fun"));
+
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin",
 				"Access-Control-Allow-Headers", "Access-Control-Expose-Headers", "Accept", "Origin", "X-Requested-With",
 				"Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Credentials",
 				"Content-Length", "Content-Encoding", "Connection"));
 
-		configuration.setAllowCredentials(true); // Permite envio de credenciais (cookies, por exemplo)
-		configuration.setAllowedOriginPatterns(List.of("http://localhost:3000/*"));
+		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
