@@ -58,10 +58,10 @@ public class UsuarioService implements UserDetailsService {
 
 	public void cadastrar(Usuario usuario) throws FlopException {
 		if (usuarioRepository.existsByEmailIgnoreCase(usuario.getEmail())) {
-			throw new FlopException("O e-mail informado já está cadastrado.", HttpStatus.BAD_REQUEST);
+			throw new FlopException("O e-mail informado já está cadastrado.", HttpStatus.CONFLICT);
 		}
 		if (usuarioRepository.existsByNickname(usuario.getUsername())) {
-			throw new FlopException("O username informado já está registrado.", HttpStatus.BAD_REQUEST);
+			throw new FlopException("O username informado já está registrado.", HttpStatus.CONFLICT);
 		}
 		usuarioRepository.save(usuario);
 	}
